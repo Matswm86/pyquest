@@ -120,7 +120,7 @@ fun QuestionScreen(
                 QuestionType.FILL -> FillAnswer(
                     question = question,
                     placed = session.slots,
-                    onPlacedChange = session::setSlots,
+                    onPlacedChange = session::placeInSlots,
                     plainLabels = plainLabels,
                     enabled = !session.checked,
                     checked = session.checked,
@@ -129,7 +129,7 @@ fun QuestionScreen(
                 QuestionType.PIPELINE -> PipelineAnswer(
                     question = question,
                     placed = session.slots,
-                    onPlacedChange = session::setSlots,
+                    onPlacedChange = session::placeInSlots,
                     plainLabels = plainLabels,
                     enabled = !session.checked,
                 )

@@ -102,7 +102,7 @@ class QuizSession(
         selection = placed
     }
 
-    fun setSlots(placed: List<String?>) {
+    fun placeInSlots(placed: List<String?>) {
         if (checked) return
         slots = placed
     }
