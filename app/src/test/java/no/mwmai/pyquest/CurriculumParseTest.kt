@@ -81,3 +81,33 @@ class CurriculumParseTest {
         }
     }
 }
+
+/**
+ * Guards against regex patterns that a desktop JVM accepts and Android does not.
+ *
+ * Android compiles regexes through ICU, which is stricter than OpenJDK. An
+ * unescaped closing brace cost a launch crash that every JVM test in this file
+ * passed straight through, because OpenJDK compiles that pattern happily. The
+ * source itself is checked here instead.
+ */
+class RegexPortabilityTest {
+
+    @Test
+    fun `no Kotlin source leaves a closing brace unescaped in a regex`() {
+        val regexLiteral = Regex("Regex\\(([^)]*)\\)")
+        val bareClosingBrace = Regex("(?<!\\\\)\\}")
+
+        val offenders = File("src/main/java").walkTopDown()
+            .filter { it.extension == "kt" }
+            .flatMap { file ->
+                regexLiteral.findAll(file.readText()).map { file.name to it.groupValues[1] }
+            }
+            .filter { (_, pattern) -> bareClosingBrace.containsMatchIn(pattern) }
+            .toList()
+
+        assertTrue(
+            "Android's ICU regex rejects a bare closing brace, escape it: $offenders",
+            offenders.isEmpty(),
+        )
+    }
+}

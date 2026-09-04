@@ -68,8 +68,16 @@ data class Question(
     fun block(id: String): Block? = blocks.firstOrNull { it.id == id }
 
     companion object {
-        /** Matches a `{0}` style gap marker inside [template]. */
-        val GAP = Regex("""\{(\d+)}""")
+        /**
+         * Matches a `{0}` style gap marker inside [template].
+         *
+         * The closing brace has to be escaped. OpenJDK's regex engine accepts a
+         * bare `}` and Android's ICU-backed one rejects it, so the unescaped
+         * version compiled on a desktop JVM, passed the unit tests, and then
+         * threw PatternSyntaxException inside this class's static initializer on
+         * the first phone that ran it.
+         */
+        val GAP = Regex("""\{(\d+)\}""")
     }
 }
 
