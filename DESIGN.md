@@ -1,14 +1,14 @@
 # PyQuest: Android Python quiz game
 
-**Status**: 2026-09-04. Scaffold built and pushed to Matswm86/pyquest (private).
+**Status**: 2026-09-04. Scaffold built, CI green, APK published.
 Tier 1 is complete at 30 questions; tier 10 ships a 6-question preview so the top
 of the ladder is playable rather than only described. Tiers 2 to 9 are unwritten.
 **One line**: a native Android game that walks a player from `print("hello")` to
 scoping and pricing an AI-engineering consultancy job, using multiple-choice cards
 and Scratch-style drag blocks the whole way up.
 
-Working name is PyQuest; the mascot is Pytor (reuse `projects/pylearn/docs/pytor.webp`)
-so it reads as a sibling of the PyLearn web app rather than a competitor to it.
+Working name is PyQuest, and it shares the Pytor snake mascot with the PyLearn web
+app so the two read as siblings rather than competitors.
 
 ## 1. How this differs from PyLearn
 
@@ -107,8 +107,8 @@ Pyodide as an optional download, not Chaquopy. That is a v2 question, not a v1 o
 ## 6. Technical design
 
 **Stack**: Kotlin + Jetpack Compose, JDK 17, compileSdk 35, minSdk 26,
-kotlinx.serialization, Room for progress. Same versions as
-`projects/mwm-trading-mobile`, which builds green today.
+kotlinx.serialization. Versions are pinned in `gradle/libs.versions.toml` and
+verified by the first green CI build rather than by a local toolchain.
 
 **Drag and drop**: Compose `pointerInput` + `detectDragGesturesAfterLongPress` on
 each tray block, with drop-target bounds collected via `onGloballyPositioned`. A
@@ -151,11 +151,11 @@ example "drill every question tagged rag that I have missed twice".
 **Scoring**: XP and a daily streak. No hearts and no energy timer, because gating
 practice behind a wait is the mechanic that makes people quit.
 
-**Build and ship**: GitHub Actions only. Copy
-`projects/mwm-trading-mobile/.github/workflows/build-android.yml`, which already
-does JDK 17 + `android-actions/setup-android@v3` + `sdkmanager "platforms;android-35"`
-+ `assembleDebug`, and uploads the APK as an artifact to sideload. Never run
-`./gradlew` on this 8 GB host; it OOMs.
+**Build and ship**: GitHub Actions only. The workflow runs JDK 17 plus
+`android-actions/setup-android@v3`, installs `platforms;android-35`, runs
+`assembleDebug`, attaches the APK to the rolling `latest` pre-release under a
+SHA-suffixed filename, and rewrites the README download link to match. No APK is
+ever produced on a workstation.
 
 **Screens** (7 total): Home with the tier map, Tier detail with 5 level nodes,
 Question screen (the one screen that matters), Explain card after each answer,
@@ -163,7 +163,7 @@ Boss round with a timer, Stats with per-tier mastery bars, Settings.
 
 ## 7. Build order
 
-1. Repo scaffold cloned from mwm-trading-mobile's gradle setup, CI green on an empty app.
+1. Repo scaffold with a pinned version catalog, CI green on an empty app.
 2. Question screen with the `mcq` and `blocks` types, hardcoded sample questions.
 3. JSON loader + schema check in CI.
 4. Room progress + Leitner scheduling.

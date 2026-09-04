@@ -8,6 +8,20 @@ The design lives in [DESIGN.md](DESIGN.md). The short version: the same physical
 action, dragging pieces into the right order, carries the player from syntax
 tokens at tier 1 to pipeline components at tier 10.
 
+## 📲 Download
+
+**[⬇ Latest APK](https://github.com/Matswm86/pyquest/releases/download/latest/pyquest-0000000.apk)**
+&nbsp;·&nbsp; [all builds](https://github.com/Matswm86/pyquest/releases)
+
+Open the link on your phone, tap the file, and allow "install from this source"
+when Android asks. Android 8.0 or newer (minSdk 26). The filename carries the
+commit id on purpose, so your browser can never serve you a cached old build. If
+the link 404s, a newer build has landed: grab the newest `pyquest-*.apk` off the
+releases page.
+
+Debug-signed. Reinstalling over a build with a different signature means
+uninstalling the old one first.
+
 ## State
 
 | Piece | Status |
@@ -25,14 +39,17 @@ on day one, not just described in a document.
 
 ## Building
 
-Every APK is built in GitHub Actions. Do not run `./gradlew` on the workstation;
-the 8 GB box runs out of memory.
+Every APK is built in GitHub Actions, which also publishes it to the rolling
+`latest` pre-release and rewrites the download link above to match. Pushing to
+`main` is the whole release process.
 
 ```bash
-gh workflow run build-android.yml            # trigger a build
+gh workflow run build-android.yml            # trigger a build by hand
 gh run watch                                 # follow it
-gh run download --name pyquest-debug-apk     # fetch the APK to sideload
+gh run download --name pyquest-debug-apk     # fetch the APK without a release
 ```
+
+Tagging `vX.Y.Z` publishes a normal, non-rolling release instead.
 
 ## Adding questions
 
