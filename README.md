@@ -10,7 +10,7 @@ tokens at tier 1 to pipeline components at tier 10.
 
 ## 📲 Download
 
-**[⬇ Latest APK](https://github.com/Matswm86/pyquest/releases/download/latest/pyquest-8a220de.apk)**
+**[⬇ Latest APK](https://github.com/Matswm86/pyquest/releases/download/latest/pyquest-1ab3e37.apk)**
 &nbsp;·&nbsp; [all builds](https://github.com/Matswm86/pyquest/releases)
 
 Open the link on your phone, tap the file, and allow "install from this source"
