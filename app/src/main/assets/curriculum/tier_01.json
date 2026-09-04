@@ -1,0 +1,759 @@
+{
+  "tier": 1,
+  "title": "First Words",
+  "subtitle": "print, strings, comments, and your first variable",
+  "questions": [
+    {
+      "id": "t1.l1.q1",
+      "tier": 1,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Which line prints the word hello?",
+      "options": [
+        "print(\"hello\")",
+        "print hello",
+        "echo(\"hello\")",
+        "printf(\"hello\")"
+      ],
+      "answer": [
+        "print(\"hello\")"
+      ],
+      "explain": "print is a function, so the thing you want shown goes inside its parentheses. echo and printf belong to other languages.",
+      "xp": 10,
+      "tags": [
+        "print"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l1.q2",
+      "tier": 1,
+      "level": 1,
+      "type": "blocks",
+      "prompt": "Build the line that prints hello.",
+      "tray": [
+        "print",
+        "(",
+        "\"hello\"",
+        ")"
+      ],
+      "answer": [
+        "print",
+        "(",
+        "\"hello\"",
+        ")"
+      ],
+      "accept": [],
+      "explain": "Function name first, then an opening paren, then the value, then the closing paren.",
+      "xp": 15,
+      "tags": [
+        "print",
+        "syntax"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l1.q3",
+      "tier": 1,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What appears on screen when this runs?",
+      "options": [
+        "Pytor",
+        "\"Pytor\"",
+        "print(\"Pytor\")",
+        "nothing"
+      ],
+      "answer": [
+        "Pytor"
+      ],
+      "explain": "The quotes mark where the text starts and ends. They are not part of the text itself, so they are not printed.",
+      "xp": 10,
+      "tags": [
+        "print",
+        "strings"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(\"Pytor\")"
+    },
+    {
+      "id": "t1.l1.q4",
+      "tier": 1,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Python cares about capital letters. Which one runs?",
+      "options": [
+        "print(\"hi\")",
+        "Print(\"hi\")",
+        "PRINT(\"hi\")",
+        "Prnt(\"hi\")"
+      ],
+      "answer": [
+        "print(\"hi\")"
+      ],
+      "explain": "Python is case sensitive. Print with a capital P is a different name, and Python has no idea what it means.",
+      "xp": 10,
+      "tags": [
+        "print",
+        "case-sensitivity"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l1.q5",
+      "tier": 1,
+      "level": 1,
+      "type": "blocks",
+      "prompt": "Build the line that prints Good morning.",
+      "tray": [
+        "print",
+        "(",
+        "\"Good morning\"",
+        ")"
+      ],
+      "answer": [
+        "print",
+        "(",
+        "\"Good morning\"",
+        ")"
+      ],
+      "accept": [],
+      "explain": "A space inside the quotes is just another character in the text.",
+      "xp": 15,
+      "tags": [
+        "print"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l1.q6",
+      "tier": 1,
+      "level": 1,
+      "type": "order",
+      "prompt": "Put the steps of running your first program in order.",
+      "tray": [
+        "write the code",
+        "save the file",
+        "run the file",
+        "read the output"
+      ],
+      "answer": [
+        "write the code",
+        "save the file",
+        "run the file",
+        "read the output"
+      ],
+      "accept": [],
+      "explain": "Unsaved edits are invisible to Python. Save before you run, every time.",
+      "xp": 15,
+      "tags": [
+        "workflow"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l2.q1",
+      "tier": 1,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Which of these is NOT a valid Python string?",
+      "options": [
+        "'hello'",
+        "\"hello\"",
+        "\"\"\"hello\"\"\"",
+        "\"hello'"
+      ],
+      "answer": [
+        "\"hello'"
+      ],
+      "explain": "A string has to close with the same quote character it opened with. Mixing a double quote and a single quote leaves the string unterminated.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "quotes"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l2.q2",
+      "tier": 1,
+      "level": 2,
+      "type": "blocks",
+      "prompt": "Build a line that prints:  it's fine",
+      "tray": [
+        "print",
+        "(",
+        "\"it's fine\"",
+        "'it's fine'",
+        ")"
+      ],
+      "answer": [
+        "print",
+        "(",
+        "\"it's fine\"",
+        ")"
+      ],
+      "accept": [],
+      "explain": "Wrap the text in double quotes and the apostrophe inside causes no trouble. Single quotes would end the string at the apostrophe.",
+      "xp": 15,
+      "tags": [
+        "strings",
+        "quotes"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l2.q3",
+      "tier": 1,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does the # symbol do in Python?",
+      "options": [
+        "Starts a comment that Python ignores",
+        "Starts a new line of output",
+        "Marks a variable name",
+        "Makes the text bold"
+      ],
+      "answer": [
+        "Starts a comment that Python ignores"
+      ],
+      "explain": "Everything after # on that line is for humans. Python skips it entirely.",
+      "xp": 10,
+      "tags": [
+        "comments"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l2.q4",
+      "tier": 1,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "How many lines does this program print?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "0"
+      ],
+      "answer": [
+        "1"
+      ],
+      "explain": "The first line is a comment, so only the print runs.",
+      "xp": 10,
+      "tags": [
+        "comments"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "# print(\"first\")\nprint(\"second\")"
+    },
+    {
+      "id": "t1.l2.q5",
+      "tier": 1,
+      "level": 2,
+      "type": "order",
+      "prompt": "Put a comment above the code it explains.",
+      "tray": [
+        "# greet the user",
+        "print(\"hello\")"
+      ],
+      "answer": [
+        "# greet the user",
+        "print(\"hello\")"
+      ],
+      "accept": [],
+      "explain": "A comment above the line is the normal Python habit, and it reads like a caption.",
+      "xp": 15,
+      "tags": [
+        "comments",
+        "style"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l2.q6",
+      "tier": 1,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "This line has a mistake. What is it?",
+      "options": [
+        "The closing quote is missing",
+        "print should be capitalised",
+        "It needs a semicolon",
+        "Nothing is wrong"
+      ],
+      "answer": [
+        "The closing quote is missing"
+      ],
+      "explain": "Python reads to the end of the line looking for the closing quote, does not find one, and raises SyntaxError.",
+      "xp": 10,
+      "tags": [
+        "errors",
+        "quotes"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(\"hello)"
+    },
+    {
+      "id": "t1.l3.q1",
+      "tier": 1,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "Which word appears first on screen?",
+      "options": [
+        "one",
+        "two",
+        "three",
+        "They appear at the same time"
+      ],
+      "answer": [
+        "one"
+      ],
+      "explain": "Python runs a file top to bottom, one line at a time.",
+      "xp": 10,
+      "tags": [
+        "execution-order"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(\"one\")\nprint(\"two\")\nprint(\"three\")"
+    },
+    {
+      "id": "t1.l3.q2",
+      "tier": 1,
+      "level": 3,
+      "type": "order",
+      "prompt": "Order the lines so the output reads: ready / steady / go",
+      "tray": [
+        "print(\"go\")",
+        "print(\"ready\")",
+        "print(\"steady\")"
+      ],
+      "answer": [
+        "print(\"ready\")",
+        "print(\"steady\")",
+        "print(\"go\")"
+      ],
+      "accept": [],
+      "explain": "Output order is line order. Nothing reorders itself.",
+      "xp": 15,
+      "tags": [
+        "execution-order"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l3.q3",
+      "tier": 1,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does an empty print() do?",
+      "options": [
+        "Prints a blank line",
+        "Prints the word None",
+        "Does nothing at all",
+        "Raises an error"
+      ],
+      "answer": [
+        "Prints a blank line"
+      ],
+      "explain": "print always ends with a newline, so calling it with nothing inside gives you an empty line, which is how you space output out.",
+      "xp": 10,
+      "tags": [
+        "print"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(\"a\")\nprint()\nprint(\"b\")"
+    },
+    {
+      "id": "t1.l3.q4",
+      "tier": 1,
+      "level": 3,
+      "type": "blocks",
+      "prompt": "Build two lines that print hi and then bye.",
+      "tray": [
+        "print",
+        "(",
+        "\"hi\"",
+        ")",
+        "print",
+        "(",
+        "\"bye\"",
+        ")"
+      ],
+      "answer": [
+        "print",
+        "(",
+        "\"hi\"",
+        ")",
+        "print",
+        "(",
+        "\"bye\"",
+        ")"
+      ],
+      "accept": [],
+      "explain": "Two complete calls, each with its own parentheses. The blocks repeat because the code repeats.",
+      "xp": 15,
+      "tags": [
+        "print",
+        "syntax"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l3.q5",
+      "tier": 1,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "Does Python ever run the last line of a file first?",
+      "options": [
+        "No, it always starts at the top",
+        "Yes, if the last line is a print",
+        "Yes, files run bottom to top",
+        "Only when the file has comments"
+      ],
+      "answer": [
+        "No, it always starts at the top"
+      ],
+      "explain": "A Python file executes top to bottom. Functions can delay when code runs, but the reading order never flips.",
+      "xp": 10,
+      "tags": [
+        "execution-order"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l3.q6",
+      "tier": 1,
+      "level": 3,
+      "type": "order",
+      "prompt": "Order these lines to count down 3, 2, 1, liftoff.",
+      "tray": [
+        "print(\"liftoff\")",
+        "print(\"2\")",
+        "print(\"3\")",
+        "print(\"1\")"
+      ],
+      "answer": [
+        "print(\"3\")",
+        "print(\"2\")",
+        "print(\"1\")",
+        "print(\"liftoff\")"
+      ],
+      "accept": [],
+      "explain": "Countdown order is just line order. Python has no idea the lines are a countdown, it only runs them from the top down.",
+      "xp": 15,
+      "tags": [
+        "execution-order"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l4.q1",
+      "tier": 1,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What exactly does this print?",
+      "options": [
+        "a b",
+        "ab",
+        "a,b",
+        "a b "
+      ],
+      "answer": [
+        "a b"
+      ],
+      "explain": "print joins several values with a single space between them by default.",
+      "xp": 10,
+      "tags": [
+        "print",
+        "sep"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(\"a\", \"b\")"
+    },
+    {
+      "id": "t1.l4.q2",
+      "tier": 1,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "options": [
+        "2026-09-04",
+        "2026 09 04",
+        "2026,09,04",
+        "An error"
+      ],
+      "answer": [
+        "2026-09-04"
+      ],
+      "explain": "sep replaces the space that print normally puts between values.",
+      "xp": 10,
+      "tags": [
+        "print",
+        "sep"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(\"2026\", \"09\", \"04\", sep=\"-\")"
+    },
+    {
+      "id": "t1.l4.q3",
+      "tier": 1,
+      "level": 4,
+      "type": "blocks",
+      "prompt": "Build a line that prints:  a-b",
+      "tray": [
+        "print",
+        "(",
+        "\"a\"",
+        ",",
+        "\"b\"",
+        ",",
+        "sep=\"-\"",
+        ")"
+      ],
+      "answer": [
+        "print",
+        "(",
+        "\"a\"",
+        ",",
+        "\"b\"",
+        ",",
+        "sep=\"-\"",
+        ")"
+      ],
+      "accept": [],
+      "explain": "sep is a keyword argument, so it goes inside the parentheses after the values, separated by a comma.",
+      "xp": 15,
+      "tags": [
+        "print",
+        "sep"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l4.q4",
+      "tier": 1,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does end=\"\" change?",
+      "options": [
+        "print stops adding a newline at the end",
+        "print stops adding spaces between values",
+        "print writes to a file instead of the screen",
+        "print runs faster"
+      ],
+      "answer": [
+        "print stops adding a newline at the end"
+      ],
+      "explain": "end is the text print puts after everything else. Set it to an empty string and the next print continues on the same line.",
+      "xp": 10,
+      "tags": [
+        "print",
+        "end"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(\"a\", end=\"\")\nprint(\"b\")"
+    },
+    {
+      "id": "t1.l4.q5",
+      "tier": 1,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What appears on screen?",
+      "options": [
+        "7",
+        "3 + 4",
+        "\"3 + 4\"",
+        "34"
+      ],
+      "answer": [
+        "7"
+      ],
+      "explain": "There are no quotes, so Python does the arithmetic first and print receives the number 7.",
+      "xp": 10,
+      "tags": [
+        "print",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(3 + 4)"
+    },
+    {
+      "id": "t1.l4.q6",
+      "tier": 1,
+      "level": 4,
+      "type": "blocks",
+      "prompt": "Build a line that prints:  2 + 2 = 4",
+      "tray": [
+        "print",
+        "(",
+        "\"2 + 2 =\"",
+        ",",
+        "2 + 2",
+        ")"
+      ],
+      "answer": [
+        "print",
+        "(",
+        "\"2 + 2 =\"",
+        ",",
+        "2 + 2",
+        ")"
+      ],
+      "accept": [],
+      "explain": "The quoted part is shown literally, the unquoted part is calculated, and print puts a space between them.",
+      "xp": 15,
+      "tags": [
+        "print",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l5.q1",
+      "tier": 1,
+      "level": 5,
+      "type": "order",
+      "prompt": "Order the lines so the program prints Pytor.",
+      "tray": [
+        "print(name)",
+        "name = \"Pytor\""
+      ],
+      "answer": [
+        "name = \"Pytor\"",
+        "print(name)"
+      ],
+      "accept": [],
+      "explain": "A name has to exist before you use it. Reversed, this raises NameError.",
+      "xp": 15,
+      "tags": [
+        "variables"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l5.q2",
+      "tier": 1,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "options": [
+        "name",
+        "Pytor",
+        "\"name\"",
+        "An error"
+      ],
+      "answer": [
+        "name"
+      ],
+      "explain": "Quotes make it literal text. Without quotes, print(name) would show what the variable holds.",
+      "xp": 10,
+      "tags": [
+        "variables",
+        "strings"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "name = \"Pytor\"\nprint(\"name\")"
+    },
+    {
+      "id": "t1.l5.q3",
+      "tier": 1,
+      "level": 5,
+      "type": "blocks",
+      "prompt": "Build a line that greets by name using an f-string.",
+      "tray": [
+        "print",
+        "(",
+        "f\"Hi {name}\"",
+        "\"Hi {name}\"",
+        ")"
+      ],
+      "answer": [
+        "print",
+        "(",
+        "f\"Hi {name}\"",
+        ")"
+      ],
+      "accept": [],
+      "explain": "The f before the quote is what turns {name} into the value. Without it you print the braces literally.",
+      "xp": 15,
+      "tags": [
+        "variables",
+        "f-string"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l5.q4",
+      "tier": 1,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What happens when this runs?",
+      "options": [
+        "NameError, because age was never given a value",
+        "It prints a blank line",
+        "It prints the word age",
+        "It prints 0"
+      ],
+      "answer": [
+        "NameError, because age was never given a value"
+      ],
+      "explain": "Python has no default value for a name you never assigned. It stops with NameError.",
+      "xp": 10,
+      "tags": [
+        "variables",
+        "errors"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "print(age)"
+    },
+    {
+      "id": "t1.l5.q5",
+      "tier": 1,
+      "level": 5,
+      "type": "order",
+      "prompt": "Order the lines so the program prints 12.",
+      "tray": [
+        "print(score)",
+        "score = 10",
+        "score = 12"
+      ],
+      "answer": [
+        "score = 10",
+        "score = 12",
+        "print(score)"
+      ],
+      "accept": [],
+      "explain": "Assigning again replaces the value. The variable holds whatever was put in last before the print.",
+      "xp": 15,
+      "tags": [
+        "variables"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l5.q6",
+      "tier": 1,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "options": [
+        "Hi Pytor",
+        "Hi {name}",
+        "f\"Hi {name}\"",
+        "An error"
+      ],
+      "answer": [
+        "Hi Pytor"
+      ],
+      "explain": "The f-string swaps {name} for the value the variable holds at that moment.",
+      "xp": 10,
+      "tags": [
+        "variables",
+        "f-string"
+      ],
+      "reviewed": "2026-09-04",
+      "code": "name = \"Pytor\"\nprint(f\"Hi {name}\")"
+    }
+  ]
+}

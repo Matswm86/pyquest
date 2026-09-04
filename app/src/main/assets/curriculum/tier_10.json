@@ -1,0 +1,158 @@
+{
+  "tier": 10,
+  "title": "Consultancy",
+  "subtitle": "Preview of the top of the ladder: scoping, cost, evals, triage",
+  "questions": [
+    {
+      "id": "t10.l1.q1",
+      "tier": 10,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "A Norwegian law firm has 40,000 PDFs, wants internal question answering, the data may not leave the EU, the budget is 150,000 NOK and they want it live in six weeks. What do you propose?",
+      "options": [
+        "Retrieval over the PDFs with an EU-hosted model",
+        "Fine-tune an open model on the 40,000 PDFs",
+        "Paste the relevant documents into a long-context prompt on every query",
+        "Train a model from scratch on Norwegian legal text"
+      ],
+      "answer": [
+        "Retrieval over the PDFs with an EU-hosted model"
+      ],
+      "explain": "Fine-tuning teaches style and format, not retrievable facts, and has to be redone whenever the corpus changes. Long-context-per-query still needs retrieval to choose the documents and multiplies the token bill. Training from scratch costs years and millions. Retrieval against an EU-hosted endpoint is the only option that meets residency, budget and timeline at once.",
+      "xp": 40,
+      "tags": [
+        "scoping",
+        "rag-vs-finetune",
+        "data-residency"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t10.l1.q2",
+      "tier": 10,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Each request sends 40,000 input tokens and returns 800 output tokens, and the client expects 12,000 requests a month. Input costs $3 per million tokens and output $15 per million. What is the monthly model bill?",
+      "options": [
+        "$1,584",
+        "$1,440",
+        "$158.40",
+        "$1,468.80"
+      ],
+      "answer": [
+        "$1,584"
+      ],
+      "explain": "Input is 40,000 x 12,000 = 480 million tokens, which is 480 x $3 = $1,440. Output is 800 x 12,000 = 9.6 million tokens, which is 9.6 x $15 = $144. The total is $1,584. $1,440 forgets output entirely and $1,468.80 prices output at the input rate.",
+      "xp": 40,
+      "tags": [
+        "cost",
+        "token-math"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t10.l1.q3",
+      "tier": 10,
+      "level": 1,
+      "type": "blocks",
+      "prompt": "Assemble the evaluation harness the client's procurement team will accept. Leave out anything that is not evidence.",
+      "tray": [
+        "vibe check in the chat window",
+        "golden question set",
+        "human rubric",
+        "automated judge",
+        "regression run on every deploy",
+        "cost and latency logging"
+      ],
+      "answer": [
+        "golden question set",
+        "human rubric",
+        "automated judge",
+        "regression run on every deploy",
+        "cost and latency logging"
+      ],
+      "accept": [],
+      "explain": "A fixed question set comes first because nothing else is measurable without it. The rubric defines what good means, the automated judge applies it at scale, the regression run makes it a gate rather than a one-off, and cost plus latency logging is what procurement actually signs against. A vibe check is not evidence.",
+      "xp": 45,
+      "tags": [
+        "evals",
+        "procurement"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t10.l1.q4",
+      "tier": 10,
+      "level": 1,
+      "type": "blocks",
+      "prompt": "Order the ingestion pipeline. One block belongs to query time, not ingestion.",
+      "tray": [
+        "embed chunks",
+        "split into chunks",
+        "re-rank results",
+        "load the PDF",
+        "upsert to the vector store"
+      ],
+      "answer": [
+        "load the PDF",
+        "split into chunks",
+        "embed chunks",
+        "upsert to the vector store"
+      ],
+      "accept": [],
+      "explain": "Re-ranking scores candidates that came back from a search, so it can only happen once a query exists. Putting it in the ingestion path is the mistake this level is built to catch.",
+      "xp": 45,
+      "tags": [
+        "rag",
+        "pipeline"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t10.l1.q5",
+      "tier": 10,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Two weeks after launch the client reports the assistant is inventing case numbers. What do you check first?",
+      "options": [
+        "Whether the retrieved chunks actually contain the answer",
+        "Whether temperature is set above zero",
+        "Whether a larger model would score better",
+        "Whether the system prompt says not to make things up"
+      ],
+      "answer": [
+        "Whether the retrieved chunks actually contain the answer"
+      ],
+      "explain": "Most invented facts in a retrieval system are a retrieval miss: nothing relevant came back and the model filled the gap. Measure retrieval hit rate on the exact failing questions before you touch temperature, model size, or prompt wording, or you will spend the budget tuning generation to cover a search bug.",
+      "xp": 40,
+      "tags": [
+        "failure-triage",
+        "hallucination"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t10.l1.q6",
+      "tier": 10,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "The contract sets p95 response time under 2 seconds and you are measuring 6. Which change buys the most?",
+      "options": [
+        "Stream tokens to the UI and shrink the retrieved context",
+        "Retrieve 40 chunks instead of 8 so answers are better grounded",
+        "Add a second model pass that checks the first answer",
+        "Put the whole corpus in the prompt and skip retrieval"
+      ],
+      "answer": [
+        "Stream tokens to the UI and shrink the retrieved context"
+      ],
+      "explain": "Streaming changes time-to-first-token, which is what a user experiences as speed, and a smaller context cuts real prefill time. The other three each add work: more chunks means more prefill, a second pass doubles the round trips, and a whole-corpus prompt is the slowest and most expensive option on the list.",
+      "xp": 40,
+      "tags": [
+        "latency",
+        "sla"
+      ],
+      "reviewed": "2026-09-04"
+    }
+  ]
+}
