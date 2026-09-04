@@ -183,34 +183,7 @@ jobs:
           ram-size: 3072M
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: |
-            set -x
-            chmod +x ./gradlew
-            ./gradlew installDebug --no-daemon
-            mkdir -p smoke
-            adb logcat -c || true
-            # `am start -W` waits for the launch to settle, and a crash-restart
-            # loop makes that wait forever: the first run of this job burned 28
-            # minutes here and captured nothing. Cap it and keep going, because
-            # the log is the point of this job, not the exit code of am.
-            timeout 90 adb shell am start -n no.mwmai.pyquest.debug/no.mwmai.pyquest.MainActivity \
-              || echo "am start did not return cleanly (exit $?)"
-            sleep 15
-            adb logcat -d > smoke/logcat.txt || true
-            adb exec-out screencap -p > smoke/launch.png || true
-            adb shell dumpsys activity activities > smoke/activities.txt || true
-            wc -l smoke/logcat.txt || true
-            if grep -qE "FATAL EXCEPTION|AndroidRuntime: .*Exception" smoke/logcat.txt; then
-              echo "::error::App crashed at launch"
-              grep -A 40 -m 1 "FATAL EXCEPTION" smoke/logcat.txt || true
-              exit 1
-            fi
-            if ! grep -q "no.mwmai.pyquest.debug" smoke/activities.txt; then
-              echo "::error::App is not in the activity stack after launch"
-              tail -60 smoke/logcat.txt || true
-              exit 1
-            fi
-            echo "App launched and is running."
+          script: bash tools/smoke.sh
 
       - name: Upload logcat and screenshot
         if: always()
