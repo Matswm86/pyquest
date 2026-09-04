@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Launches the app on a connected emulator and reports whether it survives.
+# Launches the app on a connected emulator and proves it actually rendered.
 #
 # This lives in a file rather than inline in the workflow because the emulator
-# action runs the inline script one line at a time through `sh -c`: a line
-# continuation or a multi-line `if` is split apart and fails with a syntax error
-# before anything useful is captured.
+# action runs an inline script one line at a time through `sh -c`: a line
+# continuation or a multi-line `if` gets split apart and fails with a syntax
+# error before anything useful is captured.
 set -x
 
 PKG=no.mwmai.pyquest.debug
@@ -17,14 +17,25 @@ chmod +x ./gradlew
 
 adb logcat -c || true
 # No -W here. That flag waits for the launch to settle, which never happens for
-# an app that dies and restarts, and it cost a 28 minute job timeout once.
+# an app that dies and restarts, and it cost a 30 minute job timeout once.
 adb shell am start -n "$PKG/$ACTIVITY" || echo "am start returned $?"
-sleep 15
+sleep 20
 
 adb logcat -d > "$OUT/logcat.txt" 2>&1 || true
-adb exec-out screencap -p > "$OUT/launch.png" 2>/dev/null || true
 adb shell dumpsys activity activities > "$OUT/activities.txt" 2>&1 || true
-wc -l "$OUT/logcat.txt" || true
+
+# Pixels first, by both routes. A headless emulator often hands back an all
+# black frame regardless of what is on screen, so the capture is evidence when
+# it works and proves nothing when it does not.
+adb exec-out screencap -p > "$OUT/launch.png" 2>/dev/null || true
+adb shell screencap -p /sdcard/launch2.png >/dev/null 2>&1 || true
+adb pull /sdcard/launch2.png "$OUT/launch2.png" >/dev/null 2>&1 || true
+
+# The view hierarchy is the assertion that does not depend on the GPU. Compose
+# publishes its text through accessibility semantics, so real rendered content
+# shows up here as real strings.
+adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1 || true
+adb pull /sdcard/ui.xml "$OUT/ui.xml" >/dev/null 2>&1 || true
 
 if grep -qE "FATAL EXCEPTION|AndroidRuntime: .*(Exception|Error)" "$OUT/logcat.txt"; then
     echo "::error::App crashed at launch"
@@ -38,4 +49,24 @@ if ! grep -q "$PKG" "$OUT/activities.txt"; then
     exit 1
 fi
 
-echo "App launched and is still running."
+if [ ! -s "$OUT/ui.xml" ]; then
+    echo "::error::Could not dump the view hierarchy, so nothing proves the UI drew"
+    exit 1
+fi
+
+# Strings the track screen must be showing. If Compose composed but painted
+# nothing, or the curriculum failed to load, these are missing.
+MISSING=0
+for TEXT in "PyQuest" "THE TRACK" "Hello, world" "AI consultancy sims"; do
+    if ! grep -qF "$TEXT" "$OUT/ui.xml"; then
+        echo "::error::The track screen is missing the text: $TEXT"
+        MISSING=1
+    fi
+done
+if [ "$MISSING" -ne 0 ]; then
+    echo "--- view hierarchy ---"
+    head -c 4000 "$OUT/ui.xml"
+    exit 1
+fi
+
+echo "App launched, and the track screen rendered its real content."
