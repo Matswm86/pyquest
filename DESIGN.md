@@ -1,6 +1,8 @@
-# PyQuest — Android Python quiz game
+# PyQuest: Android Python quiz game
 
-**Status**: design only, 2026-09-04. No code written yet.
+**Status**: 2026-09-04. Scaffold built and pushed to Matswm86/pyquest (private).
+Tier 1 is complete at 30 questions; tier 10 ships a 6-question preview so the top
+of the ladder is playable rather than only described. Tiers 2 to 9 are unwritten.
 **One line**: a native Android game that walks a player from `print("hello")` to
 scoping and pricing an AI-engineering consultancy job, using multiple-choice cards
 and Scratch-style drag blocks the whole way up.
@@ -82,11 +84,11 @@ Tier 10, drag-block:
 
 Five types, all thumb-first, all gradeable without running Python:
 
-1. **mcq** — 4 options, one correct, tap.
-2. **blocks** — drag tokens/statements from a tray into ordered slots.
-3. **fill** — code shown with `___` gaps; drag the right token into each gap.
-4. **order** — reorder a shuffled list (pipeline steps, execution order).
-5. **match** — pair left column to right (method to what it returns, metric to when you use it).
+1. **mcq**: 4 options, one correct, tap.
+2. **blocks**: drag tokens/statements from a tray into ordered slots.
+3. **fill**: code shown with `___` gaps; drag the right token into each gap.
+4. **order**: reorder a shuffled list (pipeline steps, execution order).
+5. **match**: pair left column to right (method to what it returns, metric to when you use it).
 
 ## 5. The runtime decision: no Python on the device in v1
 
@@ -135,11 +137,16 @@ they ship.
 }
 ```
 
-**Progress and repetition**: Room stores one row per question with a Leitner box
-(0-4) and a due counter. A wrong answer drops the question to box 0 and re-queues it
-3 questions later, then 8, then next session. Mastery per tier is the share of that
-tier's questions in box 3 or higher, which is a more honest number than "levels
+**Progress and repetition**: one JSON blob in SharedPreferences holds a Leitner box
+(0-4) per question id, plus XP, streak and last-played date. A wrong answer drops the
+question to box 0 and re-queues it 3 questions later. Mastery per tier is the share of
+that tier's questions in box 3 or higher, which is a more honest number than "levels
 completed".
+
+The design first called for Room here. A 300-question blob rewrites in under a
+millisecond and Room would have added KSP to the very first CI run for no gain, so the
+build ships SharedPreferences. Room becomes worth it when per-tag queries arrive, for
+example "drill every question tagged rag that I have missed twice".
 
 **Scoring**: XP and a daily streak. No hearts and no energy timer, because gating
 practice behind a wait is the mechanic that makes people quit.
