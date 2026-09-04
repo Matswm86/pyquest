@@ -1,7 +1,7 @@
 {
   "tier": 1,
-  "title": "First Words",
-  "subtitle": "print, strings, comments, and your first variable",
+  "title": "Hello, world",
+  "subtitle": "print, strings, comments and your first variable",
   "questions": [
     {
       "id": "t1.l1.q1",
@@ -754,6 +754,104 @@
       ],
       "reviewed": "2026-09-04",
       "code": "name = \"Pytor\"\nprint(f\"Hi {name}\")"
+    },
+    {
+      "id": "t1.l5.q7",
+      "tier": 1,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gap so the program prints Pytor.",
+      "template": "name = {0}\nprint(name)",
+      "blocks": [
+        {
+          "id": "quoted",
+          "code": "\"Pytor\"",
+          "plain": "the text Pytor",
+          "kind": "expr"
+        },
+        {
+          "id": "bare",
+          "code": "Pytor",
+          "plain": "a name called Pytor",
+          "kind": "var"
+        },
+        {
+          "id": "name",
+          "code": "name",
+          "plain": "the variable name",
+          "kind": "var"
+        },
+        {
+          "id": "num",
+          "code": "42",
+          "plain": "the number 42",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "quoted"
+      ],
+      "accept": [],
+      "explain": "Quotes are what make it text. Without them Python goes looking for a variable called Pytor, finds none, and stops with NameError.",
+      "xp": 15,
+      "tags": [
+        "variables",
+        "strings"
+      ],
+      "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t1.l5.q8",
+      "tier": 1,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gaps so the line prints: Hi Pytor, you have 3 messages",
+      "template": "name = \"Pytor\"\ncount = 3\nprint(f\"Hi {0}, you have {1} messages\")",
+      "blocks": [
+        {
+          "id": "bname",
+          "code": "{name}",
+          "plain": "the value of name",
+          "kind": "var"
+        },
+        {
+          "id": "bcount",
+          "code": "{count}",
+          "plain": "the value of count",
+          "kind": "var"
+        },
+        {
+          "id": "pname",
+          "code": "name",
+          "plain": "the letters n-a-m-e",
+          "kind": "var"
+        },
+        {
+          "id": "lit3",
+          "code": "{3}",
+          "plain": "the number three",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "bname",
+        "bcount"
+      ],
+      "accept": [],
+      "explain": "Inside an f-string the braces are the instruction to swap in a value. Drop them and you print the letters of the name instead.",
+      "xp": 20,
+      "tags": [
+        "f-string",
+        "variables"
+      ],
+      "reviewed": "2026-09-04"
     }
+  ],
+  "lessons": [
+    "print()",
+    "strings",
+    "comments",
+    "variables",
+    "f-strings"
   ]
 }

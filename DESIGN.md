@@ -35,38 +35,35 @@ That is the whole reason the game holds together from hello-world to consultancy
 at every tier the player is doing the same physical action (order these pieces
 correctly) against progressively larger pieces.
 
-## 3. Level ladder (10 tiers)
+## 3. Level ladder (8 tiers)
 
 | # | Tier | Covers |
 |---|------|--------|
-| 1 | First Words | `print`, strings, comments, quotes, the REPL idea |
-| 2 | Data & Variables | int/float/str/bool, naming, f-strings, casting, `type()` |
-| 3 | Control Flow | `if`/`elif`/`else`, comparison + boolean ops, `for`, `while`, `range`, `break` |
-| 4 | Collections | list, dict, set, tuple, indexing, slicing, comprehensions, `enumerate`, `zip` |
-| 5 | Functions & Errors | `def`, args/kwargs, `return`, scope, `try`/`except`/`finally`, `raise`, custom exceptions |
-| 6 | Structure | modules + imports, `pathlib`, `class`/`__init__`/methods, dunders, `@dataclass`, context managers |
-| 7 | Real Python | venv + pip, type hints, `pytest`, `logging`, `argparse`, JSON/CSV, `httpx`, `asyncio` basics |
-| 8 | Data & ML Foundations | numpy, pandas, train/test split, leakage, overfitting, precision/recall/F1/ROC-AUC, baselines |
-| 9 | LLM Engineering | tokens, embeddings, cosine similarity, chunking, vector stores, RAG order, prompt structure, tool calling, streaming, temperature vs top-p, evals, cost-per-1k-token maths |
-| 10 | Consultancy | client scoping, RAG vs fine-tune vs bigger-model, latency and cost budgets, PII/GDPR and data residency, eval harness design, hallucination mitigation, failure triage, monitoring, writing the SOW, estimating spend |
+| 1 | Hello, world | print, strings, comments, variables, f-strings |
+| 2 | Types & collections | int/float/str/bool, lists, dicts, sets, slicing |
+| 3 | Control flow | if/elif/else, comparisons, for, while, range, comprehensions |
+| 4 | Functions & modules | def, return, args and kwargs, scope, imports, exceptions |
+| 5 | Data wrangling | pathlib, JSON and CSV, pandas DataFrames, groupby, joins |
+| 6 | APIs, async & tests | httpx, REST, async/await, pytest, type hints, logging |
+| 7 | LLM engineering | tokens, embeddings, chunking, retrieval, tool use, evals, cost control |
+| 8 | AI consultancy sims | capstone: scoping, architecture, budgets, handover |
 
-Each tier: 5 levels x 6 questions = 30 questions, plus a boss round.
-Full v1 corpus is 300 questions + 10 boss rounds. Tier unlocks at >=80% on the boss.
+Tier 8 is a capstone rather than a lesson tier: every question is a client brief.
 
-### What tier 9 and 10 questions actually look like
+### What tier 7 and 8 questions actually look like
 
-Tier 9, block-order type:
+Tier 7, block-order type:
 > "Order the RAG ingestion pipeline." Blocks: `load PDF`, `split into chunks`,
 > `embed chunks`, `upsert to vector store`, `write metadata`. Distractor block in
 > the tray: `re-rank results` (belongs to query time, not ingestion). Dragging the
 > distractor in is the mistake the level is built to catch.
 
-Tier 9, multiple choice with a number:
+Tier 7, multiple choice with a number:
 > "A 40k-token context, 800-token answer, 12k requests/month. At $3/M input and
 > $15/M output, what is the monthly bill?" Four options, one off-by-a-decimal,
 > one that forgets output tokens, one correct, one that prices output as input.
 
-Tier 10, scenario card:
+Tier 8, scenario card:
 > "A Norwegian law firm has 40,000 PDFs, needs internal Q&A, data may not leave the
 > EU, budget 150k NOK, wants it live in six weeks. Which do you propose?"
 > Options: fine-tune an open model on the corpus / RAG over the PDFs with an
@@ -74,7 +71,7 @@ Tier 10, scenario card:
 > train from scratch. Correct answer is RAG, and the explain card says why the
 > other three fail on cost, residency, or timeline specifically.
 
-Tier 10, drag-block:
+Tier 8, drag-block:
 > "Assemble the eval harness the client's procurement team will accept."
 > Blocks: `golden question set`, `human rubric`, `automated judge`,
 > `regression run on every deploy`, `cost + latency logging`. Distractor:
@@ -82,13 +79,23 @@ Tier 10, drag-block:
 
 ## 4. Question types
 
-Five types, all thumb-first, all gradeable without running Python:
+Five formats, all thumb-first, all gradeable without running Python:
 
-1. **mcq**: 4 options, one correct, tap.
-2. **blocks**: drag tokens/statements from a tray into ordered slots.
-3. **fill**: code shown with `___` gaps; drag the right token into each gap.
-4. **order**: reorder a shuffled list (pipeline steps, execution order).
-5. **match**: pair left column to right (method to what it returns, metric to when you use it).
+1. **mcq**: four lettered options, tap one.
+2. **blocks**: drag blocks from a tray into an ordered answer row, distractors allowed.
+3. **order**: same interaction, but every tray block must be used.
+4. **fill**: blocks drop into typed gaps inside real, rendered code. Blocks are
+   coloured by kind, blue for a name, amber for an expression, violet for a call,
+   so a player starts reading what a hole wants before they can explain why. The
+   tray always holds more blocks than there are holes, which kills elimination.
+5. **pipeline**: the capstone. Wire a client's inference pipeline into numbered
+   stages while estimated p95 latency and cost per request update live against the
+   ceilings the brief states, turning coral the moment either is breached.
+
+Every format accepts both interactions: tap a block to place it in the next free
+slot and tap a filled slot to empty it, or long-press to pick a block up and drop
+it where the finger is. The tap path is what makes the game playable one-handed on
+a bus; the drag path is what makes it feel like Scratch. Neither is optional.
 
 ## 5. The runtime decision: no Python on the device in v1
 
@@ -167,9 +174,9 @@ Boss round with a timer, Stats with per-tier mastery bars, Settings.
 2. Question screen with the `mcq` and `blocks` types, hardcoded sample questions.
 3. JSON loader + schema check in CI.
 4. Room progress + Leitner scheduling.
-5. Tiers 1-5 corpus (150 questions).
+5. Tiers 1-4 corpus.
 6. Tier map, boss rounds, stats.
-7. Tiers 6-10 corpus (150 questions), which is the part worth the most care.
+7. Tiers 5-8 corpus, which is the part worth the most care.
 
-Tiers 9 and 10 are where this app earns its existence, and they are also the part
+Tiers 7 and 8 are where this app earns its existence, and they are also the part
 that will date fastest, so their JSON needs a `reviewed` date field per question.

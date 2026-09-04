@@ -3,6 +3,7 @@ package no.mwmai.pyquest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -16,15 +17,17 @@ import no.mwmai.pyquest.data.CurriculumRepository
 import no.mwmai.pyquest.data.ProgressStore
 import no.mwmai.pyquest.ui.QuestionScreen
 import no.mwmai.pyquest.ui.QuizSession
-import no.mwmai.pyquest.ui.TierMapScreen
+import no.mwmai.pyquest.ui.TrackScreen
+import no.mwmai.pyquest.ui.theme.Pal
 import no.mwmai.pyquest.ui.theme.PyQuestTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             PyQuestTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(modifier = Modifier.fillMaxSize(), color = Pal.Screen) {
                     PyQuestApp()
                 }
             }
@@ -43,20 +46,27 @@ private fun PyQuestApp() {
 
     var route by remember { mutableStateOf<LevelRoute?>(null) }
     var progress by remember { mutableStateOf(store.load()) }
+    var plainLabels by remember { mutableStateOf(store.plainLabels) }
 
     val active = route
     if (active == null) {
-        TierMapScreen(
+        TrackScreen(
             tiers = tiers,
             progress = progress,
+            plainLabels = plainLabels,
+            onTogglePlainLabels = {
+                plainLabels = !plainLabels
+                store.plainLabels = plainLabels
+            },
             onStartLevel = { tier, level -> route = LevelRoute(tier, level) },
         )
     } else {
         val tier = tiers.first { it.tier == active.tier }
         val session = remember(active) { QuizSession(tier.level(active.level), store) }
         QuestionScreen(
-            tierTitle = tier.title,
+            tier = tier,
             session = session,
+            plainLabels = plainLabels,
             onBack = {
                 progress = store.load()
                 route = null

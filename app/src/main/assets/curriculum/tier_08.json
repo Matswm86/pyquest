@@ -1,11 +1,11 @@
 {
-  "tier": 10,
-  "title": "Consultancy",
-  "subtitle": "Preview of the top of the ladder: scoping, cost, evals, triage",
+  "tier": 8,
+  "title": "AI consultancy sims",
+  "subtitle": "Scoping, budgets, evals and failure triage under a client brief",
   "questions": [
     {
-      "id": "t10.l1.q1",
-      "tier": 10,
+      "id": "t8.l1.q1",
+      "tier": 8,
       "level": 1,
       "type": "mcq",
       "prompt": "A Norwegian law firm has 40,000 PDFs, wants internal question answering, the data may not leave the EU, the budget is 150,000 NOK and they want it live in six weeks. What do you propose?",
@@ -28,8 +28,8 @@
       "reviewed": "2026-09-04"
     },
     {
-      "id": "t10.l1.q2",
-      "tier": 10,
+      "id": "t8.l1.q2",
+      "tier": 8,
       "level": 1,
       "type": "mcq",
       "prompt": "Each request sends 40,000 input tokens and returns 800 output tokens, and the client expects 12,000 requests a month. Input costs $3 per million tokens and output $15 per million. What is the monthly model bill?",
@@ -51,8 +51,8 @@
       "reviewed": "2026-09-04"
     },
     {
-      "id": "t10.l1.q3",
-      "tier": 10,
+      "id": "t8.l1.q3",
+      "tier": 8,
       "level": 1,
       "type": "blocks",
       "prompt": "Assemble the evaluation harness the client's procurement team will accept. Leave out anything that is not evidence.",
@@ -81,8 +81,8 @@
       "reviewed": "2026-09-04"
     },
     {
-      "id": "t10.l1.q4",
-      "tier": 10,
+      "id": "t8.l1.q4",
+      "tier": 8,
       "level": 1,
       "type": "blocks",
       "prompt": "Order the ingestion pipeline. One block belongs to query time, not ingestion.",
@@ -109,8 +109,8 @@
       "reviewed": "2026-09-04"
     },
     {
-      "id": "t10.l1.q5",
-      "tier": 10,
+      "id": "t8.l1.q5",
+      "tier": 8,
       "level": 1,
       "type": "mcq",
       "prompt": "Two weeks after launch the client reports the assistant is inventing case numbers. What do you check first?",
@@ -132,8 +132,8 @@
       "reviewed": "2026-09-04"
     },
     {
-      "id": "t10.l1.q6",
-      "tier": 10,
+      "id": "t8.l1.q6",
+      "tier": 8,
       "level": 1,
       "type": "mcq",
       "prompt": "The contract sets p95 response time under 2 seconds and you are measuring 6. Which change buys the most?",
@@ -153,6 +153,99 @@
         "sla"
       ],
       "reviewed": "2026-09-04"
+    },
+    {
+      "id": "t8.l1.q7",
+      "tier": 8,
+      "level": 1,
+      "type": "pipeline",
+      "prompt": "Wire the ticket-routing pipeline inside the client's budget.",
+      "brief": {
+        "client": "Nordic Logistics AS",
+        "initials": "NL",
+        "quote": "40k support tickets a month, all triaged by hand. Automate the routing, but our data cannot leave the EU and the agent console has to stay snappy.",
+        "constraints": [
+          "p95 < 900 ms",
+          "at most EUR 0.004 per ticket",
+          "EU residency"
+        ],
+        "stages": 4,
+        "maxMs": 900,
+        "maxCost": 0.004,
+        "currency": "EUR"
+      },
+      "blocks": [
+        {
+          "id": "pii",
+          "code": "PII redaction",
+          "plain": "strip personal data",
+          "kind": "stage",
+          "ms": 40,
+          "cost": 0.0002
+        },
+        {
+          "id": "knn",
+          "code": "Embed + kNN retrieve",
+          "plain": "find similar past tickets",
+          "kind": "stage",
+          "ms": 180,
+          "cost": 0.0005
+        },
+        {
+          "id": "small",
+          "code": "Small-model classifier",
+          "plain": "a small model picks the queue",
+          "kind": "stage",
+          "ms": 420,
+          "cost": 0.0018
+        },
+        {
+          "id": "rerank",
+          "code": "Cross-encoder re-rank",
+          "plain": "re-score the matches",
+          "kind": "stage",
+          "ms": 310,
+          "cost": 0.0009
+        },
+        {
+          "id": "ft7b",
+          "code": "Self-hosted 7B",
+          "plain": "a big model you run yourself",
+          "kind": "stage",
+          "ms": 900,
+          "cost": 0.0031
+        },
+        {
+          "id": "esc",
+          "code": "Human escalation route",
+          "plain": "hand the hard ones to a person",
+          "kind": "stage",
+          "ms": 20,
+          "cost": 0.0004
+        }
+      ],
+      "answer": [
+        "pii",
+        "knn",
+        "small",
+        "esc"
+      ],
+      "accept": [],
+      "explain": "Redaction goes first, because every stage after it would otherwise see raw personal data. Retrieval then gives the classifier past tickets to reason from, and the escalation route is what keeps the low-confidence cases from being routed wrongly. That wiring costs 660 ms and EUR 0.0029, inside both ceilings. Swap the small classifier for the self-hosted 7B and you are at 1140 ms and EUR 0.0042, over on latency and over on cost at the same time.",
+      "xp": 80,
+      "tags": [
+        "pipeline",
+        "budgets",
+        "architecture"
+      ],
+      "reviewed": "2026-09-04"
     }
-  ]
+  ],
+  "lessons": [
+    "scoping",
+    "architecture",
+    "budgets",
+    "handover"
+  ],
+  "capstone": true
 }

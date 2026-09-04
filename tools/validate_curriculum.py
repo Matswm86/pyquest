@@ -20,7 +20,8 @@ from pathlib import Path
 DEFAULT_DIR = Path("app/src/main/assets/curriculum")
 FILE_PATTERN = re.compile(r"^tier_(\d{2})\.json$")
 ID_PATTERN = re.compile(r"^t(\d+)\.l(\d+)\.q(\d+)$")
-VALID_TYPES = {"mcq", "blocks", "order"}
+VALID_TYPES = {"mcq", "blocks", "order", "fill", "pipeline"}
+GAP = re.compile(r"\{(\d+)}")
 MIN_EXPLAIN_CHARS = 40
 
 
@@ -79,6 +80,10 @@ def check_question(question: dict, tier_number: int, seen_ids: set[str]) -> list
             problems.append(f"{qid}: mcq has duplicate options")
         if question.get("tray"):
             problems.append(f"{qid}: mcq must not carry a tray")
+    elif qtype == "fill":
+        problems.extend(check_fill(qid, question, answer))
+    elif qtype == "pipeline":
+        problems.extend(check_pipeline(qid, question, answer))
     else:
         tray = question.get("tray") or []
         if not tray:
@@ -91,6 +96,89 @@ def check_question(question: dict, tier_number: int, seen_ids: set[str]) -> list
         if question.get("options"):
             problems.append(f"{qid}: {qtype} must not carry options")
 
+    return problems
+
+
+def block_ids(question: dict) -> list[str]:
+    return [str(block.get("id")) for block in question.get("blocks") or []]
+
+
+def check_blocks_pool(qid: str, question: dict, answer: list[str], slots: int) -> list[str]:
+    """Shared rules for the two typed formats: real ids, no duplicates, distractors."""
+    problems: list[str] = []
+    ids = block_ids(question)
+    if not ids:
+        problems.append(f"{qid}: needs a blocks list")
+        return problems
+    if len(set(ids)) != len(ids):
+        problems.append(f"{qid}: duplicate block ids")
+    unknown = [block for block in answer if block not in ids]
+    if unknown:
+        problems.append(f"{qid}: answer names blocks that do not exist: {', '.join(unknown)}")
+    if len(set(answer)) != len(answer):
+        problems.append(f"{qid}: answer uses the same block twice")
+    if len(answer) != slots:
+        problems.append(f"{qid}: {slots} slot(s) but {len(answer)} answer entries")
+    if len(ids) <= slots:
+        problems.append(
+            f"{qid}: {len(ids)} blocks for {slots} slots leaves nothing to rule out. "
+            "Every typed question needs at least one distractor."
+        )
+    if question.get("options") or question.get("tray"):
+        problems.append(f"{qid}: typed questions carry blocks, not options or tray")
+    return problems
+
+
+def check_fill(qid: str, question: dict, answer: list[str]) -> list[str]:
+    template = question.get("template")
+    if not template:
+        problems = [f"{qid}: fill needs a template"]
+        return problems + check_blocks_pool(qid, question, answer, len(answer))
+
+    gaps = [int(match.group(1)) for match in GAP.finditer(template)]
+    problems: list[str] = []
+    if sorted(gaps) != list(range(len(gaps))):
+        problems.append(
+            f"{qid}: template gaps must be numbered 0..N with no repeats or holes, found {gaps}"
+        )
+    problems.extend(check_blocks_pool(qid, question, answer, len(gaps)))
+    return problems
+
+
+def check_pipeline(qid: str, question: dict, answer: list[str]) -> list[str]:
+    brief = question.get("brief")
+    if not isinstance(brief, dict):
+        return [f"{qid}: pipeline needs a brief"]
+
+    problems: list[str] = []
+    for field in ("client", "initials", "quote"):
+        if not str(brief.get(field, "")).strip():
+            problems.append(f"{qid}: brief.{field} is empty")
+
+    stages = brief.get("stages")
+    if not isinstance(stages, int) or stages < 2:
+        problems.append(f"{qid}: brief.stages must be an integer of at least 2")
+        stages = len(answer)
+
+    problems.extend(check_blocks_pool(qid, question, answer, stages))
+
+    # The intended wiring has to actually fit the budget the brief states. A
+    # capstone whose own answer breaches the client's ceiling teaches the
+    # opposite of the lesson, and reads as a bug on the player's screen.
+    by_id = {str(b.get("id")): b for b in question.get("blocks") or []}
+    chosen = [by_id[b] for b in answer if b in by_id]
+    total_ms = sum(int(b.get("ms", 0)) for b in chosen)
+    total_cost = sum(float(b.get("cost", 0.0)) for b in chosen)
+    max_ms = brief.get("maxMs")
+    max_cost = brief.get("maxCost")
+    if isinstance(max_ms, int) and total_ms > max_ms:
+        problems.append(f"{qid}: the answer totals {total_ms} ms, over the brief's {max_ms} ms")
+    if isinstance(max_cost, (int, float)) and total_cost > max_cost:
+        problems.append(
+            f"{qid}: the answer totals {total_cost:.4f}, over the brief's {max_cost:.4f}"
+        )
+    if not any(int(b.get("ms", 0)) for b in by_id.values()):
+        problems.append(f"{qid}: pipeline components need ms values or the readout is dead")
     return problems
 
 

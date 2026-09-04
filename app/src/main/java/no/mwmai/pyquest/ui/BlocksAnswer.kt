@@ -26,18 +26,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
+import no.mwmai.pyquest.ui.theme.CodeStyle
+import no.mwmai.pyquest.ui.theme.Pal
 
 /**
  * Scratch-style block assembly.
@@ -108,16 +107,13 @@ fun BlocksAnswer(
                     .border(
                         width = 2.dp,
                         color = if (answerArea.contains(pointer) && dragChoice >= 0) {
-                            MaterialTheme.colorScheme.primary
+                            Pal.Lime
                         } else {
-                            MaterialTheme.colorScheme.surfaceVariant
+                            Pal.Edge
                         },
                         shape = RoundedCornerShape(14.dp),
                     )
-                    .background(
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
-                        RoundedCornerShape(14.dp),
-                    )
+                    .background(Pal.Ground, RoundedCornerShape(14.dp))
                     .padding(10.dp)
                     .onGloballyPositioned { answerArea = it.boundsInWindowCompat() },
             ) {
@@ -125,7 +121,7 @@ fun BlocksAnswer(
                     Text(
                         text = "Drop blocks here, left to right",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = Pal.Locked,
                         modifier = Modifier.align(Alignment.Center),
                     )
                 } else {
@@ -159,9 +155,9 @@ fun BlocksAnswer(
             }
 
             Text(
-                text = "Blocks",
+                text = "BLOCK TRAY",
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Pal.Faint,
                 modifier = Modifier.padding(top = 16.dp, bottom = 6.dp),
             )
 
@@ -258,22 +254,16 @@ private fun ChipSurface(
     placed: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val background =
-        if (placed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val foreground =
-        if (placed) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
     Box(
         modifier = modifier
-            .background(background, RoundedCornerShape(10.dp))
-            .border(1.dp, Color.Black.copy(alpha = 0.18f), RoundedCornerShape(10.dp))
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .background(if (placed) Pal.LimeSoft else Pal.Chip, RoundedCornerShape(10.dp))
+            .border(1.dp, if (placed) Pal.LimeEdge else Pal.Edge, RoundedCornerShape(10.dp))
+            .padding(horizontal = 11.dp, vertical = 8.dp),
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Medium,
-            color = foreground,
+            style = CodeStyle,
+            color = if (placed) Pal.Lime else Pal.Text,
         )
     }
 }

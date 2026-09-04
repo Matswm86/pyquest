@@ -1,9 +1,13 @@
 package no.mwmai.pyquest.ui
 
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.roundToInt
 
 /** This composable's rectangle in window coordinates. */
 fun LayoutCoordinates.boundsInWindowCompat(): Rect {
@@ -35,3 +39,8 @@ fun insertionIndex(slots: List<Rect>, pointer: Offset): Int = slots.count { slot
     val sameRow = pointer.y >= slot.top && pointer.y <= slot.bottom
     rowIsAbove || (sameRow && slot.center.x < pointer.x)
 }
+
+
+/** Offsets a composable by a pixel amount already measured in the parent's space. */
+fun Modifier.offsetPx(x: Float, y: Float): Modifier =
+    this.offset { IntOffset(x.roundToInt(), y.roundToInt()) }

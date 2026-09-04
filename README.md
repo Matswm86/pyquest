@@ -26,16 +26,18 @@ uninstalling the old one first.
 
 | Piece | Status |
 |-------|--------|
-| Gradle + Compose app, CI build | scaffolded |
-| `mcq` and `blocks`/`order` question types | implemented |
-| Tier map with per-tier mastery | implemented |
-| Leitner spaced repetition, XP, streak | implemented |
-| Tier 1 "First Words" | 30 questions, 5 levels |
-| Tier 10 "Consultancy" | 6-question preview, level 1 only |
-| Tiers 2 to 9 | not written yet |
+| Gradle + Compose app, CI build, rolling APK release | shipped |
+| `mcq`, `blocks`, `order`, `fill`, `pipeline` question types | shipped |
+| Accordion track screen, daily goal ring, rank, streak | shipped |
+| Leitner spaced repetition, first-try accuracy, XP | shipped |
+| Tier 1 "Hello, world" | 32 questions, 5 levels |
+| Tier 8 "AI consultancy sims" | 7-question capstone preview, level 1 |
+| Tiers 2 to 7 | not written yet |
 
-Tier 10 is deliberately in the build already so the top of the ladder is playable
-on day one, not just described in a document.
+Tier 8 is deliberately in the build already so the top of the ladder is playable
+on day one, not just described in a document. Its pipeline question is the one
+place the game stops testing recall: you wire four stages of a ticket-routing
+system while the latency and cost readouts move against the client's budget.
 
 ## Building
 
@@ -84,9 +86,16 @@ than 40 characters. CI runs it before the APK job starts.
 }
 ```
 
-`type` is `mcq` (tap one of `options`), `blocks` (drag a subset of `tray` into
-order, distractors allowed) or `order` (every tray block must be used). `accept`
-holds alternative orderings that are also correct.
+`type` is `mcq` (tap one of `options`), `blocks` (place a subset of `tray` in
+order, distractors allowed), `order` (every tray block must be used), `fill`
+(blocks go into `{0}`-style gaps in `template`) or `pipeline` (blocks are stages
+with `ms` and `cost`, wired against the budget in `brief`). `accept` holds
+alternative orderings that are also correct.
+
+The validator refuses a `fill` whose gaps are not numbered 0..N, a typed question
+with no distractor in the tray, and a `pipeline` whose own answer breaches the
+budget its brief states, because a capstone that fails its own brief teaches the
+opposite of the lesson.
 
 ## Why there is no Python interpreter in the app
 

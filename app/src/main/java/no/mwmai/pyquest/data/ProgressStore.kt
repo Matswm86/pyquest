@@ -16,6 +16,8 @@ data class Progress(
     /** Question id to Leitner box, 0 (just wrong) through 4 (mastered). */
     val boxes: Map<String, Int> = emptyMap(),
     val xp: Int = 0,
+    /** XP earned on [lastPlayed] only, which is what the daily ring shows. */
+    val xpToday: Int = 0,
     val streakDays: Int = 0,
     /** Local date of the last answered question, as yyyy-MM-dd. */
     val lastPlayed: String = "",
@@ -27,10 +29,28 @@ data class Progress(
         return ids.count { box(it) >= MASTERED_BOX }.toFloat() / ids.size
     }
 
+    /** Title shown next to the XP total. Purely cosmetic, deliberately cheap to reach. */
+    val rank: String
+        get() = RANKS.last { xp >= it.first }.second
+
+    val dailyProgress: Float
+        get() = (xpToday.toFloat() / DAILY_GOAL_XP).coerceIn(0f, 1f)
+
     companion object {
         /** A question counts as mastered from box 3 upward. */
         const val MASTERED_BOX = 3
         const val MAX_BOX = 4
+        const val DAILY_GOAL_XP = 50
+
+        private val RANKS = listOf(
+            0 to "Novice",
+            250 to "Learner",
+            750 to "Scripter",
+            1750 to "Builder",
+            3500 to "Engineer",
+            7000 to "Architect",
+            12000 to "Consultant",
+        )
     }
 }
 
@@ -61,9 +81,11 @@ class ProgressStore(context: Context) {
             current.lastPlayed == yesterdayOf(today) -> current.streakDays + 1
             else -> 1
         }
+        val gained = if (correct) xpGain else 0
         val updated = current.copy(
             boxes = current.boxes + (question to next),
-            xp = current.xp + if (correct) xpGain else 0,
+            xp = current.xp + gained,
+            xpToday = if (current.lastPlayed == today) current.xpToday + gained else gained,
             streakDays = streak,
             lastPlayed = today,
         )
@@ -76,7 +98,16 @@ class ProgressStore(context: Context) {
             java.time.LocalDate.parse(today).minusDays(1).toString()
         }.getOrElse { "" }
 
+    /**
+     * Whether blocks show English ("n squared") instead of code ("n ** 2").
+     * A beginner reads the English one and still learns which slot it belongs in.
+     */
+    var plainLabels: Boolean
+        get() = prefs.getBoolean(PLAIN_LABELS, false)
+        set(value) = prefs.edit { putBoolean(PLAIN_LABELS, value) }
+
     private companion object {
         const val KEY = "progress_v1"
+        const val PLAIN_LABELS = "plain_labels"
     }
 }

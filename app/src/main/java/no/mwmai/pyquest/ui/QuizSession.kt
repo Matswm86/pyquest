@@ -27,8 +27,12 @@ class QuizSession(
     var progress: Progress by mutableStateOf(store.load())
         private set
 
-    /** Indices into the current question's choices, in the order the player built them. */
+    /** Chosen indices into the question's choices, for the tap and row formats. */
     var selection: List<Int> by mutableStateOf(emptyList())
+        private set
+
+    /** Block id per slot, for the gap-fill and pipeline formats. Null means empty. */
+    var slots: List<String?> by mutableStateOf(emptyList())
         private set
 
     var checked: Boolean by mutableStateOf(false)
@@ -43,6 +47,25 @@ class QuizSession(
     var correct: Int by mutableStateOf(0)
         private set
 
+    /** Questions answered right on the first attempt, which is what accuracy means. */
+    var firstTryCorrect: Int by mutableStateOf(0)
+        private set
+
+    private val seen = mutableSetOf<String>()
+
+    var xpEarned: Int by mutableStateOf(0)
+        private set
+
+    /**
+     * The last piece of code the player assembled correctly, with the gaps filled
+     * in. The tier-cleared screen shows it back to them, because "you wrote this"
+     * lands harder than a score.
+     */
+    var lastBuilt: String? by mutableStateOf(null)
+        private set
+
+    val startedAtMillis: Long = System.currentTimeMillis()
+
     val total: Int = initial.size
 
     val current: Question?
@@ -54,15 +77,34 @@ class QuizSession(
     val remaining: Int
         get() = queue.size
 
+    init {
+        resetForCurrent()
+    }
+
+    private fun resetForCurrent() {
+        val question = queue.firstOrNull()
+        selection = emptyList()
+        slots = if (question != null && question.slotCount > 0) {
+            List(question.slotCount) { null }
+        } else {
+            emptyList()
+        }
+    }
+
     fun select(index: Int) {
         if (checked) return
         val question = current ?: return
-        selection = if (question.type == QuestionType.MCQ) listOf(index) else selection
+        if (question.type == QuestionType.MCQ) selection = listOf(index)
     }
 
     fun setBlocks(placed: List<Int>) {
         if (checked) return
         selection = placed
+    }
+
+    fun setSlots(placed: List<String?>) {
+        if (checked) return
+        slots = placed
     }
 
     val canSubmit: Boolean
@@ -71,17 +113,29 @@ class QuizSession(
             return when (question.type) {
                 QuestionType.MCQ -> selection.size == 1
                 QuestionType.BLOCKS, QuestionType.ORDER -> selection.isNotEmpty()
+                QuestionType.FILL, QuestionType.PIPELINE -> slots.isNotEmpty() && slots.all { it != null }
             }
         }
+
+    /** What the player built, as the plain strings the curriculum grades against. */
+    fun given(question: Question): List<String> = when (question.type) {
+        QuestionType.FILL, QuestionType.PIPELINE -> slots.map { it.orEmpty() }
+        else -> selection.mapNotNull { question.choices.getOrNull(it) }
+    }
 
     fun submit() {
         val question = current ?: return
         if (checked || !canSubmit) return
-        val given = selection.map { question.choices[it] }
-        lastCorrect = question.isCorrect(given)
+        lastCorrect = question.isCorrect(given(question))
         checked = true
         answered += 1
-        if (lastCorrect) correct += 1
+        if (lastCorrect) {
+            correct += 1
+            if (question.id !in seen) firstTryCorrect += 1
+            xpEarned += question.xp
+        }
+        seen.add(question.id)
+        if (lastCorrect) rememberBuiltCode(question)
         progress = store.record(question.id, lastCorrect, question.xp, today())
     }
 
@@ -92,14 +146,33 @@ class QuizSession(
             rest
         } else {
             // Put the miss back within reach, but not immediately: answering it
-            // right away tests short-term memory, not learning.
+            // straight away tests short-term memory, not learning.
             val at = minOf(REQUEUE_GAP, rest.size)
             rest.toMutableList().also { it.add(at, question) }
         }
-        selection = emptyList()
         checked = false
         lastCorrect = false
+        resetForCurrent()
     }
+
+    private fun rememberBuiltCode(question: Question) {
+        if (question.type != QuestionType.FILL) return
+        val template = question.template ?: return
+        lastBuilt = Question.GAP.replace(template) { match ->
+            val slot = match.groupValues[1].toIntOrNull() ?: return@replace match.value
+            slots.getOrNull(slot)?.let { question.block(it)?.code } ?: match.value
+        }
+    }
+
+    /** Share of distinct questions answered right the first time they appeared. */
+    val accuracy: Float
+        get() = if (seen.isEmpty()) 0f else firstTryCorrect.toFloat() / seen.size
+
+    val elapsedLabel: String
+        get() {
+            val seconds = ((System.currentTimeMillis() - startedAtMillis) / 1000).toInt()
+            return "%d:%02d".format(seconds / 60, seconds % 60)
+        }
 
     private companion object {
         const val REQUEUE_GAP = 3
