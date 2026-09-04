@@ -145,7 +145,7 @@ fun QuestionScreen(
                 QuestionType.MCQ -> McqAnswer(
                     options = question.options,
                     selected = session.selection.firstOrNull(),
-                    correctIndex = question.options.indexOf(question.answer.firstOrNull()),
+                    correctIndex = question.options.indexOf(question.answer.firstOrNull() ?: ""),
                     checked = session.checked,
                     onSelect = session::select,
                 )
