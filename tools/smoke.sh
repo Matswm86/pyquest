@@ -43,7 +43,12 @@ sleep 3
 adb shell uiautomator dump /sdcard/ui2.xml >/dev/null 2>&1 || true
 adb pull /sdcard/ui2.xml "$OUT/ui2.xml" >/dev/null 2>&1 || true
 adb exec-out screencap -p > "$OUT/scrolled.png" 2>/dev/null || true
-cat "$OUT/ui.xml" "$OUT/ui2.xml" > "$OUT/ui_all.xml" 2>/dev/null || true
+# uiautomator writes XML, so "Types & collections" arrives as "Types &amp;
+# collections". Decode the five predefined entities before grepping for the
+# strings a human would type.
+cat "$OUT/ui.xml" "$OUT/ui2.xml" 2>/dev/null \
+    | sed -e 's/&amp;/\&/g' -e 's/&lt;/</g' -e 's/&gt;/>/g' -e 's/&quot;/"/g' -e "s/&apos;/'/g" \
+    > "$OUT/ui_all.xml" || true
 
 if grep -qE "FATAL EXCEPTION|AndroidRuntime: .*(Exception|Error)" "$OUT/logcat.txt"; then
     echo "::error::App crashed at launch"
