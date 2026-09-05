@@ -90,13 +90,35 @@ fun PytorSheet(
 @Composable
 private fun HintList(question: Question, session: QuizSession) {
     val shown = session.hintsShown
+    val teach = question.teach
+    if (!teach.isNullOrBlank()) {
+        SectionLabel("THE IDEA")
+        Spacer(Modifier.height(6.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Pal.Ground, RoundedCornerShape(12.dp))
+                .border(1.dp, Pal.Edge, RoundedCornerShape(12.dp))
+                .padding(13.dp),
+        ) {
+            Text(inlineCode(teach), style = MaterialTheme.typography.bodyMedium, color = Pal.Text)
+        }
+        Spacer(Modifier.height(14.dp))
+    }
     if (shown == 0) {
         Text(
-            "Stuck? I will nudge you one step at a time. The block you place is still yours.",
+            if (teach.isNullOrBlank()) {
+                "Stuck? I will walk you through it one step at a time. The choice stays yours."
+            } else {
+                "Still unsure? I will walk you through it one step at a time. The choice stays yours."
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = Pal.Muted,
         )
         Spacer(Modifier.height(14.dp))
+    } else {
+        SectionLabel("STEP BY STEP")
+        Spacer(Modifier.height(8.dp))
     }
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         question.hints.take(shown).forEachIndexed { index, hint ->
@@ -117,12 +139,16 @@ private fun HintList(question: Question, session: QuizSession) {
     if (shown > 0) Spacer(Modifier.height(14.dp))
     if (shown < question.hints.size) {
         PrimaryButton(
-            text = if (shown == 0) "Give me a hint" else "Another hint (${question.hints.size - shown} left)",
+            text = when (shown) {
+                0 -> "Walk me through it"
+                question.hints.size - 1 -> "Narrow it down for me"
+                else -> "Next step (${question.hints.size - shown} left)"
+            },
             onClick = { session.revealHint() },
         )
     } else {
         Text(
-            "That is every hint I have. Place the blocks; being wrong here costs nothing but a rematch.",
+            "That is as far as I go without answering for you. Being wrong here costs nothing but a rematch, and the note afterwards explains everything.",
             style = MaterialTheme.typography.bodySmall,
             color = Pal.Faint,
         )

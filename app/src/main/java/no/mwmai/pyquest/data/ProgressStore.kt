@@ -33,12 +33,35 @@ data class Progress(
     val tagMissed: Map<String, Int> = emptyMap(),
     val answered: Int = 0,
     val correct: Int = 0,
+    /** Levels finished at least once, as "t3.l2". The track's tick marks. */
+    val clearedLevels: List<String> = emptyList(),
 ) {
     fun box(id: String): Int = boxes[id] ?: 0
 
+    /**
+     * Share of questions in the mastered box or higher. Reaching it takes three
+     * correct answers on separate sittings, so this is the long-term number.
+     */
     fun masteryOf(ids: List<String>): Float {
         if (ids.isEmpty()) return 0f
         return ids.count { box(it) >= MASTERED_BOX }.toFloat() / ids.size
+    }
+
+    /**
+     * Share of questions answered correctly at least once. This is what a
+     * player means by progress; mastery alone read as 0% after a level they had
+     * just finished, which is the tracker bug reported on the first build.
+     */
+    fun solvedOf(ids: List<String>): Float {
+        if (ids.isEmpty()) return 0f
+        return ids.count { box(it) >= 1 }.toFloat() / ids.size
+    }
+
+    fun isCleared(tier: Int, level: Int): Boolean = levelKey(tier, level) in clearedLevels
+
+    fun clearing(tier: Int, level: Int): Progress {
+        val key = levelKey(tier, level)
+        return if (key in clearedLevels) this else copy(clearedLevels = clearedLevels + key)
     }
 
     /** XP earned today, which is zero on a day nothing has been played yet. */
@@ -133,6 +156,8 @@ data class Progress(
             12000 to "Consultant",
         )
 
+        fun levelKey(tier: Int, level: Int): String = "t$tier.l$level"
+
         fun yesterdayOf(today: String): String =
             runCatching { LocalDate.parse(today).minusDays(1).toString() }.getOrElse { "" }
 
@@ -163,6 +188,13 @@ class ProgressStore(context: Context) {
         tags: List<String> = emptyList(),
     ): Progress {
         val updated = load().applying(question, correct, xpGain, today, tags)
+        save(updated)
+        return updated
+    }
+
+    /** Marks a level finished. Idempotent, so a replay does not grow the list. */
+    fun markCleared(tier: Int, level: Int): Progress {
+        val updated = load().clearing(tier, level)
         save(updated)
         return updated
     }

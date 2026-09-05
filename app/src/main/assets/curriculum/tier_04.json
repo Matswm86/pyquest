@@ -17,17 +17,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Which line starts a function called greet that takes no arguments?",
-      "explain": "def, the name, parentheses for the parameters, then a colon.",
-      "hints": [
-        "The keyword is three letters long.",
-        "Even with no parameters the parentheses are required."
-      ],
-      "deep": "def is an executable statement: it creates a function object at runtime and binds it to the name, which is why a function must be defined before it is called in a script. The object carries its own __name__, __doc__ and defaults; you can pass it around like any value.",
-      "xp": 10,
-      "tags": [
-        "functions"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "def greet:",
         "greet() def:",
@@ -36,7 +25,20 @@
       ],
       "answer": [
         "def greet():"
-      ]
+      ],
+      "explain": "def, the name, parentheses for the parameters, then a colon.",
+      "teach": "You already know Python reads code top to bottom and that words like if or for are keywords that open a block. Defining a function works the same way: a special keyword says 'here comes a reusable piece of code', then a name, then a pair of parentheses where any inputs would go, then a colon. For example, def wave(): creates a function called wave that needs no input to run. Getting this first line right, in that exact order, is what makes the rest of the function work at all.",
+      "hints": [
+        "The question asks you to spot the line that correctly announces a new function named greet with nothing inside its parentheses. Check three things on each option: is there a keyword meaning 'define a function', is the name right, and are the parentheses empty and in the right spot. Which one keeps all three pieces in the right order?",
+        "Think of labeling a recipe card: you write the word for defining first, then the dish name, then any ingredients in parentheses, then a colon before the steps begin. Swap that order, say the name before the defining word, and it reads wrong even with all the same pieces present. Look for the option where the keyword comes first, then the name, then empty parentheses, then a colon.",
+        "Some options put the parentheses in the wrong place, swap the order of the words, or leave out the parentheses entirely, which Python still needs even with no inputs. The correct line has exactly four pieces in one fixed order: the defining keyword, the function name, an empty pair of parentheses, and a colon. Once you see that clean shape, you can point to it with confidence."
+      ],
+      "deep": "def is an executable statement: it creates a function object at runtime and binds it to the name, which is why a function must be defined before it is called in a script. The object carries its own __name__, __doc__ and defaults; you can pass it around like any value.",
+      "xp": 10,
+      "tags": [
+        "functions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l1.q2",
@@ -45,18 +47,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def double(x):\n    print(x * 2)\n\nresult = double(5)\nprint(result)",
-      "explain": "The function prints 10 but returns nothing, so result is None and printing it shows None.",
-      "hints": [
-        "Printing inside a function and returning from it are different things.",
-        "What does a function hand back when it has no return statement?"
-      ],
-      "deep": "Every function returns something; with no return it returns None. print writes to stdout and returns None too. Mixing them up is the number one beginner bug: a function that prints is useless to code that needs the value. Return values, print at the edges.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "return"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "None",
         "double",
@@ -65,7 +55,21 @@
       ],
       "answer": [
         "None"
-      ]
+      ],
+      "explain": "The function prints 10 but returns nothing, so result is None and printing it shows None.",
+      "teach": "A function can show something on screen with print, or it can hand a value back to whoever called it with return, and these are two different actions. Printing only displays text for a human to read, it gives the rest of your program nothing to work with. Returning is how a function passes a result back so you can store it in a variable or use it later. If a function only prints and never returns, whatever tries to capture its result gets a special empty value instead.",
+      "hints": [
+        "This question is really asking what happens when you try to save the output of a function that only prints but never returns anything. Look at the function body: does it have a return statement anywhere, or does it only call print? Answering that tells you what ends up stored in result.",
+        "Imagine a friend who reads a number out loud but never hands you a paper with it written down. If you ask them for that paper afterward, you get nothing, even though you clearly heard the number. In code, print is the reading-out-loud part, and only a return statement is the handing-over-the-paper part, so check whether this function ever hands anything back.",
+        "The number that got printed on screen is not the same as what the function returns, so an option that just repeats that printed number is not right, and this is not a crash either since the code runs fine. When a function finishes without ever using return, Python quietly gives back its own placeholder meaning 'nothing here', and that placeholder is what shows up when you print the result."
+      ],
+      "deep": "Every function returns something; with no return it returns None. print writes to stdout and returns None too. Mixing them up is the number one beginner bug: a function that prints is useless to code that needs the value. Return values, print at the edges.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "return"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l1.q3",
@@ -74,17 +78,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def greet():\n    return \"hello\"\n\nprint(greet)",
-      "explain": "Without parentheses the name refers to the function object itself, and printing it shows its repr, not its output.",
-      "hints": [
-        "The parentheses are what actually run a function."
-      ],
-      "deep": "Functions are first-class objects. greet is the object, greet() is a call. That distinction powers callbacks, sorted(key=len), decorators and dispatch tables. The repr shows the name and memory address because that is all a function has to say about itself.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "objects"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "greet",
         "hello",
@@ -93,7 +86,21 @@
       ],
       "answer": [
         "<function greet at 0x...>"
-      ]
+      ],
+      "explain": "Without parentheses the name refers to the function object itself, and printing it shows its repr, not its output.",
+      "teach": "You have already seen that adding parentheses after a function's name is what runs it, like greet(). The name on its own, without parentheses, is just a label pointing at the function object itself, the same way a name on a business card points at a person without making them do anything. Printing that label instead of calling it shows a short description of the object, not anything the function would produce if run. This matters because functions can be passed around and stored just like numbers or strings, and code often needs to refer to one without calling it.",
+      "hints": [
+        "The question is testing whether you know the difference between a function and what happens when you actually call it with parentheses. Look carefully at the print line: does it include parentheses after the function name or not? That one detail decides everything here.",
+        "Think of a function name without parentheses as pointing at a light switch on the wall, and calling it with parentheses as actually flipping that switch. Pointing at the switch does not turn on the light, it just shows where the switch is. Since there are no parentheses in this print line, expect the output to describe the function itself rather than anything it would produce if run.",
+        "An answer showing the returned text would only make sense if parentheses were there to actually call the function, and there is no error here since referring to a function by name is perfectly valid. The real output is a short technical description mentioning the word function, the function's own name, and some memory information, which is simply how Python represents an uncalled function when printed."
+      ],
+      "deep": "Functions are first-class objects. greet is the object, greet() is a call. That distinction powers callbacks, sorted(key=len), decorators and dispatch tables. The repr shows the name and memory address because that is all a function has to say about itself.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "objects"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l1.q4",
@@ -101,20 +108,6 @@
       "level": 1,
       "type": "fill",
       "prompt": "Fill the gaps so area(3, 4) returns 12.",
-      "explain": "The body multiplies w and h, so the first parameter must be named w, and return sends the product back.",
-      "hints": [
-        "Match the parameter name to the name used in the body.",
-        "The caller wants the value back, not shown on screen."
-      ],
-      "deep": "Parameter names are local to the function, so w and h exist only during the call. Using an undefined name in the body raises NameError at call time, not at definition time, because the body is compiled but not executed until called.",
-      "xp": 20,
-      "tags": [
-        "functions",
-        "return",
-        "parameters"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "def area({0}, h):\n    {1} w * h\n\nprint(area(3, 4))",
       "blocks": [
         {
           "id": "x",
@@ -142,11 +135,27 @@
           "kind": "expr"
         }
       ],
+      "template": "def area({0}, h):\n    {1} w * h\n\nprint(area(3, 4))",
       "answer": [
         "w",
         "ret"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "The body multiplies w and h, so the first parameter must be named w, and return sends the product back.",
+      "teach": "A function's parameters are just names you choose, written inside the parentheses, and those names are the only way the body can refer to whatever gets passed in when called. Whatever word you pick as a parameter name must be spelled exactly the same everywhere it appears inside the function, or Python will not know what you mean. Calculating a value inside a function does nothing on its own, you need a keyword that sends that value back to whoever called the function. Without it, the function keeps the answer to itself instead of handing it over.",
+      "hints": [
+        "This question wants you to notice the function body multiplies something called w by h, so think about what the first parameter needs to be named for that multiplication to make sense. Then think about what has to happen to the calculated product so that print(area(3, 4)) actually shows 12 instead of nothing. Which word does the body already use that the parameter list must match?",
+        "Picture a function like a small machine with slots you pour ingredients into, and the recipe inside only knows ingredients by the names above the slots. If a recipe step names an ingredient with no matching slot, the machine cannot understand it. Here the body already multiplies a certain letter by h, so one gap must supply that same parameter name, and the other must supply a word that sends the result back out.",
+        "Naming the parameter something other than what the body uses would cause an error, since that letter must be declared as a parameter first. Calculating w times h without sending it anywhere would make the function finish silently, giving back nothing to print. One gap is a short name matching the multiplication already written, the other is the keyword that hands a value back to the caller."
+      ],
+      "deep": "Parameter names are local to the function, so w and h exist only during the call. Using an undefined name in the body raises NameError at call time, not at definition time, because the body is compiled but not executed until called.",
+      "xp": 20,
+      "tags": [
+        "functions",
+        "return",
+        "parameters"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l1.q5",
@@ -155,17 +164,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def hi(name=\"world\"):\n    print(f\"Hi, {name}\")\n\nhi(\"Pytor\")\nhi()",
-      "explain": "A default value is used when the caller leaves that argument out.",
-      "hints": [
-        "Look at what the parameter is set equal to in the def line."
-      ],
-      "deep": "Defaults are evaluated once, at definition time, and stored on the function object. That is why a mutable default like items=[] is shared across every call, the most famous Python trap. Use None as the default and create the list inside the body.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "defaults"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "An error",
         "Hi, Pytor / An error",
@@ -174,7 +172,21 @@
       ],
       "answer": [
         "Hi, Pytor / Hi, world"
-      ]
+      ],
+      "explain": "A default value is used when the caller leaves that argument out.",
+      "teach": "A parameter can have a default value written right in the function definition using an equals sign, so the caller is allowed to skip it entirely. When the caller does supply their own value, that value is used instead, overriding the default just for that one call. When the caller leaves it out, Python quietly falls back to whatever default was written. This lets one function work both with and without extra input, instead of needing two separate functions.",
+      "hints": [
+        "This question asks what happens on two separate calls to the same function, once with a value given and once with nothing given at all. Look at how the parameter is written on the function's first line: does it already have a value attached with an equals sign? That tells you what happens when a call leaves the argument out.",
+        "Think of ordering coffee where the default is milk, but you can always ask for something else instead. Say 'oat milk please' and you get oat milk. Say nothing about milk at all and you get the regular default, not an empty cup and not an error. One call here supplies its own name, and the other supplies nothing, so work out what each call actually prints using that logic.",
+        "There is no error in either call, since a default value exists specifically so the argument can be left out safely, and the second call does not simply repeat the first call's word either, because each call is independent. The first call's own value replaces the default just for that call, while the second call, having nothing supplied, falls back to exactly the word written after the equals sign in the definition."
+      ],
+      "deep": "Defaults are evaluated once, at definition time, and stored on the function object. That is why a mutable default like items=[] is shared across every call, the most famous Python trap. Use None as the default and create the list inside the body.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "defaults"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l1.q6",
@@ -182,17 +194,6 @@
       "level": 1,
       "type": "order",
       "prompt": "Order the lines so the program prints 9.",
-      "explain": "Define the function first, with its body indented, then call it.",
-      "hints": [
-        "A function has to be defined above the line that calls it.",
-        "return belongs inside the function, so it is indented."
-      ],
-      "deep": "Definition before use is a consequence of top-to-bottom execution: the call looks square up in the module namespace, and the name is only bound once the def statement has run. Inside function bodies the rule relaxes, because the lookup happens when the body runs, not when it is defined.",
-      "xp": 15,
-      "tags": [
-        "functions"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "print(square(3))",
         "def square(n):",
@@ -203,7 +204,20 @@
         "    return n * n",
         "print(square(3))"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Define the function first, with its body indented, then call it.",
+      "teach": "Python runs a script from top to bottom, one line at a time, and a function only becomes usable after the line that defines it has actually run. That means the def line and its indented body must appear before any line that calls the function, never after. Indentation matters too: the lines belonging inside the function body must be indented under the def line, while the line that calls the function sits back at the outer level. Getting this order and indentation right is what lets a call like square(3) actually find a function to run.",
+      "hints": [
+        "This question asks you to put three lines in an order where the function exists before anything tries to use it. Look at the three lines: which one starts the definition, which one is indented and belongs inside it, and which one actually calls the function to print a result? Think about what has to happen first for the call to work at all.",
+        "Imagine writing a recipe card before you can cook from it, you cannot follow step three of a recipe not yet written. The line starting with the defining keyword comes first, its indented instruction comes right after as part of that recipe, and only once the recipe is written can the line that calls it and prints the result come last. Arrange the three lines with that logic.",
+        "Putting the call before the definition would fail, since Python would not yet know any function by that name, and putting the indented line first would also fail, since an indented instruction cannot stand alone without a def line above it. The correct order starts with the line opening the function, immediately followed by its indented instruction, and finishes with the call that prints the result at the very end."
+      ],
+      "deep": "Definition before use is a consequence of top-to-bottom execution: the call looks square up in the module namespace, and the name is only bound once the def statement has run. Inside function bodies the rule relaxes, because the lookup happens when the body runs, not when it is defined.",
+      "xp": 15,
+      "tags": [
+        "functions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l2.q1",
@@ -212,17 +226,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def show(a, b):\n    print(a, b)\n\nshow(b=4, a=3)",
-      "explain": "Keyword arguments are matched by name, so a=3 and b=4 regardless of order.",
-      "hints": [
-        "Names beat positions when you write them out."
-      ],
-      "deep": "Positional arguments fill parameters left to right; keyword arguments fill by name and may come in any order, but must follow all positionals. A parameter after * in the def is keyword-only, and one before / is positional-only (PEP 570), both useful for stable APIs.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "arguments"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "3 4",
         "b a",
@@ -231,7 +234,21 @@
       ],
       "answer": [
         "3 4"
-      ]
+      ],
+      "explain": "Keyword arguments are matched by name, so a=3 and b=4 regardless of order.",
+      "teach": "A function call can send values two ways: by position, in the order the parameters are listed, or by keyword, using name=value. When you use name=value, Python matches it to the parameter with that exact name, no matter where you put it in the call. For example, in def greet(name, age), calling greet(age=9, name=\"Sam\") still gives name the value \"Sam\" and age the value 9, because the names did the matching, not the order. This is handy because it makes calls with several arguments much harder to mix up.",
+      "hints": [
+        "The question is really asking whether Python cares about the order you write arguments in, or the names you give them. Look at how show is being called here: are the values plain numbers in order, or are they labeled with a name before the equals sign?",
+        "Think of it like addressing two envelopes marked 'to Alice' and 'to Ben'. It does not matter which one you hand over first, each still reaches the person named on it, not whoever happens to be first in line. Apply that idea to b=4 and a=3 in the call, and match each label to the matching parameter name in the def line.",
+        "An option that just prints the labels themselves, or swaps the values to match the order they were typed, is ignoring that names override position here. Nothing about this call is invalid, so an error is not right either. The correct output simply lists a's real value first, then b's real value, in the order the def line declares them."
+      ],
+      "deep": "Positional arguments fill parameters left to right; keyword arguments fill by name and may come in any order, but must follow all positionals. A parameter after * in the def is keyword-only, and one before / is positional-only (PEP 570), both useful for stable APIs.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "arguments"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l2.q2",
@@ -240,19 +257,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def add(item, items=[]):\n    items.append(item)\n    return items\n\nadd(1)\nprint(add(2))",
-      "explain": "The default list is created once and shared, so the second call sees the item the first call added.",
-      "hints": [
-        "When is the default value created: every call, or once?",
-        "Both calls use the same list object."
-      ],
-      "deep": "Mutable default arguments persist between calls because the default lives on the function object. The fix is the sentinel idiom: def add(item, items=None): if items is None: items = []. Linters (ruff B006) flag the trap because it has bitten everyone at least once.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "defaults",
-        "mutability"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[2]",
         "[1] [2]",
@@ -261,7 +265,22 @@
       ],
       "answer": [
         "[1, 2]"
-      ]
+      ],
+      "explain": "The default list is created once and shared, so the second call sees the item the first call added.",
+      "teach": "A default argument value, like items=[] in a function definition, is created only once, the moment Python reads the def statement, not fresh on every call. If that default is something mutable, such as a list or dict, and the function changes it in place, that change sticks around for the next call that also relies on the default. So two separate calls that both skip the argument can end up sharing and modifying the exact same list behind the scenes. This surprises many learners because they expect every call to start clean.",
+      "hints": [
+        "The question is asking what happens when a function has a default list and you call it more than once without ever passing your own list in. Look closely: does add get given its own items list each time, or does it fall back to the same default every time it is not supplied?",
+        "Imagine a shared notebook left on a shelf that a function only opens when nobody hands it a fresh one. The first visitor writes a line in it and leaves. The second visitor, using the same shelf notebook, sees the first line still there before adding their own. Trace what gets written into that shared list across both calls, in order.",
+        "An option showing only the second call's number alone assumes the list resets between calls, which it does not here. An option showing the two results as separate lists side by side assumes they never share storage, which is also wrong. The real output is a single list containing both numbers that were ever appended, in the order they were added."
+      ],
+      "deep": "Mutable default arguments persist between calls because the default lives on the function object. The fix is the sentinel idiom: def add(item, items=None): if items is None: items = []. Linters (ruff B006) flag the trap because it has bitten everyone at least once.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "defaults",
+        "mutability"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l2.q3",
@@ -269,19 +288,6 @@
       "level": 2,
       "type": "fill",
       "prompt": "Fill the gap so total() accepts any number of arguments.",
-      "explain": "A single star collects extra positional arguments into a tuple called nums.",
-      "hints": [
-        "One star packs positionals into a tuple; two stars pack keywords into a dict."
-      ],
-      "deep": "*args collects positionals into a tuple, **kwargs collects keywords into a dict; the names args and kwargs are convention only. The same star unpacks on the way in: total(*[1, 2, 3]). Use them for wrappers and decorators; in ordinary APIs, explicit parameters are clearer.",
-      "xp": 20,
-      "tags": [
-        "functions",
-        "arguments",
-        "varargs"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "def total({0}):\n    return sum(nums)\n\nprint(total(1, 2, 3))",
       "blocks": [
         {
           "id": "list",
@@ -304,10 +310,26 @@
           "kind": "var"
         }
       ],
+      "template": "def total({0}):\n    return sum(nums)\n\nprint(total(1, 2, 3))",
       "answer": [
         "star"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "A single star collects extra positional arguments into a tuple called nums.",
+      "teach": "Sometimes you do not know in advance how many values someone will pass to a function. Putting a single star before a parameter name in a def line tells Python to gather any extra positional values into a tuple with that name, instead of forcing you to list a fixed number of parameters. For example, def combine(*parts) lets you call combine(1, 2, 3) or combine(9) and parts will hold whatever was given. This matters because it makes a function flexible enough to handle any amount of input without rewriting it.",
+      "hints": [
+        "The question wants a gap that lets total() take any number of values, since it is called with three numbers here but should not be limited to exactly three. Look at what total actually does with those values inside the function, and think about what kind of parameter can hold several separate numbers at once.",
+        "Picture a bag you hold open at a party door. Every guest who arrives drops something into it, and you never know beforehand how many guests are coming. The bag ends up holding everything as one collection you can add up later. The gap needs a parameter written so it behaves like that open bag for positional values.",
+        "A plain name with no star only accepts a single value, so it would break as soon as more than one number arrives. A default like an empty list assigned directly is not how incoming positional values get collected at all. The right choice uses a single leading symbol that gathers loose positional values together into one tuple named nums."
+      ],
+      "deep": "*args collects positionals into a tuple, **kwargs collects keywords into a dict; the names args and kwargs are convention only. The same star unpacks on the way in: total(*[1, 2, 3]). Use them for wrappers and decorators; in ordinary APIs, explicit parameters are clearer.",
+      "xp": 20,
+      "tags": [
+        "functions",
+        "arguments",
+        "varargs"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l2.q4",
@@ -316,18 +338,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def info(**kw):\n    print(kw)\n\ninfo(city=\"Bergen\", age=3)",
-      "explain": "Two stars collect keyword arguments into a dict keyed by name.",
-      "hints": [
-        "The parameter with two stars receives every name=value pair."
-      ],
-      "deep": "**kwargs preserves the keyword order since 3.7. It is how libraries forward options to lower layers without knowing them, and how you build wrappers: def wrapper(*args, **kwargs): return f(*args, **kwargs). Type it as **kwargs: Any or with Unpack[TypedDict] (PEP 692) when the keys are known.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "arguments",
-        "varargs"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "An error",
         "{'city': 'Bergen', 'age': 3}",
@@ -336,7 +346,22 @@
       ],
       "answer": [
         "{'city': 'Bergen', 'age': 3}"
-      ]
+      ],
+      "explain": "Two stars collect keyword arguments into a dict keyed by name.",
+      "teach": "Just as a single star gathers extra positional values into a tuple, two stars before a parameter name gather extra keyword arguments into a dictionary. Each name=value pair used in the call becomes a key and value in that dictionary. For example, def describe(**info) lets you call describe(color=\"red\", size=9), and info ends up as a dictionary mapping \"color\" to \"red\" and \"size\" to 9. This is useful whenever a function needs to accept a flexible set of named options it was not written to know about in advance.",
+      "hints": [
+        "The question is asking what shape the collected keyword values take when a function is defined to soak up any name=value pairs. Look at how info is being called, with labeled values rather than plain ones in order, and think about what container holds labeled data naturally.",
+        "Think of a form with blank labeled fields like city and age that a visitor fills in freely. Whoever reads the form afterward sees each label paired with what was written next to it, not just a bare list of the entries. Consider what kind of Python container naturally stores labels paired with their values in that same way.",
+        "An option showing just the values without their labels throws away the names, which the double star is built to preserve. An option showing only one pair ignores that every keyword given in the call gets collected, not just one of them. The real output is a single dictionary holding every label from the call matched to its value."
+      ],
+      "deep": "**kwargs preserves the keyword order since 3.7. It is how libraries forward options to lower layers without knowing them, and how you build wrappers: def wrapper(*args, **kwargs): return f(*args, **kwargs). Type it as **kwargs: Any or with Unpack[TypedDict] (PEP 692) when the keys are known.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "arguments",
+        "varargs"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l2.q5",
@@ -345,18 +370,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def show(a, b, c):\n    print(a, b, c)\n\nnums = [1, 2, 3]\nshow(*nums)",
-      "explain": "The star unpacks the list into three separate positional arguments.",
-      "hints": [
-        "The star on the call side spreads a list out into individual arguments."
-      ],
-      "deep": "Call-side unpacking works with any iterable, and ** unpacks a mapping into keyword arguments: connect(**config). Both were extended in PEP 448 so you can unpack several at once: f(*a, *b). It is also how print(*items, sep=\", \") prints a list nicely.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "arguments",
-        "unpacking"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "An error",
         "1 [2, 3]",
@@ -365,7 +378,22 @@
       ],
       "answer": [
         "1 2 3"
-      ]
+      ],
+      "explain": "The star unpacks the list into three separate positional arguments.",
+      "teach": "A star can also be used on the calling side, not just in a def line. Putting a star before a list or tuple when calling a function spreads its items out into separate positional arguments, instead of passing the whole collection as one single argument. For example, if pair = (1, 2) and you call move(*pair), it is exactly as if you had written move(1, 2). This matters because it lets you store values in a list and still hand them to a function that expects them one by one.",
+      "hints": [
+        "The question is asking what happens to a list when a star is placed in front of it inside a function call. Look at how many parameters show actually expects, and compare that to how many items sit inside nums.",
+        "Imagine tipping a basket of three apples onto a table so each apple sits in its own spot, rather than placing the whole basket down as one object. The star does that tipping-out action to a list at call time. Count how many separate items nums holds, and think about what each one becomes once it lands in its own parameter slot.",
+        "An option that treats the list as a single leftover chunk after the first value misunderstands what the star does, since it is not held back like that here. An option that prints the list itself ignores that the star already broke it apart before the call happened. The real output is three separate values, each occupying its own parameter, printed plainly one after another."
+      ],
+      "deep": "Call-side unpacking works with any iterable, and ** unpacks a mapping into keyword arguments: connect(**config). Both were extended in PEP 448 so you can unpack several at once: f(*a, *b). It is also how print(*items, sep=\", \") prints a list nicely.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "arguments",
+        "unpacking"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l2.q6",
@@ -373,18 +401,6 @@
       "level": 2,
       "type": "blocks",
       "prompt": "Build the call that passes 3 by position and verbose by keyword.",
-      "explain": "Positional first, then the keyword argument written as name=value.",
-      "hints": [
-        "A keyword argument is one block: the name, the equals sign and the value together.",
-        "Positionals must come before keywords."
-      ],
-      "deep": "Passing booleans by keyword is a readability rule many style guides enforce: run(3, True) tells the reader nothing, run(3, verbose=True) tells them everything. Making such parameters keyword-only with a bare * in the def turns the rule into a guarantee.",
-      "xp": 15,
-      "tags": [
-        "functions",
-        "arguments"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         ",",
         "3",
@@ -403,7 +419,21 @@
         "verbose=True",
         ")"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Positional first, then the keyword argument written as name=value.",
+      "teach": "A function call can mix positional and keyword arguments, but positional ones must come first, followed by keyword ones. A positional argument is a bare value matched by its place in order, while a keyword argument is written as name=value and matched by that name. For example, schedule(5, urgent=True) passes 5 by position and clearly labels the second value as urgent. This ordering rule exists so Python can tell which values fill parameters by position before it looks for any by name.",
+      "hints": [
+        "The question is asking you to build a call where the first value is given plainly by position and the second is given with its name attached. Look at the pieces available and think about which one is a bare value and which one already carries a label with an equals sign.",
+        "Think of ordering coffee: you say the size first without labeling it, since it is understood to come first, then you add 'extra hot' as a clearly named request. The plain value always comes before the named one, never after. Arrange the call the same way: plain value first, named request second, separated the way a function call normally separates its arguments.",
+        "A piece that already carries an equals sign is a finished keyword argument, so it belongs after the plain value, not combined with another equals sign or placed first. A bare True alone loses the label that explains it. The finished call starts with the function name and a parenthesis, the plain number, a comma, then the piece that already reads as a labeled true value, then closing."
+      ],
+      "deep": "Passing booleans by keyword is a readability rule many style guides enforce: run(3, True) tells the reader nothing, run(3, verbose=True) tells them everything. Making such parameters keyword-only with a bare * in the def turns the rule into a guarantee.",
+      "xp": 15,
+      "tags": [
+        "functions",
+        "arguments"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l3.q1",
@@ -412,16 +442,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "count = 1\n\ndef bump():\n    count = 2\n\nbump()\nprint(count)",
-      "explain": "Assigning count inside the function makes a new local variable; the global count is untouched.",
-      "hints": [
-        "Assignment inside a function creates a local name unless told otherwise."
-      ],
-      "deep": "Python decides at compile time that count is local to bump because it is assigned there. Reading the global would need the global keyword, which is almost always a design smell: return the new value instead and let the caller assign it.",
-      "xp": 10,
-      "tags": [
-        "scope"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "None",
         "An error",
@@ -430,7 +450,20 @@
       ],
       "answer": [
         "1"
-      ]
+      ],
+      "explain": "Assigning count inside the function makes a new local variable; the global count is untouched.",
+      "teach": "Think of a function as its own little room. Any name you assign inside that room, like `count = 2`, creates a fresh variable that lives only in that room, even if a variable with the same name exists outside. The outside variable does not know anything happened inside, unless the function explicitly returns a value and someone uses it. This matters because it keeps functions from accidentally messing up variables used elsewhere in your program.",
+      "hints": [
+        "The question is really asking whether assigning inside a function changes the variable outside it. Look at the two `count` names in the code: one outside the function, one inside. Ask yourself: does writing `count = 2` inside `bump` reach out and touch the `count` defined at the top?",
+        "Picture two boxes labeled count, one on your desk and one inside a closed room. When bump runs, it writes on the room's own box, not the one on your desk, because assigning a name inside a function creates a local copy unless you tell Python otherwise. So after the function finishes, check which box the final print statement is reading from, the desk or the room.",
+        "The idea that the outside count becomes 2, or that this crashes, both misread how local variables work: nothing in this code raises an error, and the inside assignment never escapes the function. The right answer keeps the very first value that count held before bump was ever called, since the function only ever touched its own private copy."
+      ],
+      "deep": "Python decides at compile time that count is local to bump because it is assigned there. Reading the global would need the global keyword, which is almost always a design smell: return the new value instead and let the caller assign it.",
+      "xp": 10,
+      "tags": [
+        "scope"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l3.q2",
@@ -439,18 +472,6 @@
       "type": "mcq",
       "prompt": "Why does this raise UnboundLocalError?",
       "code": "count = 0\n\ndef bump():\n    count += 1\n\nbump()",
-      "explain": "count += 1 assigns to count, which makes count local everywhere in the function, so the read on the same line finds an unassigned local.",
-      "hints": [
-        "Scope is decided per function, not per line.",
-        "+= both reads and writes the name."
-      ],
-      "deep": "The compiler scans the whole function body for assignments to decide which names are local (the LEGB rule: Local, Enclosing, Global, Built-in). A local read before its first assignment raises UnboundLocalError. Fix: global count (discouraged) or pass and return the value.",
-      "xp": 10,
-      "tags": [
-        "scope",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "count is assigned in the function, so it is local for the whole body, including the read before the assignment",
         "Global variables are read-only",
@@ -459,7 +480,21 @@
       ],
       "answer": [
         "count is assigned in the function, so it is local for the whole body, including the read before the assignment"
-      ]
+      ],
+      "explain": "count += 1 assigns to count, which makes count local everywhere in the function, so the read on the same line finds an unassigned local.",
+      "teach": "Before running a function, Python quickly scans the whole function body to decide which names belong to it. If a name gets assigned anywhere inside the function, Python treats that name as local for the entire function, from the very first line to the last. So writing something like `total += 1` is really `total = total + 1`, and the right side needs total to already exist as a local variable. This matters because a variable can look like it should come from outside, but Python already decided it belongs only to the function.",
+      "hints": [
+        "This question asks why a variable that exists outside a function seems to vanish inside it. The key idea is that Python decides which names are local before running any line, based on where a name gets assigned. Look at the line inside bump: it tries to change count, so ask what that does to count for the whole function.",
+        "Imagine filling in a form that asks for your name, but you copy it from a tag not written yet. `count += 1` needs Python to read count and write a new count, but if count is only an empty local copy, the read fails before the write happens. Look for an answer that says the whole function treats count as local because it is assigned somewhere inside.",
+        "It is not true that Python globals are permanently read-only, that += is banned in functions, or that count is undefined anywhere, since count clearly exists at the top of the code. The real explanation is that assigning to count anywhere inside the function makes every mention of count in that function local, so reading it before it has a value is what breaks."
+      ],
+      "deep": "The compiler scans the whole function body for assignments to decide which names are local (the LEGB rule: Local, Enclosing, Global, Built-in). A local read before its first assignment raises UnboundLocalError. Fix: global count (discouraged) or pass and return the value.",
+      "xp": 10,
+      "tags": [
+        "scope",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l3.q3",
@@ -468,17 +503,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "def outer():\n    x = 10\n    def inner():\n        print(x)\n    inner()\n\nouter()",
-      "explain": "The inner function can read x from the enclosing function's scope.",
-      "hints": [
-        "Inner functions see the variables of the function around them."
-      ],
-      "deep": "This is a closure: inner captures x from outer's scope, and that binding survives after outer returns. Closures are how decorators, callbacks and functools.partial remember state. To rebind an enclosing variable you need nonlocal, introduced in Python 3.",
-      "xp": 10,
-      "tags": [
-        "scope",
-        "closures"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "None",
         "An error",
@@ -487,7 +511,21 @@
       ],
       "answer": [
         "10"
-      ]
+      ],
+      "explain": "The inner function can read x from the enclosing function's scope.",
+      "teach": "A function can be defined inside another function, and the inner one is allowed to look outward and read variables that belong to the function surrounding it, kind of like a smaller room with a window into the bigger room. Because of this, if you set up a value in the outer function, the inner function can read it directly, without needing it passed in as an argument. This matters because it lets functions share information without extra parameters, which is how many decorators and callbacks quietly remember things.",
+      "hints": [
+        "The question asks what happens when a function defined inside another function tries to read a variable from that outer function. The single idea to focus on is whether an inner function can see variables that live in the function wrapping it. Look at where x is created and where it gets printed, and ask if inner has a window into outer's room.",
+        "Think of outer as a house and inner as a room built inside it. Someone in the room can see furniture placed in the house before the room existed, without anyone handing it over. In the same way, inner can read a variable outer already set up, as long as inner does not assign a new value to that name. Look for the option matching what outer stored.",
+        "This does not raise an error, and it does not print the word x as text, since inner resolves the name to a real value. The tempting wrong answers assume inner cannot see outside itself at all, but nested functions can look outward to read, just not to write without extra keywords. The right answer is the actual value outer stored in x before calling inner."
+      ],
+      "deep": "This is a closure: inner captures x from outer's scope, and that binding survives after outer returns. Closures are how decorators, callbacks and functools.partial remember state. To rebind an enclosing variable you need nonlocal, introduced in Python 3.",
+      "xp": 10,
+      "tags": [
+        "scope",
+        "closures"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l3.q4",
@@ -495,19 +533,6 @@
       "level": 3,
       "type": "fill",
       "prompt": "Fill the gap so the counter can update the enclosing variable.",
-      "explain": "nonlocal tells Python that n refers to the variable in the enclosing function, not a new local one.",
-      "hints": [
-        "The variable belongs to the surrounding function, not the module.",
-        "global would look for a module-level n that does not exist."
-      ],
-      "deep": "nonlocal (PEP 3104) rebinds a name in the nearest enclosing function scope. Each call to make_counter creates a fresh n, so two counters are independent. This is state without a class; when the state grows beyond one or two variables, a class is clearer.",
-      "xp": 20,
-      "tags": [
-        "scope",
-        "closures"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "def make_counter():\n    n = 0\n    def step():\n        {0} n\n        n += 1\n        return n\n    return step",
       "blocks": [
         {
           "id": "local",
@@ -530,10 +555,25 @@
           "kind": "expr"
         }
       ],
+      "template": "def make_counter():\n    n = 0\n    def step():\n        {0} n\n        n += 1\n        return n\n    return step",
       "answer": [
         "nonlocal"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "nonlocal tells Python that n refers to the variable in the enclosing function, not a new local one.",
+      "teach": "A closure is a function defined inside another function that remembers variables from the function that wraps it. Reading an enclosing variable is automatic, but if you try to change it directly, like doing `n += 1` inside a nested function, Python treats n as a brand new local variable instead of changing the outer one. To actually update the enclosing variable, you need to tell Python that this name lives one level up, not inside this function and not at the top of the file. This matters because it lets a nested function keep a running counter that survives between calls.",
+      "hints": [
+        "This question is about the difference between reading a variable from an enclosing function and actually changing it. Think about the step written just above `n += 1`, and ask what word would let step reach up and update outer's own n, instead of making a fresh local one. Look at the four blocks and think about which level of scope each one points to.",
+        "Picture n as a notebook in outer's desk drawer. If inner only reads it, no special word is needed. But to write a new number into that notebook, inner must say it means the drawer one level up, not a brand new notebook of its own, and not the notebook kept at the outside of the file. Look for the block meaning one level up, not all the way to the top.",
+        "The block meaning the very top of the file reaches past the enclosing function, which is not where n lives. A plain local declaration or a made up keyword would not connect inner to outer's n at all. The right block simply says this name belongs to the nearest surrounding function, not the module and not a fresh local copy, so step keeps updating the same n each time it runs."
+      ],
+      "deep": "nonlocal (PEP 3104) rebinds a name in the nearest enclosing function scope. Each call to make_counter creates a fresh n, so two counters are independent. This is state without a class; when the state grows beyond one or two variables, a class is clearer.",
+      "xp": 20,
+      "tags": [
+        "scope",
+        "closures"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l3.q5",
@@ -542,18 +582,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "pairs = [(2, \"b\"), (1, \"c\"), (3, \"a\")]\nprint([n for n, _ in sorted(pairs, key=lambda p: p[0])])",
-      "explain": "The lambda tells sorted to compare by the number in each pair, and the comprehension pulls the numbers out in that order.",
-      "hints": [
-        "key= says what to compare; it does not change what is returned."
-      ],
-      "deep": "lambda builds an anonymous single-expression function. key functions transform each item once for comparison, which is faster than a comparison function. For attribute or index keys, operator.itemgetter(1) and attrgetter are faster and clearer than a lambda.",
-      "xp": 10,
-      "tags": [
-        "functions",
-        "lambda",
-        "sorting"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "An error",
         "[(1, 'b'), ...]",
@@ -562,7 +590,22 @@
       ],
       "answer": [
         "[1, 2, 3]"
-      ]
+      ],
+      "explain": "The lambda tells sorted to compare by the number in each pair, and the comprehension pulls the numbers out in that order.",
+      "teach": "When you sort a list, Python needs to know what to compare. By default it compares items directly, but you can hand sorted a small helper function through the key parameter that tells it exactly what part of each item to compare. A lambda is a tiny unnamed function written in one line, for example `lambda p: p[0]` means take p and give back its first item. This matters because it lets you sort complex items, like pairs or dictionaries, by just one piece of them instead of the whole thing.",
+      "hints": [
+        "This question asks what order a list of pairs ends up in after sorting by just one part of each pair, and what gets pulled out afterward into the final list. The single idea to focus on is what `p[0]` picks out from each pair, since that is exactly what sorted uses to compare items. Look at the numbers inside each pair and think about how sorting normally arranges plain numbers.",
+        "Imagine sorting luggage tags by the number written on them, ignoring the name also printed on each tag. Each pair here holds a number and a letter, and the key function tells sorted to compare only the number, so the letters just travel along with their own number. After sorting by number, the comprehension keeps only the numbers, dropping the letters, in that new order.",
+        "This does not raise an error, and the choice showing full pairs forgets that the comprehension keeps only the number from each pair, not the whole tuple. The choice listing numbers in their original order forgets that sorting rearranges them by size first. The right answer lists the three numbers from smallest to largest, the order sorting by the first item produces."
+      ],
+      "deep": "lambda builds an anonymous single-expression function. key functions transform each item once for comparison, which is faster than a comparison function. For attribute or index keys, operator.itemgetter(1) and attrgetter are faster and clearer than a lambda.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "lambda",
+        "sorting"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l3.q6",
@@ -570,16 +613,6 @@
       "level": 3,
       "type": "mcq",
       "prompt": "Which name does Python look up last when resolving print?",
-      "explain": "Lookup order is Local, Enclosing, Global, then Built-in, so built-ins are found last.",
-      "hints": [
-        "The acronym for the order is LEGB."
-      ],
-      "deep": "Because built-ins come last, defining a global called list or id shadows the built-in for the whole module, a bug that only surfaces when something later calls list(). Linters flag it (ruff A001). The lookup order is fixed at compile time per name, not searched at runtime.",
-      "xp": 10,
-      "tags": [
-        "scope"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Enclosing",
         "Built-in",
@@ -588,7 +621,20 @@
       ],
       "answer": [
         "Built-in"
-      ]
+      ],
+      "explain": "Lookup order is Local, Enclosing, Global, then Built-in, so built-ins are found last.",
+      "teach": "Every name in Python, like print or a variable you made up, has to be found somewhere before it can be used. Python keeps several separate places where names can live: inside the function currently running, inside any function that wraps around it, at the top level of your file, and among names Python ships with automatically, like print or len. When you use a name, Python checks through these places in a specific sequence to decide which one you meant. This matters because two places can hold a name with the same spelling, and Python needs a consistent rule to pick one.",
+      "hints": [
+        "This question asks about the order Python checks when looking for a name that is not defined anywhere close by, using print as the example. The single idea is the fixed search order Python always follows, sometimes remembered with the letters L, E, G, B. Think about which of those four stops would be checked first and which one would only be checked if nothing closer matched.",
+        "Picture asking four people for something: the person next to you, then someone in the next room, then someone in the main hall, and only then the storage room that came with the building. Python checks the current function first, then any wrapping function, then the whole file, and only after all that fails does it check the names built into the language. Look for the option matching the last stop.",
+        "The options naming the current function or the file itself are checked early, not late, so they do not fit a question about what happens last. The enclosing function scope also comes before the final stop, since it only applies when one function is nested inside another. The right answer is the stop holding names Python already knows before your code runs, checked only when nothing closer was found."
+      ],
+      "deep": "Because built-ins come last, defining a global called list or id shadows the built-in for the whole module, a bug that only surfaces when something later calls list(). Linters flag it (ruff A001). The lookup order is fixed at compile time per name, not searched at runtime.",
+      "xp": 10,
+      "tags": [
+        "scope"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l4.q1",
@@ -596,17 +642,6 @@
       "level": 4,
       "type": "mcq",
       "prompt": "Which line gives access to sqrt as math.sqrt?",
-      "explain": "import math binds the module object, and you reach its functions through the dot.",
-      "hints": [
-        "You want the module name itself in scope, not just one function."
-      ],
-      "deep": "import math executes math's code once, caches the module in sys.modules, and binds the name. from math import sqrt binds only that name; import math as m renames. Star imports (from x import *) pollute the namespace and hide where names come from, so they are banned in most codebases.",
-      "xp": 10,
-      "tags": [
-        "modules",
-        "imports"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "include math",
         "import sqrt from math",
@@ -615,7 +650,21 @@
       ],
       "answer": [
         "import math"
-      ]
+      ],
+      "explain": "import math binds the module object, and you reach its functions through the dot.",
+      "teach": "A module is a file of ready-made code, like a toolbox someone packed for you. When you bring the whole toolbox in, it keeps its own label, so you reach a tool inside it by writing the toolbox name, then a dot, then the tool name, like toolbox.hammer. That dot notation shows exactly where each piece came from. The math module works the same way, and sqrt is one of the tools packed inside it.",
+      "hints": [
+        "The question is asking how you get a whole toolbox into your program so you can use one tool from it by its full label. Look at the four lines on screen and ask which one brings in the entire math toolbox, keeping its name attached to what is inside. Which line names only the toolbox itself, with nothing else added?",
+        "Think of it like bringing a whole spice rack into your kitchen instead of taking just one jar out. If you keep the whole rack, you still say rack.cinnamon to grab what you need, because the rack keeps its name attached to its contents. Look among the options for the one that names only the toolbox, using the plain keyword Python uses to bring in a whole module.",
+        "The option that says include is not a real Python word, and the one about importing sqrt directly from math would let you write sqrt alone, without any dot in front of it, which is not what the question wants. You need the plain word that brings in the whole module by name, so afterward you still write the toolbox name, a dot, then the tool name to reach it. Look for the shortest, plainest line, just a keyword followed by the module's name."
+      ],
+      "deep": "import math executes math's code once, caches the module in sys.modules, and binds the name. from math import sqrt binds only that name; import math as m renames. Star imports (from x import *) pollute the namespace and hide where names come from, so they are banned in most codebases.",
+      "xp": 10,
+      "tags": [
+        "modules",
+        "imports"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l4.q2",
@@ -623,18 +672,6 @@
       "level": 4,
       "type": "fill",
       "prompt": "Fill the gap so choice comes straight into the namespace.",
-      "explain": "from module import name pulls one name out of the module.",
-      "hints": [
-        "The line reads as: from where, import what."
-      ],
-      "deep": "The from form is convenient but hides the origin of a name in large files. Import modules for clarity, import names for the few you use constantly. Circular imports happen when two modules import each other at top level; moving one import inside a function or restructuring fixes it.",
-      "xp": 20,
-      "tags": [
-        "modules",
-        "imports"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "{0} random import choice\n\nprint(choice([\"a\", \"b\"]))",
       "blocks": [
         {
           "id": "import",
@@ -657,10 +694,25 @@
           "kind": "expr"
         }
       ],
+      "template": "{0} random import choice\n\nprint(choice([\"a\", \"b\"]))",
       "answer": [
         "from"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "from module import name pulls one name out of the module.",
+      "teach": "Sometimes you only want one tool out of a whole toolbox, not the whole box. Python lets you pull a single name straight out of a module so you can use it on its own, without writing the module name first. For example, pulling choice out of the random toolbox means you can later write choice(...) directly, instead of random.choice(...). This saves typing when you use that one tool often.",
+      "hints": [
+        "The code already uses choice by itself, with no module name and no dot in front of it. Think about which keyword lets you take one specific name out of a module and drop it straight into your file, so it works alone afterward. Look at the blank at the start of the line and ask which word matches that pattern.",
+        "Imagine a recipe that says take the sugar jar out of the pantry and put it on the counter, instead of bring the whole pantry into the kitchen. One way brings in an entire module, keeping its name attached to everything inside it. The other way reaches into the module and pulls out just one item, so that item can stand on its own afterward. Look for the keyword that matches the second idea, built for pulling a single name out.",
+        "The keyword for bringing in a whole module would leave you needing the module name and a dot before choice, which does not match the line printed below. The unrelated keywords about opening resources or a made-up word do not fit either. You want the short word that starts a from-something-import pattern, letting one name land in your file ready to use by itself."
+      ],
+      "deep": "The from form is convenient but hides the origin of a name in large files. Import modules for clarity, import names for the few you use constantly. Circular imports happen when two modules import each other at top level; moving one import inside a function or restructuring fixes it.",
+      "xp": 20,
+      "tags": [
+        "modules",
+        "imports"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l4.q3",
@@ -669,16 +721,6 @@
       "type": "mcq",
       "prompt": "What is the purpose of this line?",
       "code": "if __name__ == \"__main__\":\n    main()",
-      "explain": "Python sets __name__ to \"__main__\" for the file it runs directly and to the module name when imported.",
-      "hints": [
-        "Think about the difference between running a file and importing it."
-      ],
-      "deep": "Every module has __name__. Guarding the script's entry point behind this check lets the same file be both a runnable script and an importable library, which is what tests need. The convention is def main(): with the guard calling it, so nothing runs at import time.",
-      "xp": 10,
-      "tags": [
-        "modules"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Run the code below only when the file is executed directly, not when imported",
         "Check that the file has a name",
@@ -687,7 +729,20 @@
       ],
       "answer": [
         "Run the code below only when the file is executed directly, not when imported"
-      ]
+      ],
+      "explain": "Python sets __name__ to \"__main__\" for the file it runs directly and to the module name when imported.",
+      "teach": "Every Python file secretly carries a variable called __name__. When you run a file directly, Python sets that variable to the text main. When another file imports that same file instead, Python sets it to the file's own name. Checking __name__ before running code lets a file behave differently depending on whether it was run directly or borrowed by another file, which matters because tests often import files without wanting them to run automatically.",
+      "hints": [
+        "This is really about the difference between running a file yourself and having another file quietly borrow code from it. Ask yourself, what should happen to the code inside this block when someone else imports your file instead of running it directly? Look at the condition on screen and think about what value it compares __name__ against.",
+        "Picture a chef who only starts cooking the final dish when they personally walk into the kitchen, but happily lets others borrow individual recipes from their cookbook without cooking anything. The check on screen works like that chef, telling Python to run the code inside only under one specific circumstance. Find the option describing that one specific circumstance, not always and not never.",
+        "The choices about naming the main function or making a file importable describe things that happen elsewhere, not what this exact line controls, and simply checking that a file has a name is not what __name__ compares against. This line is a gate that only opens for one particular way of starting the program, keeping the same code silent the rest of the time. Pick the option describing that direct-run-only behavior."
+      ],
+      "deep": "Every module has __name__. Guarding the script's entry point behind this check lets the same file be both a runnable script and an importable library, which is what tests need. The convention is def main(): with the guard calling it, so nothing runs at import time.",
+      "xp": 10,
+      "tags": [
+        "modules"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l4.q4",
@@ -695,17 +750,6 @@
       "level": 4,
       "type": "mcq",
       "prompt": "Which module gives today's date?",
-      "explain": "datetime.date.today() returns today's date; the time module is for timestamps and sleeping.",
-      "hints": [
-        "The module name contains both words you care about."
-      ],
-      "deep": "datetime.datetime.now() gives a naive local time; for anything stored or compared use timezone-aware values: datetime.now(tz=ZoneInfo(\"Europe/Oslo\")) with the zoneinfo module (PEP 615, Python 3.9). Store UTC, render local. Naive datetimes are a bug waiting to be discovered.",
-      "xp": 10,
-      "tags": [
-        "modules",
-        "stdlib"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "datetime",
         "date",
@@ -714,7 +758,21 @@
       ],
       "answer": [
         "datetime"
-      ]
+      ],
+      "explain": "datetime.date.today() returns today's date; the time module is for timestamps and sleeping.",
+      "teach": "Python's standard library ships with ready-made modules for common jobs, and working with dates and times is common enough to get its own toolbox. Inside that toolbox live objects that represent a single day, a single moment, or a stretch of time, and one of them can tell you what day it is right now. Knowing which toolbox holds this ability saves you from writing date math by hand. This matters anywhere your program needs to stamp something with today's date.",
+      "hints": [
+        "The question is asking which toolbox in the standard library actually knows how to give you the current date. Think about which of the four names sounds like it is built specifically around calendar dates and clock times together, rather than just one narrow job. Which name on screen covers both dates and times in one place?",
+        "Imagine four drawers labeled with related but different jobs, one for pausing a program or measuring elapsed seconds, one for laying out a yearly grid of days, one that is just a plain word for a single day, and one built around full date and time objects with today baked in as a ready method. Only one drawer actually contains an object made to represent today's date directly. Look for the toolbox name broad enough to cover both dates and times.",
+        "The drawer about pausing or measuring elapsed time is for timers, not calendar dates, and the one about laying out monthly grids is for printing calendars, not fetching today. A word that only means a single day is too plain to be the actual module name Python uses. You want the toolbox whose name pairs date and time together, since it holds the object with a ready-made today method."
+      ],
+      "deep": "datetime.datetime.now() gives a naive local time; for anything stored or compared use timezone-aware values: datetime.now(tz=ZoneInfo(\"Europe/Oslo\")) with the zoneinfo module (PEP 615, Python 3.9). Store UTC, render local. Naive datetimes are a bug waiting to be discovered.",
+      "xp": 10,
+      "tags": [
+        "modules",
+        "stdlib"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l4.q5",
@@ -722,17 +780,6 @@
       "level": 4,
       "type": "mcq",
       "prompt": "You need a third-party package. Where does it come from?",
-      "explain": "Third-party code is installed from the Python Package Index into an environment; import only finds what is installed.",
-      "hints": [
-        "The standard library ships with Python; everything else is installed."
-      ],
-      "deep": "A virtual environment isolates a project's packages: python -m venv .venv, or the faster uv. Pin dependencies in pyproject.toml plus a lockfile so a build is reproducible. Installing into the system Python is how two projects end up needing different versions of the same package.",
-      "xp": 10,
-      "tags": [
-        "modules",
-        "packaging"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "pip install from PyPI, ideally inside a virtual environment",
         "It is downloaded automatically at import time",
@@ -741,7 +788,21 @@
       ],
       "answer": [
         "pip install from PyPI, ideally inside a virtual environment"
-      ]
+      ],
+      "explain": "Third-party code is installed from the Python Package Index into an environment; import only finds what is installed.",
+      "teach": "Python comes with a standard library built in, but plenty of useful code lives outside it, written by other programmers and shared publicly. That outside code is not on your computer until you fetch it from a public shelf called the Python Package Index and install it into your project. A virtual environment is like a separate, clean shelf just for one project, so different projects can keep different versions of the same package without clashing. Import only finds code that has already been installed somewhere Python can see.",
+      "hints": [
+        "The question is really asking where code that is not part of core Python actually comes from before you can use it. Think about what has to happen before a package shows up on your computer at all. Does typing import alone make new code appear, or does something else need to happen first?",
+        "Think of it like borrowing a book that is not on your own bookshelf. You cannot just say the title out loud and have it appear, you need to go get it from a library first and bring it home before you can open it. Python packages work the same way, they live on an outside index until someone fetches and installs them into a particular project space. Look for the option describing fetching and installing, ideally into its own separate space.",
+        "Saying the code arrives automatically when you import it skips the actual fetching step entirely, and claiming the standard library already covers everything ignores that whole outside ecosystem. Manually copying source files works in theory but is not how Python projects are normally built, and it skips version tracking. You want the option describing getting the package from the public index and installing it, preferably into an isolated space kept just for that project."
+      ],
+      "deep": "A virtual environment isolates a project's packages: python -m venv .venv, or the faster uv. Pin dependencies in pyproject.toml plus a lockfile so a build is reproducible. Installing into the system Python is how two projects end up needing different versions of the same package.",
+      "xp": 10,
+      "tags": [
+        "modules",
+        "packaging"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l4.q6",
@@ -749,17 +810,6 @@
       "level": 4,
       "type": "order",
       "prompt": "Order the lines so the program prints a random number from 1 to 6.",
-      "explain": "Import first, use the module, then print the result.",
-      "hints": [
-        "Nothing from a module can be used before the import line runs."
-      ],
-      "deep": "randint is inclusive on both ends, unlike range. For anything security-related use the secrets module, not random, which is a Mersenne Twister and predictable. For reproducible tests call random.seed(0) once, or better, inject a random.Random instance.",
-      "xp": 15,
-      "tags": [
-        "modules",
-        "imports"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "print(roll)",
         "roll = random.randint(1, 6)",
@@ -770,7 +820,21 @@
         "roll = random.randint(1, 6)",
         "print(roll)"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Import first, use the module, then print the result.",
+      "teach": "A Python program runs top to bottom, one line after another, and each line can only use tools that already exist by the time it runs. Before you can call a function from a module, that module has to be imported first, the same way you need to open a toolbox before using a tool from it. Once a tool is available, you can use it to produce a value, and only after that value exists can you print it. Getting this order right is what makes the difference between code that works and code that crashes.",
+      "hints": [
+        "This is about the order a program needs its pieces in before anything can happen. Ask yourself, can you use a tool from a toolbox before you have opened the toolbox, and can you print a value before it has been created? Look at the three lines and think about which one has to happen first, which one depends on it, and which one depends on both.",
+        "Think of baking, you cannot pour batter into a pan before you have gathered your ingredients, and you cannot eat the cake before it has baked. One line brings in the ability to make random numbers at all, another line actually uses that ability to create a value and store it, and a third line shows that stored value. Line up the tray so each step only relies on things that already happened above it.",
+        "Printing a value before it is created would crash, since nothing would exist yet to show, and generating a random number before the tool for it is brought in would also crash. The very first line has to be the short one that only brings in an ability, with nothing computed yet. After that comes the line that actually creates and stores a number, and only then the line that displays it."
+      ],
+      "deep": "randint is inclusive on both ends, unlike range. For anything security-related use the secrets module, not random, which is a Mersenne Twister and predictable. For reproducible tests call random.seed(0) once, or better, inject a random.Random instance.",
+      "xp": 15,
+      "tags": [
+        "modules",
+        "imports"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l5.q1",
@@ -779,16 +843,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "try:\n    n = int(\"abc\")\nexcept ValueError:\n    print(\"not a number\")",
-      "explain": "int(\"abc\") raises ValueError, the except catches it and prints the message.",
-      "hints": [
-        "What does int() do with text that is not digits?"
-      ],
-      "deep": "Exceptions unwind the stack until a matching except is found. ValueError means the type was right but the value was not; TypeError means the type was wrong. Catch the most specific exception that you can actually handle, as close to the source as makes sense.",
-      "xp": 10,
-      "tags": [
-        "exceptions"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "0",
         "abc",
@@ -797,7 +851,20 @@
       ],
       "answer": [
         "not a number"
-      ]
+      ],
+      "explain": "int(\"abc\") raises ValueError, the except catches it and prints the message.",
+      "teach": "When your code might fail, you can wrap the risky part in a try block. Python runs the try part first, and if something goes wrong, it looks for a matching except block instead of crashing the whole program. Different problems raise different named errors: turning a word like `\"abc\"` into a number raises a ValueError, because the text is not a valid number. Catching the right error lets your program respond calmly instead of stopping dead.",
+      "hints": [
+        "This question asks what actually gets printed once the code finishes running, not what you expect in theory. Look at the line inside try first, then ask yourself whether it succeeds or fails, and if it fails, what kind of problem that is.",
+        "Think of try like handing something risky to a friend who catches it if it slips. Turning a word into a whole number is like asking someone to weigh something that has no weight, it does not make sense as a number, so Python raises a specific complaint about the value. Walk through the code line by line, find which line stops the normal flow, then find the except that names that same complaint.",
+        "The raw value and the idea of a crash both ignore that this exception has a matching except sitting right below it, so the program does not stop and the number itself never gets printed. The right answer is the short, plain, human-readable message written inside that matching except block, the same words you would say out loud."
+      ],
+      "deep": "Exceptions unwind the stack until a matching except is found. ValueError means the type was right but the value was not; TypeError means the type was wrong. Catch the most specific exception that you can actually handle, as close to the source as makes sense.",
+      "xp": 10,
+      "tags": [
+        "exceptions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l5.q2",
@@ -806,17 +873,6 @@
       "type": "mcq",
       "prompt": "Why is this except clause a bad idea?",
       "code": "try:\n    risky()\nexcept:\n    pass",
-      "explain": "A bare except catches everything, including KeyboardInterrupt and SystemExit, and hides real bugs.",
-      "hints": [
-        "Ask which errors this would catch. All of them?"
-      ],
-      "deep": "Bare except and except Exception with pass are the origin of most silent failures. If you must catch broadly, log with logger.exception and re-raise or fail visibly. The hierarchy matters: KeyboardInterrupt and SystemExit derive from BaseException, not Exception, precisely so that except Exception leaves them alone.",
-      "xp": 10,
-      "tags": [
-        "exceptions",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "It is a syntax error",
         "It only catches ValueError",
@@ -825,7 +881,21 @@
       ],
       "answer": [
         "It swallows every error, including bugs and Ctrl-C, so failures go unnoticed"
-      ]
+      ],
+      "explain": "A bare except catches everything, including KeyboardInterrupt and SystemExit, and hides real bugs.",
+      "teach": "Python has a whole family of error types, and some of them are not meant to be silenced casually. Pressing Ctrl-C to stop a running program is actually delivered through that same error system. When you write except with nothing after it, a bare except, you tell Python to catch absolutely everything that goes wrong, no matter what it is or how serious. That is very different from catching one specific, expected problem you already know how to handle.",
+      "hints": [
+        "The question wants you to notice what a bare except, one with no error type named after it, actually promises to catch. Look at the code and ask yourself, is there any limit at all on what kind of problem this except will grab?",
+        "Picture a net so wide it scoops up fish, boots, and the fisherman's own hat, you cannot tell afterward what got caught. A bare except behaves the same way, it grabs the error you expected but also grabs typos, missing files, and even the signal meaning the user pressed Ctrl-C. Look for the option describing catching everything indiscriminately, not one about speed or syntax.",
+        "This is not a syntax mistake and it is not limited to one error type, so those choices misread what a bare except does, and it does not make anything slower either. The real issue is that combined with doing nothing afterward, it hides genuine bugs and even blocks the user from quitting, so failures vanish silently instead of surfacing where someone could fix them."
+      ],
+      "deep": "Bare except and except Exception with pass are the origin of most silent failures. If you must catch broadly, log with logger.exception and re-raise or fail visibly. The hierarchy matters: KeyboardInterrupt and SystemExit derive from BaseException, not Exception, precisely so that except Exception leaves them alone.",
+      "xp": 10,
+      "tags": [
+        "exceptions",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l5.q3",
@@ -833,17 +903,6 @@
       "level": 5,
       "type": "fill",
       "prompt": "Fill the gap so the function refuses negative amounts.",
-      "explain": "raise creates and throws the exception; the caller decides whether to catch it.",
-      "hints": [
-        "Python's keyword for throwing an error is not throw."
-      ],
-      "deep": "Raise early, with a specific type and a message that says what was wrong and what was expected. Validating at the boundary means the rest of the function can assume clean input. For your own error families, subclass Exception: class InsufficientFunds(ValueError): pass.",
-      "xp": 20,
-      "tags": [
-        "exceptions"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "def withdraw(amount):\n    if amount < 0:\n        {0} ValueError(\"amount must be positive\")\n    return amount",
       "blocks": [
         {
           "id": "raise",
@@ -866,10 +925,24 @@
           "kind": "expr"
         }
       ],
+      "template": "def withdraw(amount):\n    if amount < 0:\n        {0} ValueError(\"amount must be positive\")\n    return amount",
       "answer": [
         "raise"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "raise creates and throws the exception; the caller decides whether to catch it.",
+      "teach": "Sometimes a function receives a value that breaks a rule it needs, like a negative amount where only positive ones make sense. Python lets you stop the function right there and signal that something is wrong, instead of quietly continuing with bad data. This is different from returning a value, because it interrupts the normal flow and forces whoever called the function to notice the problem. Choosing the right word is what actually sets that error in motion.",
+      "hints": [
+        "The question is about how you deliberately trigger an error in Python on purpose, when input breaks a rule. Look at the gap, right before it builds a ValueError with a message, and ask yourself which word actually launches that error rather than just describing it.",
+        "Think of it like a fire alarm, the box already exists on the wall, you still need to pull it to set it off. Writing ValueError with a message only builds the error object, a separate word is needed to send it traveling through the program so execution stops. Look for the block whose word means to launch or trigger, not one meaning to grab, send back, or borrowed from another language.",
+        "Sending a value back would just hand back data calmly, which does not stop anything or flag a problem, and the word borrowed from other languages is not valid Python at all. Catching happens with a different keyword entirely and belongs on the receiving end, not here. What belongs in this gap is the short Python keyword whose only job is to start an exception moving up through the code."
+      ],
+      "deep": "Raise early, with a specific type and a message that says what was wrong and what was expected. Validating at the boundary means the rest of the function can assume clean input. For your own error families, subclass Exception: class InsufficientFunds(ValueError): pass.",
+      "xp": 20,
+      "tags": [
+        "exceptions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l5.q4",
@@ -877,17 +950,6 @@
       "level": 5,
       "type": "mcq",
       "prompt": "When does the finally block run?",
-      "explain": "finally runs on every path out of the try, which makes it the place for cleanup.",
-      "hints": [
-        "It is the block for cleanup that must happen no matter what."
-      ],
-      "deep": "finally runs even when the try returns or raises. That is what closing files and releasing locks need, and the with statement packages the same guarantee: with open(p) as f: is try/finally with the close built in. Prefer with; use finally for cleanup that has no context manager.",
-      "xp": 10,
-      "tags": [
-        "exceptions",
-        "context-managers"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Only if except ran",
         "Always, whether or not an exception happened",
@@ -896,7 +958,21 @@
       ],
       "answer": [
         "Always, whether or not an exception happened"
-      ]
+      ],
+      "explain": "finally runs on every path out of the try, which makes it the place for cleanup.",
+      "teach": "A try block can end in different ways: everything works, an exception happens, or the function even returns early from inside it. Python gives you a finally block that runs no matter which of those paths happened, which makes it the natural place for cleanup like closing a file or releasing a lock. Think of turning off the stove after cooking, you do it whether the meal turned out great or burned. That guarantee is what makes finally different from code simply written after the try.",
+      "hints": [
+        "The question is about timing, specifically which situations make the finally block run. Look at the options and ask yourself whether any of them describe a limit, or whether finally's whole point is having no limit at all.",
+        "Imagine a lifeguard who checks the pool gate every single evening, rain or shine, whether swimmers came or not, because closing up safely matters no matter what happened that day. finally behaves the same way inside a try statement, it is not conditional on success or failure. Look for the option naming no condition at all, rather than one tied to whether except ran or whether an error happened.",
+        "The options tying finally to whether except ran, or to an error happening, or only to a clean run, all describe conditional behavior, which is exactly what finally is not. Its whole purpose is to remove that condition entirely. The right answer says finally fires on every path out of the try, success, failure, or even an early return, with nothing left out."
+      ],
+      "deep": "finally runs even when the try returns or raises. That is what closing files and releasing locks need, and the with statement packages the same guarantee: with open(p) as f: is try/finally with the close built in. Prefer with; use finally for cleanup that has no context manager.",
+      "xp": 10,
+      "tags": [
+        "exceptions",
+        "context-managers"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l5.q5",
@@ -905,16 +981,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "d = {}\ntry:\n    d[\"x\"]\nexcept KeyError:\n    print(\"missing\")\nexcept TypeError:\n    print(\"type\")",
-      "explain": "The lookup raises KeyError, the first matching except is KeyError, so missing is printed.",
-      "hints": [
-        "except clauses are tested in order, and only the first match runs."
-      ],
-      "deep": "Order except clauses from specific to general, because a general one first (except Exception) would shadow the rest. Multiple types in one clause use a tuple: except (KeyError, IndexError) as e. Python 3.11 added except* for ExceptionGroup, used by TaskGroup.",
-      "xp": 10,
-      "tags": [
-        "exceptions"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "type",
         "missing",
@@ -923,7 +989,20 @@
       ],
       "answer": [
         "missing"
-      ]
+      ],
+      "explain": "The lookup raises KeyError, the first matching except is KeyError, so missing is printed.",
+      "teach": "A Python dictionary only holds the key-value pairs you actually put into it. If you ask for a key that was never added, like d[\"x\"] on an empty dictionary, Python does not quietly return nothing, it raises an error called KeyError to tell you that key is not there. A try/except block lets you catch that error and run your own code instead of letting the program crash. You can stack several except clauses for different error types, and Python uses the first one that matches the actual error, so the order you write them in matters.",
+      "hints": [
+        "This question is really about which except block ends up running. Look at the dictionary d, notice it starts out empty, and the code tries to read d[\"x\"]. Ask yourself: what specific error does Python raise when you look up a key that was never stored, and which except line names that same error?",
+        "Think of a library catalog: searching for a title that was never catalogued gets a not-found response, not a complaint about wrong format. Python works the same way, a key that was never stored raises KeyError, while TypeError is for mixing incompatible types. Except clauses are checked top to bottom, so find the line whose error name matches what happened, then look at its print statement.",
+        "TypeError only fires for mixing incompatible types, which is not what happened here, so that option is out. The error is not unhandled either, since an except clause is ready and waiting for exactly this problem. The code also does not print the exception's class name, it prints a short lowercase word the programmer chose, describing a key that was never stored, inside the block matching a failed lookup."
+      ],
+      "deep": "Order except clauses from specific to general, because a general one first (except Exception) would shadow the rest. Multiple types in one clause use a tuple: except (KeyError, IndexError) as e. Python 3.11 added except* for ExceptionGroup, used by TaskGroup.",
+      "xp": 10,
+      "tags": [
+        "exceptions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t4.l5.q6",
@@ -931,19 +1010,6 @@
       "level": 5,
       "type": "order",
       "prompt": "Order the lines so the file is read and always closed, even on error.",
-      "explain": "Open first, read inside try, close inside finally so it happens on every path.",
-      "hints": [
-        "The file has to be opened before try, or the finally would close nothing.",
-        "Only the read can fail, so only it belongs inside try."
-      ],
-      "deep": "This is exactly what with open(\"data.txt\") as f: text = f.read() compiles down to, minus the boilerplate. Context managers (PEP 343) implement __enter__ and __exit__; contextlib.contextmanager lets you write one from a generator with a single yield.",
-      "xp": 15,
-      "tags": [
-        "exceptions",
-        "context-managers",
-        "files"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "f = open(\"data.txt\")",
         "finally:",
@@ -958,7 +1024,22 @@
         "finally:",
         "    f.close()"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Open first, read inside try, close inside finally so it happens on every path.",
+      "teach": "Opening a file gives you a connection to it that should always be closed when you are done, whether reading it worked or crashed halfway through. Python's try and finally work as a pair for exactly this: you put the risky work, like reading, inside try, and the cleanup, like closing, inside finally so it happens no matter what. This is the same guarantee behind the friendlier `with open(...) as f:` line, just written out by hand. Getting the order right matters, since closing before opening or before reading makes no sense.",
+      "hints": [
+        "This question is about sequencing three ideas in the order that makes physical sense: getting a file open, doing the risky work with it, and cleaning up afterward. Look at the five lines and ask yourself which one must obviously happen first before anything else can touch the file.",
+        "Think of borrowing a library book, you first check it out, then you read it, and finally you return it, and you would return it even if something interrupted your reading. The checking out step has to come before try even starts, since try only wraps the risky part, the reading. Arrange the lines so opening comes first, the risky action sits inside try, and the guaranteed cleanup sits inside finally right after it.",
+        "Putting the closing line before opening or before reading breaks the whole idea, since you cannot clean up something you have not used yet. The reading line belongs nested inside try because it is the part that might fail. The right order starts with opening the file, then a try line holding the read indented beneath it, then a finally line holding the close indented beneath that."
+      ],
+      "deep": "This is exactly what with open(\"data.txt\") as f: text = f.read() compiles down to, minus the boilerplate. Context managers (PEP 343) implement __enter__ and __exit__; contextlib.contextmanager lets you write one from a generator with a single yield.",
+      "xp": 15,
+      "tags": [
+        "exceptions",
+        "context-managers",
+        "files"
+      ],
+      "reviewed": "2026-09-05"
     }
   ]
 }

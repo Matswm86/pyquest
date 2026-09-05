@@ -232,3 +232,41 @@ stored fields with no date attached and showed stale values on a new day (both
 are now functions of today's date, with unit tests); and the level-done screen
 said "Tier cleared" after every level.
 
+## 9. Second pass, 2026-09-05 afternoon: what the first phone test found
+
+Four reports from the first real play session, and what changed:
+
+1. **"Some options are impossible to tell apart"** (`a b` vs `ab` vs `a b `).
+   Whitespace does not survive a proportional font on a phone. Output options
+   whose only difference is spacing are now written in quotes in the JSON, and
+   the multiple-choice widget renders quoted options in mono with every space
+   drawn as a middle dot plus the caption "· marks one space". The validator
+   refuses a new question whose options differ only by whitespace unless every
+   option is quoted, so the class of bug cannot come back.
+2. **"Pytor should be an actual teacher when asked for hints."** The first
+   hints were one-line nudges (median 55 characters). Every question now has a
+   `teach` mini-lesson shown before any hint, and three progressive hints of a
+   paragraph each: restate the question in plain words, walk the reasoning with
+   a parallel example, then narrow it down without saying it. The validator
+   enforces the shape (teach at least 150 characters, exactly three hints of at
+   least 100). The online persona gained a teaching register that switches on
+   whenever the player is stuck or asks for a hint: slow, plain, one idea at a
+   time, ending with a check question, never "obviously" or "just".
+3. **"The tracker in each level does not work."** Level chips showed mastery,
+   which needs three correct answers on separate sittings, so a level you had
+   just finished read 0%. Progress now records `clearedLevels` when a sitting
+   ends; the level chip shows a tick and "N% mastered", the tier card counts
+   cleared levels, the You tab shows solved (right at least once) as the bar and
+   mastery as a secondary number, and "next level" means the first uncleared
+   one. Mastery still gates the review queue; it just stopped pretending to be
+   progress.
+4. **"You should get a log so we can review later."** Two logs. On the phone,
+   every answer (with what was given, hints used, time taken), every hint, level
+   start and end, chat question and answer, and Codex read is appended to a
+   private JSONL file; the You tab shows the last fifteen lines and a Share
+   button that hands the whole file to any app via the Android share sheet.
+   Nothing leaves the phone by itself. On the tutor service, every quest-mode
+   exchange (question, game context, answer, backend, milliseconds, no IP) is
+   appended to a JSONL file next to the bridge so Pytor's answers can be
+   reviewed and, where wrong, turned into Codex corrections.
+

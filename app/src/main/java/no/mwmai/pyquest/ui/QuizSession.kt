@@ -3,6 +3,7 @@ package no.mwmai.pyquest.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import no.mwmai.pyquest.data.EventLog
 import no.mwmai.pyquest.data.Progress
 import no.mwmai.pyquest.data.ProgressStore
 import no.mwmai.pyquest.model.Question
@@ -26,10 +27,15 @@ class QuizSession(
     private val store: ProgressStore,
     /** True when this sitting replays the misses of an earlier one. */
     val isReview: Boolean = false,
+    /** Which level this is, so finishing it can be recorded. Null for ad-hoc sittings. */
+    private val tier: Int? = null,
+    private val level: Int? = null,
+    private val log: EventLog? = null,
     private val today: () -> String = { Progress.today() },
     private val random: Random = Random.Default,
 ) {
     private var queue: List<Question> by mutableStateOf(initial)
+    private var questionShownAt: Long = System.currentTimeMillis()
 
     var progress: Progress by mutableStateOf(store.load())
         private set
@@ -110,11 +116,16 @@ class QuizSession(
         get() = missedIds.values.toList()
 
     init {
+        log?.log(
+            "level_start",
+            "tier" to tier, "level" to level, "review" to isReview, "questions" to initial.size,
+        )
         resetForCurrent()
     }
 
     private fun resetForCurrent() {
         val question = queue.firstOrNull()
+        questionShownAt = System.currentTimeMillis()
         selection = emptyList()
         hintsShown = 0
         slots = if (question != null && question.slotCount > 0) {
@@ -174,6 +185,7 @@ class QuizSession(
         if (hintsShown >= question.hints.size) return false
         hintsShown += 1
         hintsUsed += 1
+        log?.log("hint", "id" to question.id, "n" to hintsShown)
         return true
     }
 
@@ -210,6 +222,12 @@ class QuizSession(
         }
         seen.add(question.id)
         progress = store.record(question.id, lastCorrect, question.xp, today(), question.tags)
+        log?.log(
+            "answer",
+            "id" to question.id, "type" to question.type.name.lowercase(), "correct" to lastCorrect,
+            "given" to given(question), "hints" to hintsShown,
+            "ms" to (System.currentTimeMillis() - questionShownAt), "retry" to (question.id in missedIds),
+        )
     }
 
     fun next() {
@@ -226,6 +244,19 @@ class QuizSession(
         checked = false
         lastCorrect = false
         resetForCurrent()
+        if (queue.isEmpty()) finish()
+    }
+
+    private fun finish() {
+        if (!isReview && tier != null && level != null) {
+            progress = store.markCleared(tier, level)
+        }
+        log?.log(
+            "level_end",
+            "tier" to tier, "level" to level, "review" to isReview,
+            "accuracy" to accuracy, "xp" to xpEarned, "hints" to hintsUsed,
+            "misses" to misses.size, "secs" to ((System.currentTimeMillis() - startedAtMillis) / 1000),
+        )
     }
 
     private fun rememberBuiltCode(question: Question) {

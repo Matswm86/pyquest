@@ -95,6 +95,24 @@ class ProgressTest {
     }
 
     @Test
+    fun `solved counts one right answer and mastery needs three`() {
+        var p = Progress().applying("a", true, 10, day1).applying("b", false, 10, day1)
+        assertEquals(0.5f, p.solvedOf(listOf("a", "b")), 0.001f)
+        assertEquals(0f, p.masteryOf(listOf("a", "b")), 0.001f)
+        repeat(2) { p = p.applying("a", true, 10, day1) }
+        assertEquals(0.5f, p.masteryOf(listOf("a", "b")), 0.001f)
+    }
+
+    @Test
+    fun `clearing a level is recorded once and read back by tier and level`() {
+        var p = Progress().clearing(3, 2)
+        assertTrue(p.isCleared(3, 2))
+        assertFalse(p.isCleared(3, 1))
+        p = p.clearing(3, 2)
+        assertEquals(listOf("t3.l2"), p.clearedLevels)
+    }
+
+    @Test
     fun `yesterday handles month boundaries and garbage`() {
         assertEquals("2026-08-31", Progress.yesterdayOf("2026-09-01"))
         assertEquals("", Progress.yesterdayOf("not a date"))

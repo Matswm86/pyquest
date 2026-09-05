@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.mwmai.pyquest.data.CurriculumRepository
+import no.mwmai.pyquest.data.EventLog
 import no.mwmai.pyquest.data.Progress
 import no.mwmai.pyquest.data.ProgressStore
 import no.mwmai.pyquest.model.CodexEntry
@@ -88,6 +89,7 @@ private fun PyQuestApp() {
     val context = LocalContext.current
     val repository = remember { CurriculumRepository(context.assets) }
     val store = remember { ProgressStore(context) }
+    val log = remember { EventLog(context) }
 
     // Eight tier files and the Codex parse off the main thread so the first
     // frame is Pytor, not a blank screen.
@@ -107,7 +109,7 @@ private fun PyQuestApp() {
     var progress by remember { mutableStateOf(store.load()) }
     var plainLabels by remember { mutableStateOf(store.plainLabels) }
     var pytorOnline by remember { mutableStateOf(store.pytorOnline) }
-    val chat = remember { PytorChat() }
+    val chat = remember { PytorChat().also { it.log = log } }
     val today = Progress.today()
 
     fun leaveLevel() {
@@ -145,7 +147,10 @@ private fun PyQuestApp() {
                 plainLabels = plainLabels,
                 onBack = ::leaveLevel,
                 onReview = {
-                    session = QuizSession(live.misses, store, isReview = true)
+                    session = QuizSession(
+                        live.misses, store, isReview = true,
+                        tier = active.tier, level = active.level, log = log,
+                    )
                 },
                 onAskPytor = {
                     val q = live.current
@@ -168,7 +173,7 @@ private fun PyQuestApp() {
                     today = today,
                     onStartLevel = { t, l ->
                         val tier = loaded.tiers.first { it.tier == t }
-                        session = QuizSession(tier.level(l), store)
+                        session = QuizSession(tier.level(l), store, tier = t, level = l, log = log)
                         route = LevelRoute(t, l)
                     },
                     onOpenPytor = { tab = Tab.PYTOR },
@@ -203,7 +208,9 @@ private fun PyQuestApp() {
                     onReset = {
                         store.reset()
                         progress = store.load()
+                        log.log("reset")
                     },
+                    log = log,
                 )
             }
         }

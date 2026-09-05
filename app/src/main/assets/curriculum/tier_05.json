@@ -18,17 +18,6 @@
       "type": "mcq",
       "prompt": "What does the slash do here?",
       "code": "from pathlib import Path\n\ndata = Path(\"data\") / \"sales.csv\"",
-      "explain": "pathlib overloads / to join path components, so the same code works on Linux, macOS and Windows.",
-      "hints": [
-        "pathlib gives / a new meaning when one side is a Path."
-      ],
-      "deep": "Path objects (PEP 428) replace os.path string juggling. Path / \"sub\" / \"file.csv\" builds a PurePath lazily; nothing touches the disk until you call exists(), read_text() or similar. Path.home() and Path.cwd() are the two anchors you will use most.",
-      "xp": 10,
-      "tags": [
-        "files",
-        "pathlib"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Divides the path by a string",
         "Creates the folder",
@@ -37,7 +26,21 @@
       ],
       "answer": [
         "Joins path parts with the right separator for the operating system"
-      ]
+      ],
+      "explain": "pathlib overloads / to join path components, so the same code works on Linux, macOS and Windows.",
+      "teach": "You already know that the slash usually means division between numbers, like 10 / 2. But in Python, a class can give an operator a new job for its own objects, this is called operator overloading. For example, the plus sign on two strings glues them together instead of adding numbers, so foo plus bar becomes foobar. The pathlib module gives the slash a new job too, one that has nothing to do with math, and it matters because it saves you from typing folder separators by hand.",
+      "hints": [
+        "The question is really asking what job the slash is doing between two pieces of a Path, since it clearly is not doing arithmetic here. Look at the two things sitting on either side of it, a folder name and a file name, and ask yourself what a computer would sensibly do with those two pieces together.",
+        "Think of writing directions for a friend: first go into the data folder, then find sales.csv inside it. A Path object lets code express that same step by step direction using the slash instead of you typing a separator character by hand. Look for the option that talks about combining pieces of a path rather than doing math or touching the disk.",
+        "It is not real division, so any option describing math is wrong, and it is not creating a folder either, since nothing here writes to disk. It is also not a syntax error, because Path defines this behavior on purpose. The right option describes building one path out of smaller pieces using whatever separator character the current operating system expects."
+      ],
+      "deep": "Path objects (PEP 428) replace os.path string juggling. Path / \"sub\" / \"file.csv\" builds a PurePath lazily; nothing touches the disk until you call exists(), read_text() or similar. Path.home() and Path.cwd() are the two anchors you will use most.",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l1.q2",
@@ -45,17 +48,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Which call reads the whole file as one string?",
-      "explain": "read_text() opens, reads and closes in one call and returns a str.",
-      "hints": [
-        "The method name says what it reads and what type comes back."
-      ],
-      "deep": "read_text(encoding=\"utf-8\") and read_bytes() are the one-shot readers; write_text() is their mirror and truncates first. For large files iterate lines with path.open() in a with block instead of loading everything. Always pass encoding explicitly: the platform default is not UTF-8 on every Windows machine.",
-      "xp": 10,
-      "tags": [
-        "files",
-        "pathlib"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "path.text",
         "path.open()",
@@ -64,7 +56,21 @@
       ],
       "answer": [
         "path.read_text()"
-      ]
+      ],
+      "explain": "read_text() opens, reads and closes in one call and returns a str.",
+      "teach": "When you want text from a file, Python normally makes you open it, read from it, then close it, in three separate steps. pathlib gives Path objects a shortcut method that does all three in one call and hands you back the contents as a plain string, similar to how a kettle that boils and pours in one button press saves you two steps. This matters because fewer steps means fewer chances to forget the closing step, which can leave a file locked or data unsaved.",
+      "hints": [
+        "The question wants a single call that hands you the entire file content as one string, not a file object you still need to read from. Look at the options and ask which one sounds like it does the whole job, opening, reading and closing, by itself.",
+        "Imagine asking a friend to fetch a letter. One friend hands you the sealed envelope, so you still have to open and read it yourself, that is like getting a file object back. Another friend reads it aloud and gives you the words directly, finishing the job completely. Look for the option written as a method call, with parentheses, whose name mentions both reading and text.",
+        "An option that ends without parentheses is not calling anything, so it cannot do work at all. An option that only opens the file still leaves you holding something you must read separately. The right one is a method, called with parentheses, whose name plainly says it reads text and returns it as a finished string."
+      ],
+      "deep": "read_text(encoding=\"utf-8\") and read_bytes() are the one-shot readers; write_text() is their mirror and truncates first. For large files iterate lines with path.open() in a with block instead of loading everything. Always pass encoding explicitly: the platform default is not UTF-8 on every Windows machine.",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l1.q3",
@@ -72,18 +78,6 @@
       "level": 1,
       "type": "fill",
       "prompt": "Fill the gap so the file is closed automatically after reading.",
-      "explain": "with runs the file's cleanup when the block ends, even if reading raises.",
-      "hints": [
-        "You want the block that guarantees cleanup."
-      ],
-      "deep": "open() returns a file object whose __exit__ closes it. Without with, a file stays open until the object is garbage-collected, which on CPython is usually immediate and on other runtimes is not; either way ruff flags it (SIM115). Never rely on the GC for resources.",
-      "xp": 20,
-      "tags": [
-        "files",
-        "context-managers"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "{0} open(\"notes.txt\") as f:\n    text = f.read()",
       "blocks": [
         {
           "id": "try",
@@ -106,10 +100,25 @@
           "kind": "expr"
         }
       ],
+      "template": "{0} open(\"notes.txt\") as f:\n    text = f.read()",
       "answer": [
         "with"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "with runs the file's cleanup when the block ends, even if reading raises.",
+      "teach": "Some Python blocks guarantee cleanup happens automatically when the block finishes, even if something goes wrong inside it. You have probably seen open used to work with a file, and the risk is that if you forget to close it, the file can stay locked or unsaved data can be lost. Python has a special statement that pairs with open using the word as to name the result, and it takes care of closing things for you the moment the indented block ends. This matters because relying on yourself to remember cleanup every time is fragile, but a block that does it automatically never forgets.",
+      "hints": [
+        "The gap needs a word that starts a block promising automatic cleanup when the block ends, so the file gets closed even if reading fails partway through. Look at the four options and ask which one is an actual Python keyword built for exactly this job, not something borrowed from another language.",
+        "Think of a locker system that locks itself the moment you step away, versus one where you must remember to lock it yourself. Python has a statement built for resources like files that behaves like the self-locking version, automatically closing things when its block ends. It is the keyword that naturally pairs with the word as right before the file variable name.",
+        "One option is a made up word that does not exist in Python at all. Another is for catching errors, not for closing resources, and another is a loop keyword with nothing to do with cleanup. The correct word is short, exactly four letters, and is the real Python keyword for managing a resource safely for the length of a block."
+      ],
+      "deep": "open() returns a file object whose __exit__ closes it. Without with, a file stays open until the object is garbage-collected, which on CPython is usually immediate and on other runtimes is not; either way ruff flags it (SIM115). Never rely on the GC for resources.",
+      "xp": 20,
+      "tags": [
+        "files",
+        "context-managers"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l1.q4",
@@ -118,17 +127,6 @@
       "type": "mcq",
       "prompt": "What does this print for the path reports/q3_summary.csv?",
       "code": "p = Path(\"reports/q3_summary.csv\")\nprint(p.suffix, p.stem)",
-      "explain": "suffix is the extension with its dot, stem is the filename without the extension.",
-      "hints": [
-        "Two properties: one is the extension, one is the name without it."
-      ],
-      "deep": "Path parts: name is the full filename, stem drops the last suffix, suffix is the last extension, suffixes is the list for names like archive.tar.gz, parent is the directory. with_suffix(\".json\") swaps extensions, which is how you derive output paths from input paths.",
-      "xp": 10,
-      "tags": [
-        "files",
-        "pathlib"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "csv q3_summary.csv",
         ".csv reports",
@@ -137,7 +135,21 @@
       ],
       "answer": [
         ".csv q3_summary"
-      ]
+      ],
+      "explain": "suffix is the extension with its dot, stem is the filename without the extension.",
+      "teach": "A filename like photo.png can be split into meaningful pieces. The part after the last dot, including the dot itself, tells you the file type, and the part before it is the plain name without that type tag. pathlib gives you these pieces as ready made attributes on a Path, so you never have to slice the text yourself with string tricks. This matters because you often need just the name or just the extension, for example when building a new output filename from an input one.",
+      "hints": [
+        "The question prints two pieces of the same filename in a specific order, the type tag first and then the plain name. Look at the code again and notice which attribute is written first in the print call, then think about what each attribute name suggests it holds.",
+        "Picture the file diary.txt. The letters after the dot, dot included, tell you it is a text file, while the word before the dot is just the label you gave it. For a path buried inside folders, only the filename part at the end matters, the folder names are ignored by these two attributes. Look for the option whose first piece includes a leading dot and whose second piece has no dot at all.",
+        "Any option missing the dot on the first piece is not describing the type tag correctly, and any option that keeps the dot attached to the second piece is not describing a clean name. Any option listing the plain name before the type tag has the print order backwards. The right one shows the dotted extension first, followed by the bare filename with no dot and no folder names attached."
+      ],
+      "deep": "Path parts: name is the full filename, stem drops the last suffix, suffix is the last extension, suffixes is the list for names like archive.tar.gz, parent is the directory. with_suffix(\".json\") swaps extensions, which is how you derive output paths from input paths.",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l1.q5",
@@ -145,17 +157,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Which expression lists every CSV in a folder, including subfolders?",
-      "explain": "rglob searches recursively; glob only looks in the folder itself.",
-      "hints": [
-        "The r prefix stands for recursive."
-      ],
-      "deep": "glob and rglob return generators of Path objects, so wrap in sorted() when order matters, because directory order is filesystem-dependent and will differ between your laptop and CI. glob(\"**/*.csv\") is equivalent to rglob(\"*.csv\").",
-      "xp": 10,
-      "tags": [
-        "files",
-        "pathlib"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "folder.rglob(\"*.csv\")",
         "folder.list(\"*.csv\")",
@@ -164,7 +165,21 @@
       ],
       "answer": [
         "folder.rglob(\"*.csv\")"
-      ]
+      ],
+      "explain": "rglob searches recursively; glob only looks in the folder itself.",
+      "teach": "Searching for files by pattern is called globbing, and a simple glob only looks inside the one folder you point it at. Sometimes files are scattered across nested subfolders instead, like csv files stored in separate folders for each month inside a bigger reports folder. pathlib offers a version of the search that also dives into every subfolder, and every subfolder inside those, before it stops looking. This matters because a search limited to one folder can silently miss most of your files without any error to warn you.",
+      "hints": [
+        "The question wants a search that finds matching files no matter how deeply they are buried in subfolders, not just the ones sitting directly in the top folder. Look at the options and think about which method name hints at digging deeper than just one level.",
+        "Imagine a filing cabinet with drawers, and some drawers have smaller boxes inside them. Checking only the open drawers is like a plain search of one folder, but checking every box inside every drawer too is a deeper, recursive search. Look for the option whose method name has an extra letter at the front, often used in programming to mean recursive.",
+        "The options that invent method names not found on real Path objects cannot be right, since they simply do not exist. The plain search method only looks in the one folder you call it on and stops there, missing anything nested deeper. The right option is a real Path method whose name signals it repeats the search inside every subfolder it finds."
+      ],
+      "deep": "glob and rglob return generators of Path objects, so wrap in sorted() when order matters, because directory order is filesystem-dependent and will differ between your laptop and CI. glob(\"**/*.csv\") is equivalent to rglob(\"*.csv\").",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l1.q6",
@@ -172,17 +187,6 @@
       "level": 1,
       "type": "order",
       "prompt": "Order the lines so the report is written only if the folder exists.",
-      "explain": "Build the path, check it, then write inside the condition.",
-      "hints": [
-        "The check needs the path object first, and the write happens only when the check passes."
-      ],
-      "deep": "Check-then-act has a race: the folder can vanish between exists() and write. The robust version is out.mkdir(parents=True, exist_ok=True) followed by an unconditional write, or catching FileNotFoundError. EAFP, easier to ask forgiveness than permission, is the Python idiom.",
-      "xp": 15,
-      "tags": [
-        "files",
-        "pathlib"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "if out.exists():",
         "    (out / \"summary.txt\").write_text(\"done\")",
@@ -193,7 +197,21 @@
         "if out.exists():",
         "    (out / \"summary.txt\").write_text(\"done\")"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Build the path, check it, then write inside the condition.",
+      "teach": "Code needs a sensible order, you cannot use something before you have created it, and you often need to check a condition before acting on it. Think of a recipe: get your ingredient ready first, then check if the pan is hot, and only then pour the batter in, nested inside that checking step. Indentation shows which lines belong inside another line's block. Getting the order or indentation wrong can mean using something that does not exist yet, or acting without ever checking first.",
+      "hints": [
+        "The question is really about sequencing, three lines need to happen in an order where each one depends on something the previous line set up. Look at the three lines and ask which one creates something the other two lines need to refer to by name.",
+        "Think of checking if a shop is open before walking in. You cannot check the door if you have not walked up to the shop yet, and you cannot walk in before checking it is unlocked. One line builds a path, one line checks something about it, and one indented line acts only if that check passes. Look for which line must logically come first.",
+        "The line that writes a file cannot come first, because nothing has been checked yet and doing so ignores the whole point of the condition. The checking line cannot come before the thing it checks even exists. The correct order creates the path first, then checks something about it, then performs the writing action nested directly inside that check."
+      ],
+      "deep": "Check-then-act has a race: the folder can vanish between exists() and write. The robust version is out.mkdir(parents=True, exist_ok=True) followed by an unconditional write, or catching FileNotFoundError. EAFP, easier to ask forgiveness than permission, is the Python idiom.",
+      "xp": 15,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l2.q1",
@@ -202,16 +220,6 @@
       "type": "mcq",
       "prompt": "Which function turns this text into a Python dict?",
       "code": "text = '{\"name\": \"Pytor\", \"tier\": 5}'",
-      "explain": "loads reads from a string; load reads from an open file. dumps and dump go the other way.",
-      "hints": [
-        "The s at the end stands for string."
-      ],
-      "deep": "The four functions pair up: load/dump work on file objects, loads/dumps on strings. json.loads maps objects to dict, arrays to list, null to None, true/false to True/False, and numbers to int or float. Keys are always strings, so {1: \"a\"} round-trips as {\"1\": \"a\"}.",
-      "xp": 10,
-      "tags": [
-        "json"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "json.load",
         "json.loads",
@@ -220,7 +228,20 @@
       ],
       "answer": [
         "json.loads"
-      ]
+      ],
+      "explain": "loads reads from a string; load reads from an open file. dumps and dump go the other way.",
+      "teach": "JSON is a plain text format for storing data, and it looks a lot like Python dicts and lists with quotes around every key. Python's json module can turn that text into real Python objects like dict, list, str, int, and bool, and it can go the other way too, turning Python objects back into JSON text. The module's functions come in pairs: some work directly with an already-open file, others work with a plain string you already hold in memory, like the text variable here. Knowing whether your source is a string or a file tells you which function family to reach for.",
+      "hints": [
+        "The question is asking which function reads JSON that is already sitting in a string variable, not in a file on disk. Look at the code: text is a normal Python string holding JSON characters. Which option in the list is built for a string source rather than a file object?",
+        "Think of it like a letter. If someone hands you the actual paper, a string you already hold in memory, you just read it directly. If instead they hand you a closed mailbox, an open file object, you first need to reach inside before reading. json's functions split along that same line, and the two going from JSON to Python differ only in whether the source is a string or a file.",
+        "dumps and dump both go the wrong direction, turning Python data into JSON text, so rule those out first. json.parse does not exist in Python, that name belongs to JavaScript instead. That leaves the option built for a string source, which reads text like this one and hands back a dict."
+      ],
+      "deep": "The four functions pair up: load/dump work on file objects, loads/dumps on strings. json.loads maps objects to dict, arrays to list, null to None, true/false to True/False, and numbers to int or float. Keys are always strings, so {1: \"a\"} round-trips as {\"1\": \"a\"}.",
+      "xp": 10,
+      "tags": [
+        "json"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l2.q2",
@@ -228,18 +249,6 @@
       "level": 2,
       "type": "fill",
       "prompt": "Fill the gap so the dict is written as readable, indented JSON.",
-      "explain": "dump writes straight to the file object; dumps would return a string you would still have to write.",
-      "hints": [
-        "You are passing a file, not asking for a string back."
-      ],
-      "deep": "indent=2 makes diffs readable in git. sort_keys=True makes output deterministic. ensure_ascii=False keeps æøå as themselves instead of \\u00e6 escapes. For datetimes and Decimals pass default=str or a custom encoder; json raises TypeError on anything it does not know.",
-      "xp": 20,
-      "tags": [
-        "json",
-        "files"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "with open(\"out.json\", \"w\") as f:\n    json.{0}(data, f, indent=2)",
       "blocks": [
         {
           "id": "load",
@@ -262,10 +271,25 @@
           "kind": "call"
         }
       ],
+      "template": "with open(\"out.json\", \"w\") as f:\n    json.{0}(data, f, indent=2)",
       "answer": [
         "dump"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "dump writes straight to the file object; dumps would return a string you would still have to write.",
+      "teach": "When you want to save a Python dict as JSON, think about two directions: do you want a JSON string handed back to you, or do you want it written straight into a file you already opened? Python's json module has a version that returns a string, useful when you plan to send that text elsewhere. It also has a version that takes the already-open file object and writes JSON characters into it directly, so you never touch the string yourself. The indent=2 argument works with either version, controlling how many spaces of indentation make the result easy to read.",
+      "hints": [
+        "The code already opened a file and named it f, and now it needs to save data into that file as neat, indented JSON. Look at the gap: it must take the data and f together and write directly into the open file. What is the difference between a function that hands you back a result and one that writes a result somewhere for you?",
+        "Picture writing a letter two ways. One way, you write on paper and hand the finished page to someone else to post, that is like a function that returns you a string. The other way, you write directly into an envelope someone is already holding open, like a function taking the open file as an argument and writing into it on the spot. Look for the block matching that second picture, not one that only builds a string.",
+        "Reading json out of a file runs the wrong direction entirely, that is not what this gap needs. Returning a string alone would leave you holding text with nothing yet written to disk, an extra step. Plain writing cannot turn a Python dict into JSON at all, it just writes text you already have. The block you want takes both the data and the open file as arguments and formats the dict directly into it."
+      ],
+      "deep": "indent=2 makes diffs readable in git. sort_keys=True makes output deterministic. ensure_ascii=False keeps æøå as themselves instead of \\u00e6 escapes. For datetimes and Decimals pass default=str or a custom encoder; json raises TypeError on anything it does not know.",
+      "xp": 20,
+      "tags": [
+        "json",
+        "files"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l2.q3",
@@ -273,16 +297,6 @@
       "level": 2,
       "type": "mcq",
       "prompt": "What does json.loads(\"null\") return?",
-      "explain": "JSON null maps to Python None, the same way true and false map to True and False.",
-      "hints": [
-        "Every JSON value has a Python twin."
-      ],
-      "deep": "The mapping is exact but lossy in places: JSON has no tuples, sets, bytes or datetimes, and no distinction between 1.0 and 1 beyond what the parser infers. Large floats can lose precision; parse money as Decimal via parse_float=Decimal when it matters.",
-      "xp": 10,
-      "tags": [
-        "json"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "None",
         "An error",
@@ -291,7 +305,20 @@
       ],
       "answer": [
         "None"
-      ]
+      ],
+      "explain": "JSON null maps to Python None, the same way true and false map to True and False.",
+      "teach": "JSON has a small set of special words: true, false, and null, written in lowercase without quotes. When Python reads JSON text, it needs some way to represent these inside a Python program, since Python does not have a value literally called null. Python already has a built-in value that means nothing or no data here, and JSON's parser converts null into that value automatically. The same kind of conversion happens for true and false too, they become Python's own True and False rather than staying as text.",
+      "hints": [
+        "The question asks what Python value stands in for JSON's null once the text has been parsed. Think about what null even means inside JSON, it marks a spot where there is no value at all. What does Python normally use to represent an absent or missing value?",
+        "Consider true and false first, since they follow the same pattern. JSON writes them lowercase, but once parsed, Python turns them into its own capitalized True and False, not the text strings true or false. Null follows that exact rule, just for the idea of no value at all, so ask which option represents absence rather than a string or a number.",
+        "Keeping the word null as a plain string is not right, because parsing means converting to a real Python value, not keeping the raw text around. The number 0 is tempting since both can feel like a stand-in for empty, but 0 is still a number, not an absence of one. The right answer is the one built-in Python value whose entire purpose is representing no value at all."
+      ],
+      "deep": "The mapping is exact but lossy in places: JSON has no tuples, sets, bytes or datetimes, and no distinction between 1.0 and 1 beyond what the parser infers. Large floats can lose precision; parse money as Decimal via parse_float=Decimal when it matters.",
+      "xp": 10,
+      "tags": [
+        "json"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l2.q4",
@@ -299,17 +326,6 @@
       "level": 2,
       "type": "mcq",
       "prompt": "Why use csv.DictReader instead of splitting each line on commas?",
-      "explain": "Real CSV has quoted fields containing commas and newlines. The csv module parses them correctly and DictReader names the columns.",
-      "hints": [
-        "Think of a field like \"Bergen, Norway\"."
-      ],
-      "deep": "DictReader yields one dict per row with header names as keys, all values as strings. Convert types yourself at the boundary. Open the file with newline=\"\" as the docs say, or embedded newlines break. For anything analytical, pandas.read_csv does the same with type inference.",
-      "xp": 10,
-      "tags": [
-        "csv",
-        "files"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "It converts numbers automatically",
         "It works without a header row",
@@ -318,7 +334,21 @@
       ],
       "answer": [
         "It handles quoted fields with commas inside and gives each row as a dict keyed by header"
-      ]
+      ],
+      "explain": "Real CSV has quoted fields containing commas and newlines. The csv module parses them correctly and DictReader names the columns.",
+      "teach": "A CSV file just means comma separated values, but real files are not always as simple as splitting on every comma. Sometimes a single field, like an address, contains a comma inside it, so the file wraps that whole field in quotes to protect it, for example a field written as Oslo, Norway inside quote marks. If you split blindly on commas, that one field gets torn into two by mistake, throwing off every column after it. Python's csv module understands these quoting rules properly and also reads the header row, so it knows the name of each column instead of you counting positions.",
+      "hints": [
+        "The question asks what real advantage comes from using the csv module's row-to-dict reader over calling something like line.split on a comma yourself. Think about what could go wrong if a field's actual text contains a comma or a line break inside it. Look at the options and ask which one names a genuine parsing problem, not just a small convenience.",
+        "Imagine an address field written with a comma inside quote marks. A naive split on every comma would cut that single field into two pieces, misaligning the whole row after it. The csv module notices those quote marks and treats the quoted chunk as one field, and it also reads the header line so you can refer to each column by name instead of a position. Look for the option describing both of these together.",
+        "Speed is not really the reason this tool exists, it is not chosen for being faster than a manual split. It also does not convert numbers for you, values come out as plain text strings you convert yourself afterward, and it still needs a header row rather than skipping that requirement. The real reason combines correctly parsing quoted, comma-containing fields with letting you look up values by column name."
+      ],
+      "deep": "DictReader yields one dict per row with header names as keys, all values as strings. Convert types yourself at the boundary. Open the file with newline=\"\" as the docs say, or embedded newlines break. For anything analytical, pandas.read_csv does the same with type inference.",
+      "xp": 10,
+      "tags": [
+        "csv",
+        "files"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l2.q5",
@@ -326,18 +356,6 @@
       "level": 2,
       "type": "order",
       "prompt": "Order the lines so every row's city is printed.",
-      "explain": "Open the file, wrap it in a DictReader, loop over rows, index by column name.",
-      "hints": [
-        "The reader needs an open file, and the loop needs the reader.",
-        "Everything stays inside the with block so the file is open while reading."
-      ],
-      "deep": "The reader is lazy: it reads lines as the loop asks for them, so the file must stay open for the whole loop, which is why the loop is indented under with. Materialise with list(reader) if you need to close early or iterate twice.",
-      "xp": 15,
-      "tags": [
-        "csv",
-        "files"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "    for row in reader:",
         "with open(\"people.csv\", newline=\"\") as f:",
@@ -350,7 +368,21 @@
         "    for row in reader:",
         "        print(row[\"city\"])"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Open the file, wrap it in a DictReader, loop over rows, index by column name.",
+      "teach": "Reading a CSV file usually follows a small ritual: first you open the file safely, then you wrap it in a tool that understands CSV rows, then you go through the rows one at a time to do something with each one. Python's with statement opens a file and promises to close it again automatically once you are done, even if something goes wrong inside. Everything that needs the file to stay open, like looping over its rows, has to live inside that with block, lined up with matching indentation. Getting this order right matters, because reading rows after the file has already closed will fail.",
+      "hints": [
+        "This question is really about the natural order of steps: you cannot loop over rows before you have a reader, and you cannot have a reader before the file is open. Look at the four lines and ask which action has to happen first, second, third, and last, based on what each line needs from the line above it. Which line depends on something that does not exist yet?",
+        "Think of making tea: you cannot pour a cup before the water boils, and you cannot boil water before the kettle is filled. Opening the file is like filling the kettle, building a reader from that file is like the water boiling, and looping over rows is like pouring cups one by one. Look for which line opens the file first, which builds a reader from it, which loops, and which prints inside that loop.",
+        "The print line sits deepest, one level inside the for loop, since it runs once per row rather than once total. The for loop line sits inside the with block, because it needs the file to still be open while it reads rows. The line building a reader depends on the file already existing, so it comes right after opening it, and opening the file has to come first, since nothing else works without it."
+      ],
+      "deep": "The reader is lazy: it reads lines as the loop asks for them, so the file must stay open for the whole loop, which is why the loop is indented under with. Materialise with list(reader) if you need to close early or iterate twice.",
+      "xp": 15,
+      "tags": [
+        "csv",
+        "files"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l2.q6",
@@ -359,17 +391,6 @@
       "type": "mcq",
       "prompt": "What goes wrong here?",
       "code": "json.dumps({\"when\": datetime.now()})",
-      "explain": "JSON has no date type, so json.dumps raises TypeError unless you tell it how to convert.",
-      "hints": [
-        "Check the list of types JSON can represent."
-      ],
-      "deep": "Serialise datetimes as ISO 8601 strings (dt.isoformat()), ideally in UTC with the offset. pydantic and dataclasses-json do this for you. The same applies to Decimal, set, bytes and Path: json.dumps(obj, default=str) is the quick fix, an explicit encoder the proper one.",
-      "xp": 10,
-      "tags": [
-        "json",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Nothing, JSON supports dates",
         "It writes the date as a string",
@@ -378,7 +399,21 @@
       ],
       "answer": [
         "TypeError: datetime is not JSON serialisable"
-      ]
+      ],
+      "explain": "JSON has no date type, so json.dumps raises TypeError unless you tell it how to convert.",
+      "teach": "Python's json module only knows how to turn a handful of basic types into JSON text: things like str, int, float, bool, None, list, and dict. A datetime object is none of these, it is a richer Python object that json was never taught how to translate into plain JSON text. When json.dumps meets a type it does not recognize, it does not guess or quietly skip it, it stops and raises an error telling you something needs converting first. This is why real programs usually turn dates into plain text, like an ISO date string, before handing them to json.",
+      "hints": [
+        "The question asks what happens when you try to serialize something json's module was never taught to handle. Think about what kind of thing datetime.now() actually returns, is it a plain string or number, or something more specialized? Look at the options and ask which one matches what happens when json meets a type it does not know.",
+        "Picture asking a translator to render a sentence in a language they never learned. They cannot quietly skip a word and hope you will not notice, they must stop and say they do not understand. json.dumps behaves the same way with an unfamiliar type, it does not quietly turn a datetime into a string or number on its own. Look for the option describing json refusing outright, not some automatic but wrong conversion.",
+        "Writing a Unix timestamp or a plain string automatically sounds convenient, but json.dumps never guesses conversions like that on its own, someone has to tell it explicitly. The idea that nothing goes wrong is also wrong, since dates are simply not one of the handful of types JSON understands. What actually happens is that Python stops the operation and raises an error naming the exact type it could not convert."
+      ],
+      "deep": "Serialise datetimes as ISO 8601 strings (dt.isoformat()), ideally in UTC with the offset. pydantic and dataclasses-json do this for you. The same applies to Decimal, set, bytes and Path: json.dumps(obj, default=str) is the quick fix, an explicit encoder the proper one.",
+      "xp": 10,
+      "tags": [
+        "json",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l3.q1",
@@ -386,16 +421,6 @@
       "level": 3,
       "type": "mcq",
       "prompt": "What does df.shape return for 120 rows and 5 columns?",
-      "explain": "shape is a tuple of (rows, columns), so 120 rows and 5 columns is (120, 5).",
-      "hints": [
-        "Rows first, columns second."
-      ],
-      "deep": "shape is an attribute, not a method, so no parentheses. len(df) is the row count, df.columns the labels, df.dtypes the type per column, df.info() a one-screen summary with memory use and null counts. Read all four before touching any data.",
-      "xp": 10,
-      "tags": [
-        "pandas"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[120, 5]",
         "600",
@@ -404,7 +429,20 @@
       ],
       "answer": [
         "(120, 5)"
-      ]
+      ],
+      "explain": "shape is a tuple of (rows, columns), so 120 rows and 5 columns is (120, 5).",
+      "teach": "A DataFrame is basically a table, like a spreadsheet, with rows going down and columns going across. Pandas gives you an attribute called shape that tells you the size of that table in one go, without a method call or parentheses. For a table with 3 rows and 2 columns, shape reports both numbers together as a pair, always rows first, then columns. Knowing this pair instantly tells you how big your data is before you do anything else with it.",
+      "hints": [
+        "The question is really asking what order and what kind of value shape hands back. Look at the table described: which number is the rows and which is the columns, and does the answer come as one number, a pair, or something else?",
+        "Think of a grid you might describe out loud as three rows by two columns, always in that order, rows named first. Pandas follows that same habit, giving you both counts together rather than multiplying them into one total. Look among the options for the one that keeps rows before columns and keeps them as two separate numbers.",
+        "A single number would only make sense if pandas multiplied rows by columns together, which it does not do here. A square-bracket answer suggests the wrong container type, and swapping the two numbers around gets the order backwards. The right answer is a paired value with the row count listed before the column count, exactly matching how the table was described."
+      ],
+      "deep": "shape is an attribute, not a method, so no parentheses. len(df) is the row count, df.columns the labels, df.dtypes the type per column, df.info() a one-screen summary with memory use and null counts. Read all four before touching any data.",
+      "xp": 10,
+      "tags": [
+        "pandas"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l3.q2",
@@ -413,16 +451,6 @@
       "type": "mcq",
       "prompt": "What does this give you?",
       "code": "df[\"age\"]",
-      "explain": "Indexing a DataFrame with a column name returns that column as a Series.",
-      "hints": [
-        "One label in the brackets selects one column."
-      ],
-      "deep": "df[\"age\"] is a Series, a labelled 1-D array; df[[\"age\", \"city\"]] with a list is a DataFrame. Dot access df.age also works but breaks on names with spaces or that clash with methods (df.count), so brackets are the safe habit.",
-      "xp": 10,
-      "tags": [
-        "pandas"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "The column's mean",
         "A DataFrame with one row",
@@ -431,7 +459,20 @@
       ],
       "answer": [
         "A Series of the age column"
-      ]
+      ],
+      "explain": "Indexing a DataFrame with a column name returns that column as a Series.",
+      "teach": "A DataFrame is the whole table, but sometimes you want just one column out of it, like pulling one column out of a spreadsheet by its header name. Pandas has a special structure for exactly that: a single column of values that still remembers which row each value belongs to. If you had a table with a name column, asking for just that column would hand you that one strip of data, tagged with its row positions. This distinction matters because a lot of pandas operations behave differently depending on whether you are holding a whole table or just one column.",
+      "hints": [
+        "The question is asking what kind of object you get back when you pull a single column out of a table using its name in brackets. Look at what was passed inside the brackets: is it one column name, or a list of several?",
+        "Picture asking a spreadsheet for just the age header and getting back a single strip of cells, still numbered by row, rather than the entire sheet. Pandas has a specific name for a one-column, labelled strip of data like that, different from the name it uses for the full table. Look among the options for the one naming that single-column, labelled structure rather than a table or a plain summary number.",
+        "An option describing a summary number would need an extra calculation step that never happened here. An option describing a full table would only be true if you had used double brackets around the column name. A plain list would lose the row labels that pandas always keeps attached. The right answer names the one-dimensional, labelled pandas structure that a single column becomes."
+      ],
+      "deep": "df[\"age\"] is a Series, a labelled 1-D array; df[[\"age\", \"city\"]] with a list is a DataFrame. Dot access df.age also works but breaks on names with spaces or that clash with methods (df.count), so brackets are the safe habit.",
+      "xp": 10,
+      "tags": [
+        "pandas"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l3.q3",
@@ -439,18 +480,6 @@
       "level": 3,
       "type": "fill",
       "prompt": "Fill the gap to keep only rows where age is over 30.",
-      "explain": "The comparison produces a boolean Series and the outer brackets keep the True rows.",
-      "hints": [
-        "Over 30 excludes 30 itself."
-      ],
-      "deep": "Boolean indexing evaluates the comparison over the whole column at once, vectorised in C. Combine conditions with & and | inside parentheses, never and/or: df[(df.age > 30) & (df.city == \"Bergen\")]. df.query(\"age > 30\") is the readable alternative for long filters.",
-      "xp": 20,
-      "tags": [
-        "pandas",
-        "filtering"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "adults = df[df[\"age\"] {0} 30]",
       "blocks": [
         {
           "id": "gte",
@@ -473,10 +502,25 @@
           "kind": "expr"
         }
       ],
+      "template": "adults = df[df[\"age\"] {0} 30]",
       "answer": [
         "gt"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "The comparison produces a boolean Series and the outer brackets keep the True rows.",
+      "teach": "Comparing values with symbols like greater-than or less-than on a whole column gives you a column of True and False, one for each row, showing whether that row passed the test. Putting that True/False column back inside the outer brackets keeps only the rows marked True. The exact symbol you pick decides the meaning of the cutoff: whether the boundary value itself counts as included or not. Picking the right comparison symbol is what turns a vague word like over into precise code.",
+      "hints": [
+        "The question is really asking which comparison symbol matches the word over in plain English. Ask yourself: if someone is exactly 30, would you call them over 30, or does over mean strictly more than that?",
+        "Think about height: saying someone is over 180 centimeters tall does not include someone who is exactly 180. The comparison you need should behave the same way, excluding the exact boundary number. Look among the blocks for the symbol that means strictly more than, not one that also allows equality, and not one that points the opposite direction.",
+        "A symbol that also includes equals would let exactly-30 rows sneak in, which over does not mean. A pure equals symbol only matches one exact value, and a less-than symbol goes the wrong direction entirely. The block you want is the plain, single-character symbol for strictly greater, with nothing extra attached to it."
+      ],
+      "deep": "Boolean indexing evaluates the comparison over the whole column at once, vectorised in C. Combine conditions with & and | inside parentheses, never and/or: df[(df.age > 30) & (df.city == \"Bergen\")]. df.query(\"age > 30\") is the readable alternative for long filters.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "filtering"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l3.q4",
@@ -485,17 +529,6 @@
       "type": "mcq",
       "prompt": "What does this print for a column with values 10, 20 and NaN?",
       "code": "print(df[\"price\"].mean())",
-      "explain": "mean() skips missing values by default, so it averages 10 and 20.",
-      "hints": [
-        "pandas ignores NaN in aggregations unless told otherwise."
-      ],
-      "deep": "skipna=True is the default for sum, mean, min and max, which is convenient and occasionally misleading: a column that is 90 percent NaN still reports a confident mean. Always look at df.isna().sum() first, and decide per column whether to fill, drop or flag.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "missing-data"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "An error",
         "15.0",
@@ -504,7 +537,21 @@
       ],
       "answer": [
         "15.0"
-      ]
+      ],
+      "explain": "mean() skips missing values by default, so it averages 10 and 20.",
+      "teach": "NaN is pandas shorthand for a missing value, a gap in the data where nothing was recorded. When you ask for an average over a column, pandas has to decide what to do with those gaps, and by default it simply leaves them out rather than treating them as zero or refusing to answer. So if a column held the numbers 4, 6, and a missing spot, the average would just be the average of 4 and 6. This default matters because it lets you compute something useful even when data is incomplete, but it can also quietly hide how much is missing.",
+      "hints": [
+        "The question is asking what pandas does with a missing value when you compute an average over a column. Does it treat the gap as a zero, throw an error, or just leave it out of the calculation? Look at the two real numbers that are present.",
+        "Think of averaging your exam scores when one exam was cancelled. You would not count the cancelled exam as a zero, you would just average the scores you actually have. Pandas treats a missing value the same way by default when computing an average, so work out the average using only the numbers that are actually there.",
+        "An answer suggesting the missing value poisons the whole result would only be true if pandas refused to skip gaps, which is not the default. An answer suggesting an error assumes pandas cannot handle gaps at all, which is also wrong. An answer using only one of the two real numbers misses that both present values are included. The right answer is the plain average of the two numbers that were actually recorded."
+      ],
+      "deep": "skipna=True is the default for sum, mean, min and max, which is convenient and occasionally misleading: a column that is 90 percent NaN still reports a confident mean. Always look at df.isna().sum() first, and decide per column whether to fill, drop or flag.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "missing-data"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l3.q5",
@@ -512,17 +559,6 @@
       "level": 3,
       "type": "mcq",
       "prompt": "Which line counts missing values per column?",
-      "explain": "isna() gives a boolean frame, and sum() adds the Trues column by column.",
-      "hints": [
-        "Two steps: mark the missing cells, then add them up."
-      ],
-      "deep": "Booleans sum as integers, which is why isna().sum() works and is the standard first diagnostic. isna().mean() gives the fraction. df.dropna() and df.fillna(value) are the two responses; fillna with the mean is a modelling decision, not a cleaning step.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "missing-data"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "df.missing()",
         "df.count(NaN)",
@@ -531,7 +567,21 @@
       ],
       "answer": [
         "df.isna().sum()"
-      ]
+      ],
+      "explain": "isna() gives a boolean frame, and sum() adds the Trues column by column.",
+      "teach": "Checking a column cell by cell for missing values turns each cell into either True, meaning missing, or False, meaning present. In Python, True and False can be added up like 1 and 0, so summing a column of Trues and Falses gives you a count. Chaining these two ideas together, first flagging what is missing, then adding up the flags, is a very common two-step pattern in pandas. It matters because knowing exactly how many gaps each column has is usually the first thing you check before doing anything else with a dataset.",
+      "hints": [
+        "The question asks which line correctly counts how many missing values sit in each column. Think in two steps: first you need something that marks each cell as missing or not, then something that adds those marks up per column. Which option actually does both steps using real pandas methods?",
+        "Imagine a teacher marking an absent checkbox next to each student's name, then counting up the checkmarks at the end of the day to see how many were away. The pandas version works the same way, first flagging every missing cell, then totalling those flags column by column. Look among the options for the one chaining exactly those two real, existing pandas methods together.",
+        "Options that invent method names like a plain missing or null function do not exist in pandas and would simply fail. Passing a missing-value marker as an argument into a counting method also is not how pandas works. The right line chains two genuine pandas calls, one that flags each cell as missing or not, followed immediately by one that adds those flags up."
+      ],
+      "deep": "Booleans sum as integers, which is why isna().sum() works and is the standard first diagnostic. isna().mean() gives the fraction. df.dropna() and df.fillna(value) are the two responses; fillna with the mean is a modelling decision, not a cleaning step.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "missing-data"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l3.q6",
@@ -539,16 +589,6 @@
       "level": 3,
       "type": "order",
       "prompt": "Order the lines to load a CSV and print the first five rows.",
-      "explain": "Import pandas under its pd alias, read the file into a frame, then inspect the first rows.",
-      "hints": [
-        "pd is the conventional alias and must exist before pd.read_csv."
-      ],
-      "deep": "read_csv infers types, parses the header and handles quoting, and its parameters cover most messy files: sep, encoding, parse_dates, dtype, usecols, nrows for a quick peek. head() is the first look, describe() the second, and df.sample(5) shows rows that are not all from the top.",
-      "xp": 15,
-      "tags": [
-        "pandas"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "df = pd.read_csv(\"sales.csv\")",
         "import pandas as pd",
@@ -559,7 +599,20 @@
         "df = pd.read_csv(\"sales.csv\")",
         "print(df.head())"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Import pandas under its pd alias, read the file into a frame, then inspect the first rows.",
+      "teach": "Before you can use any pandas function, you first have to bring the pandas library into your program and usually give it a short nickname to save typing. Only after that can you load a file from disk into a variable that holds the table in memory. Once that table exists as a variable, you can finally look at a small piece of it, like its first few rows, to check it loaded correctly. Each step depends on the one before it, so the order really matters here.",
+      "hints": [
+        "The question is asking you to put three steps in the order that actually makes each one possible. Think about which line has to run before pandas' short nickname can be used anywhere else, and which line needs a table to already exist before it can show anything.",
+        "This is like getting your equipment ready before cooking, then bringing in your ingredient, then tasting a spoonful of the finished dish. You cannot taste something that has not been made yet, and you cannot cook without your equipment ready first. Work out which line makes the pandas nickname available, which line creates the table from a file, and which line only looks at a table that must already exist.",
+        "The line that only peeks at data cannot come first or second, since it needs a table variable that does not exist yet. The line that loads a file using the pandas nickname cannot come before the nickname itself is introduced. The correct order starts with making the library available under its short name, then builds the table from the file, and only then takes a quick look at the top of it."
+      ],
+      "deep": "read_csv infers types, parses the header and handles quoting, and its parameters cover most messy files: sep, encoding, parse_dates, dtype, usecols, nrows for a quick peek. head() is the first look, describe() the second, and df.sample(5) shows rows that are not all from the top.",
+      "xp": 15,
+      "tags": [
+        "pandas"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l4.q1",
@@ -568,17 +621,6 @@
       "type": "mcq",
       "prompt": "What does this return?",
       "code": "df.groupby(\"city\")[\"price\"].mean()",
-      "explain": "groupby splits the rows by city, then mean() aggregates the price within each group.",
-      "hints": [
-        "Split by the key, apply the aggregation, one result per key."
-      ],
-      "deep": "Split-apply-combine is the mental model. groupby(\"city\")[\"price\"] selects the column before aggregating, which is faster than aggregating everything. .agg([\"mean\", \"count\"]) gives several statistics; .agg(total=(\"price\", \"sum\")) names them. The result is indexed by city; reset_index() flattens it.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "groupby"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Average price per city, one row per city",
         "The overall average price",
@@ -587,7 +629,21 @@
       ],
       "answer": [
         "Average price per city, one row per city"
-      ]
+      ],
+      "explain": "groupby splits the rows by city, then mean() aggregates the price within each group.",
+      "teach": "Think of groupby like sorting a big pile of receipts into separate piles, one pile per city. Once the rows are separated into these piles, you can ask a question about each pile on its own, like pile.mean() for the average. This is called split-apply-combine: split the data into groups, apply a calculation to each group, then combine the results back into one table. It matters because it lets you compare cities without writing a loop.",
+      "hints": [
+        "This question asks what happens when you group rows by one column and then ask for the average of another. Look at the code: which column is used to form the groups, and which column gets averaged? Ask yourself, will the result be one number for the whole table, or one number per group?",
+        "Imagine sorting all your grocery receipts into piles by store name, then finding the average spend for each pile separately. You would not get one single average for all stores combined, you would get a list, one average per store. Look for the option that describes several results, one per group, not a single combined number.",
+        "The option describing a single overall average forgets that groupby already separated the rows into city piles before mean was applied, so nothing global remains. Sorting is not the same as averaging, and counting rows is a different operation entirely from calculating a mean. The right answer describes several averages, each tied to its own city label."
+      ],
+      "deep": "Split-apply-combine is the mental model. groupby(\"city\")[\"price\"] selects the column before aggregating, which is faster than aggregating everything. .agg([\"mean\", \"count\"]) gives several statistics; .agg(total=(\"price\", \"sum\")) names them. The result is indexed by city; reset_index() flattens it.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "groupby"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l4.q2",
@@ -595,18 +651,6 @@
       "level": 4,
       "type": "fill",
       "prompt": "Fill the gap so the largest values come first.",
-      "explain": "ascending=False sorts from largest to smallest.",
-      "hints": [
-        "The default sorts upward; you want the opposite."
-      ],
-      "deep": "sort_values returns a new frame by default; pass inplace=True only if you mean it, and most style guides say never. For top-n, df.nlargest(10, \"revenue\") is faster and clearer. Sorting by several columns takes a list with a matching list of ascending flags.",
-      "xp": 20,
-      "tags": [
-        "pandas",
-        "sorting"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "top = df.sort_values(\"revenue\", ascending={0}).head(10)",
       "blocks": [
         {
           "id": "false",
@@ -629,10 +673,25 @@
           "kind": "expr"
         }
       ],
+      "template": "top = df.sort_values(\"revenue\", ascending={0}).head(10)",
       "answer": [
         "false"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "ascending=False sorts from largest to smallest.",
+      "teach": "sort_values arranges rows by the values in one column, from smallest to largest by default. A parameter named ascending controls the direction: it expects a boolean, either True or False, not a word or a number. Think of it like a light switch, only two positions, on or off. Getting this right matters because if you want the biggest values first, like top sellers, you need the switch flipped the right way.",
+      "hints": [
+        "The question is about arranging rows so the biggest revenue numbers come first, instead of the smallest. Sorting has a direction, either from low to high or from high to low. Look at the blank, what kind of value does the ascending setting expect there, and which value flips it away from the default order?",
+        "Think about arranging a stack of exam scores from best to worst instead of worst to best. By default, sorting climbs upward, from low to high, so to reverse that climb you need to tell it explicitly to stop climbing. Look among the blocks for the plain boolean value that means no, do not sort upward, rather than a word, a quoted string, or a number.",
+        "A number like a plain digit or a quoted word like a string will not work here, because this setting only understands the two boolean values Python has built in. Choosing the boolean that means yes would keep the smallest values first, which is the opposite of what you want. The right block is the short, capitalized boolean word that means no, keep the biggest values at the top."
+      ],
+      "deep": "sort_values returns a new frame by default; pass inplace=True only if you mean it, and most style guides say never. For top-n, df.nlargest(10, \"revenue\") is faster and clearer. Sorting by several columns takes a list with a matching list of ascending flags.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "sorting"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l4.q3",
@@ -641,17 +700,6 @@
       "type": "mcq",
       "prompt": "What does this add?",
       "code": "df[\"gross\"] = df[\"price\"] * 1.25",
-      "explain": "Assigning to a new column name creates it, and the multiplication is applied to every row at once.",
-      "hints": [
-        "Arithmetic on a column applies to every value."
-      ],
-      "deep": "Vectorised arithmetic is the whole point of pandas: one expression, computed in C over the entire column. The slow anti-pattern is df.apply(lambda row: ..., axis=1), a Python-level loop. Reach for apply only when no vectorised form exists, and for string columns use the .str accessor.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "vectorisation"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "It modifies price in place",
         "A new column with each price including 25 percent VAT",
@@ -660,7 +708,21 @@
       ],
       "answer": [
         "A new column with each price including 25 percent VAT"
-      ]
+      ],
+      "explain": "Assigning to a new column name creates it, and the multiplication is applied to every row at once.",
+      "teach": "Every column in a DataFrame is really a list of numbers lined up row by row. When you multiply a column by a plain number like 1.25, pandas multiplies every single row's value by that number all at once, no loop needed. Assigning the result to a brand new name in square brackets creates a fresh column holding those results. This matters because it lets you build calculated columns, like a price with tax added, in one fast line.",
+      "hints": [
+        "This question asks what happens when you take an existing column, multiply it by a number, and store the result under a name that did not exist before. Look at the left side of the equals sign, is that column name already used somewhere else in the table? Think about what assigning to a brand new bracket name does to a DataFrame.",
+        "Picture a spreadsheet where column B holds prices, and you type a formula in column C that says B times 1.25, then copy it down every row. Column B never changes, and column C appears as something new, holding the marked-up prices. Look for the option describing a new column added to the table, not a change to the original price values.",
+        "Price does not change in place, since the code writes into a different bracket name. It is not an error either, since multiplying a column by a plain number is exactly the vectorised math pandas is built for. It is also not a new row, since naming a column always adds a column. The right answer is a fresh column of adjusted prices next to the original."
+      ],
+      "deep": "Vectorised arithmetic is the whole point of pandas: one expression, computed in C over the entire column. The slow anti-pattern is df.apply(lambda row: ..., axis=1), a Python-level loop. Reach for apply only when no vectorised form exists, and for string columns use the .str accessor.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "vectorisation"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l4.q4",
@@ -668,17 +730,6 @@
       "level": 4,
       "type": "mcq",
       "prompt": "Which is the fastest way to count how many rows each category has?",
-      "explain": "value_counts is the built-in, vectorised count per distinct value, sorted by frequency.",
-      "hints": [
-        "There is a Series method made exactly for this."
-      ],
-      "deep": "value_counts(normalize=True) gives proportions, dropna=False includes missing values. It is the first thing to run on any categorical column, because it reveals typos (\"bergen\" vs \"Bergen\"), rare classes and imbalance before they reach a model.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "eda"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "df.groupby(\"category\").apply(len)",
         "df[\"category\"].value_counts()",
@@ -687,7 +738,21 @@
       ],
       "answer": [
         "df[\"category\"].value_counts()"
-      ]
+      ],
+      "explain": "value_counts is the built-in, vectorised count per distinct value, sorted by frequency.",
+      "teach": "Sometimes you just want to know how many times each distinct value shows up in a column, like how many rows say Oslo versus Bergen. Doing this with a loop and a plain Python dictionary works, but it reads and updates one row at a time, which is slow on a big table. pandas has a purpose-built tool for exactly this job that works on the whole column at once, similar to how a spreadsheet count-if works instantly across a full range. Choosing the right tool matters because the slow, loop-based way can take far longer on large data.",
+      "hints": [
+        "The question asks which approach counts rows per category the fastest, not just which one is possible. Several of the options would give a correct count eventually, but only one is built specifically for counting values in a single column. Look at each option and ask, does this work on the whole column in one built-in step, or does it check rows one at a time?",
+        "Think of counting votes in an election. You could tally every ballot by hand on paper, which works but is slow, or feed the stack into a machine built just for counting, which is instant. A for loop with a dictionary is the tally-by-hand approach. Look for the option that is a single method built directly for this purpose, called on the column itself.",
+        "The for loop and dictionary are slow, since they process one row at a time. Combining set with len only tells you how many distinct categories exist, not how many rows each has. Using groupby with a generic apply works but carries overhead it does not need for a simple count. The fastest option is the short method called directly on the category column that exists just to count occurrences."
+      ],
+      "deep": "value_counts(normalize=True) gives proportions, dropna=False includes missing values. It is the first thing to run on any categorical column, because it reveals typos (\"bergen\" vs \"Bergen\"), rare classes and imbalance before they reach a model.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "eda"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l4.q5",
@@ -696,17 +761,6 @@
       "type": "mcq",
       "prompt": "Why convert the column with pd.to_datetime?",
       "code": "df[\"date\"] = pd.to_datetime(df[\"date\"])",
-      "explain": "As strings, dates sort alphabetically and cannot be compared or decomposed. As datetimes they gain the .dt accessor.",
-      "hints": [
-        "Think about what you can do with a real date that you cannot do with text."
-      ],
-      "deep": "After conversion, df[\"date\"].dt.month, .dt.day_name() and resampling (df.set_index(\"date\").resample(\"M\").sum()) all work. Pass format= when you know it: parsing millions of dates by inference is slow. Store timezone-aware UTC in the frame, localise for display.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "dates"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "It makes the column smaller",
         "So you can extract year, month and weekday and sort or filter by real dates",
@@ -715,7 +769,21 @@
       ],
       "answer": [
         "So you can extract year, month and weekday and sort or filter by real dates"
-      ]
+      ],
+      "explain": "As strings, dates sort alphabetically and cannot be compared or decomposed. As datetimes they gain the .dt accessor.",
+      "teach": "When dates arrive in a table as plain text, like the characters 2024-03-01, pandas treats them just like any other string, so it can only compare them alphabetically, not as real calendar dates. Converting a column with pd.to_datetime changes its type to an actual datetime, the same kind of value Python uses for real dates and times. Once converted, the column understands calendar rules, so it can tell you the month, the weekday, or whether one date comes before another. This matters anytime you need to filter by date range, sort chronologically, or pull out parts like the year.",
+      "hints": [
+        "This question is about what changes when a column stops being plain text and becomes a real date type. Ask yourself, can you ask a string what month it is, or whether it falls on a Monday? Look at what new abilities a column gains once it is treated as an actual date instead of just characters.",
+        "Imagine writing a date on a sticky note versus entering it into a calendar app. The sticky note is just words, you cannot ask it to sort your appointments by month or tell you the weekday. The calendar app understands the date itself, so it can answer real questions about it. Look for the option describing new date-aware abilities gained, not something about size, duplicates, or storage limits.",
+        "The column does not shrink or lose duplicates from this conversion, and pandas can store plain strings just fine, so that is not the reason. What changes is that the values become genuine dates instead of text that merely looks like dates, unlocking real comparisons. The right answer describes gaining the ability to pull out date parts and filter using true chronological order."
+      ],
+      "deep": "After conversion, df[\"date\"].dt.month, .dt.day_name() and resampling (df.set_index(\"date\").resample(\"M\").sum()) all work. Pass format= when you know it: parsing millions of dates by inference is slow. Store timezone-aware UTC in the frame, localise for display.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "dates"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l4.q6",
@@ -723,17 +791,6 @@
       "level": 4,
       "type": "order",
       "prompt": "Order the lines to find the city with the highest total revenue.",
-      "explain": "Aggregate per city, find the label of the maximum, print both.",
-      "hints": [
-        "idxmax gives the label of the largest value, not the value itself."
-      ],
-      "deep": "idxmax returns the index label at the maximum, which after a groupby is the group key. argmax would give a position. This aggregate-then-locate pattern replaces sorting the whole result when you need only the top entry.",
-      "xp": 15,
-      "tags": [
-        "pandas",
-        "groupby"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "totals = df.groupby(\"city\")[\"revenue\"].sum()",
         "print(best, totals[best])",
@@ -744,7 +801,21 @@
         "best = totals.idxmax()",
         "print(best, totals[best])"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Aggregate per city, find the label of the maximum, print both.",
+      "teach": "Finding the best of something in grouped data usually takes two separate steps. First you calculate a summary number for every group, like a total per city, which gives you a small table of results. Second, you ask which label in that small table has the biggest value, which is different from asking what the biggest value actually is. This two-step pattern, summarize first and then locate the top label, shows up constantly when you want to know not just the highest number, but which group it belongs to.",
+      "hints": [
+        "This question is about the order of operations needed to find which city earns the most money overall. Before you can find a best city, you first need one total number per city, not the raw rows. Look at the three lines, which one produces a small summary table, and which ones depend on that summary already existing?",
+        "Think of tallying votes in several towns. First you add up every vote per town to get one total per town, then you check which town's total is highest, and only after that do you announce the winner. You cannot announce a winner before totals exist, or find totals before the votes are grouped. Order the lines so a summary is built first, then the top label is found, then both get shown.",
+        "Printing cannot come first or second, since there is nothing to show until both the totals and the winning label exist. Finding the top label cannot happen before the totals are calculated either, since it needs something to search through, so the line building one total per city must lead. The middle step picks out the label of the highest value, and the last step just displays what came before."
+      ],
+      "deep": "idxmax returns the index label at the maximum, which after a groupby is the group key. argmax would give a position. This aggregate-then-locate pattern replaces sorting the whole result when you need only the top entry.",
+      "xp": 15,
+      "tags": [
+        "pandas",
+        "groupby"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l5.q1",
@@ -753,17 +824,6 @@
       "type": "mcq",
       "prompt": "What does how=\"left\" mean here?",
       "code": "pd.merge(orders, customers, on=\"customer_id\", how=\"left\")",
-      "explain": "A left join keeps all rows from the left frame and fills unmatched columns with NaN.",
-      "hints": [
-        "The left frame is the first argument."
-      ],
-      "deep": "inner keeps only matches, left keeps all left rows, outer keeps everything. A left join whose row count grows means the right key is not unique, a silent duplication bug: check customers[\"id\"].is_unique first, or pass validate=\"many_to_one\" so pandas raises.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "joins"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Keep rows from neither unless they match",
         "Keep only rows present in both",
@@ -772,7 +832,21 @@
       ],
       "answer": [
         "Keep every row of orders, matching customers where possible and NaN where not"
-      ]
+      ],
+      "explain": "A left join keeps all rows from the left frame and fills unmatched columns with NaN.",
+      "teach": "When you merge two tables, pandas lines up rows using a shared column called the key, here customer_id. Picture two lists: orders is written first, so pandas calls it the left table, and customers is the right table. The how parameter tells pandas what to do with rows that do not find a partner on the other side, for example an order whose customer id is not in the customers list. Getting this right matters because it decides whether your report loses rows, gains blank values, or grows extra rows you did not expect.",
+      "hints": [
+        "The question is really asking who wins when a match cannot be found, orders or customers. Look at the code: which table is written first inside pd.merge, and which one is written second. Which one do you think left refers to in a merge?",
+        "Think of it like a class roster and a locker assignment sheet. If you keep every student on the roster and just note lockers where you can find them, leaving a blank for kids without a locker yet, you keep the full roster no matter what. That is the general idea behind keeping one whole side. Look for the option that keeps one table complete and marks the missing bits rather than deleting anyone.",
+        "Two of the options describe keeping only matches, and one describes keeping the other table complete instead, those do not fit here. The word left points at the position of orders in the code, the first table listed, not at customers. The right answer keeps every row from that first table and simply leaves blanks where no matching customer info exists."
+      ],
+      "deep": "inner keeps only matches, left keeps all left rows, outer keeps everything. A left join whose row count grows means the right key is not unique, a silent duplication bug: check customers[\"id\"].is_unique first, or pass validate=\"many_to_one\" so pandas raises.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "joins"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l5.q2",
@@ -780,17 +854,6 @@
       "level": 5,
       "type": "mcq",
       "prompt": "orders has 100 rows and 8 of them have a customer_id missing from customers. How many rows does an inner join return?",
-      "explain": "inner keeps only rows whose key appears in both, so the 8 unmatched rows are dropped.",
-      "hints": [
-        "Only matched rows survive an inner join."
-      ],
-      "deep": "Assuming the customer ids are unique. Inner joins silently drop data, so after every merge compare len(before) with len(after) and account for the difference. indicator=True adds a _merge column that says left_only, right_only or both, the fastest way to audit a join.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "joins"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "92",
         "8",
@@ -799,7 +862,21 @@
       ],
       "answer": [
         "92"
-      ]
+      ],
+      "explain": "inner keeps only rows whose key appears in both, so the 8 unmatched rows are dropped.",
+      "teach": "An inner join is like a matching game: pandas looks at both tables and keeps only the rows where the key value shows up on both sides. Any row whose key has no partner on the other side is simply left out of the result, it does not get a blank, it disappears entirely. For example, if a receipt lists a customer id the customer file has never heard of, that receipt will not appear in an inner joined result. This matters because it is an easy way to lose data without any error message.",
+      "hints": [
+        "The question is asking how many orders survive when you only keep rows that exist in both tables. Look at the total number of orders and how many of them have a customer id that customers does not recognise. What happens to those specific rows in an inner join?",
+        "Imagine you have 100 guest name tags but 8 of the names are not on the official guest list. If you only keep tags that match someone on the list, you remove exactly those 8, nobody else. The same subtraction happens here: start from the total row count and take away only the rows that fail to match. Look for the option that reflects a small, exact drop rather than a big change.",
+        "An answer bigger than 100 would mean rows got duplicated or added, which is not what an inner join does, so rule that out. An answer of exactly 8 would mean you kept only the unmatched rows, which is the opposite of what inner means. The correct count is the starting total with just those unmatched rows quietly removed."
+      ],
+      "deep": "Assuming the customer ids are unique. Inner joins silently drop data, so after every merge compare len(before) with len(after) and account for the difference. indicator=True adds a _merge column that says left_only, right_only or both, the fastest way to audit a join.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "joins"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l5.q3",
@@ -807,19 +884,6 @@
       "level": 5,
       "type": "fill",
       "prompt": "Fill the gap so the two frames are stacked one above the other.",
-      "explain": "concat stacks frames with the same columns; merge is for combining on a key.",
-      "hints": [
-        "Stacking rows is not joining on a key.",
-        "DataFrame.append was removed in pandas 2.0."
-      ],
-      "deep": "concat with axis=0 stacks rows, axis=1 places frames side by side. ignore_index=True renumbers the result instead of carrying duplicate indexes. Concatenating inside a loop is quadratic; collect the frames in a list and concat once.",
-      "xp": 20,
-      "tags": [
-        "pandas",
-        "concat"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "all_sales = pd.{0}([jan, feb], ignore_index=True)",
       "blocks": [
         {
           "id": "concat",
@@ -842,10 +906,25 @@
           "kind": "call"
         }
       ],
+      "template": "all_sales = pd.{0}([jan, feb], ignore_index=True)",
       "answer": [
         "concat"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "concat stacks frames with the same columns; merge is for combining on a key.",
+      "teach": "Sometimes you have several tables shaped exactly the same, like a sales file for January and one for February, and you just want to stack them into one long table instead of matching them by a shared column. That is different from a join, which lines up rows using a key such as customer_id. Pandas has a tool whose job is placing tables on top of each other, one after another, separate from the tool that glues tables side by side by matching keys. Knowing which job you need avoids confusing stack these with match these up.",
+      "hints": [
+        "The question is asking for the pandas function that stacks two tables with the same columns into one taller table. Look at jan and feb: do they need to be matched by a shared key, or simply piled one under the other? Which family of tools handles plain stacking rather than key based matching?",
+        "Think of it like stapling two printed pages together versus using an index card to look up matching entries between two boxes. Stapling just places one sheet after another with no lookup involved, and that is what jan and feb need. The blank wants a function whose whole job is combining a list of tables by placing them together, not one that searches for matching keys.",
+        "Two of the choices are about matching rows using a key column, which is not needed since jan and feb already share the same columns, so rule those out. One choice sounds like a stacking word but is an old method pandas has removed from DataFrames entirely. The right block is a short function name that takes a list of tables and stacks them, fitting the pattern pd.____([jan, feb], ...)."
+      ],
+      "deep": "concat with axis=0 stacks rows, axis=1 places frames side by side. ignore_index=True renumbers the result instead of carrying duplicate indexes. Concatenating inside a loop is quadratic; collect the frames in a list and concat once.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "concat"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l5.q4",
@@ -854,17 +933,6 @@
       "type": "mcq",
       "prompt": "What does this produce?",
       "code": "df.pivot_table(index=\"city\", columns=\"year\", values=\"revenue\", aggfunc=\"sum\")",
-      "explain": "pivot_table reshapes long data into a grid, aggregating the values for each city and year pair.",
-      "hints": [
-        "Index gives rows, columns gives columns, values fill the cells."
-      ],
-      "deep": "pivot_table aggregates (default mean, here sum) while pivot requires unique pairs and raises otherwise. The inverse is melt, which turns wide back into long, the shape most plotting and modelling libraries want. Long is for computation, wide is for humans.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "reshaping"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "One long column of revenue",
         "A list of cities",
@@ -873,7 +941,21 @@
       ],
       "answer": [
         "A table with one row per city, one column per year, revenue summed in each cell"
-      ]
+      ],
+      "explain": "pivot_table reshapes long data into a grid, aggregating the values for each city and year pair.",
+      "teach": "Sometimes your data is long, one row per city per year, with a revenue number each time. A pivot table reshapes long data into a grid, turning one column's unique values into new row labels and another column's unique values into new column labels, then filling each cell with a number computed from a third column. If a city and year pair has more than one matching row, pandas needs a rule for combining them into a single cell, and aggfunc supplies that rule. It is the same idea as building a spreadsheet cross-tab by hand, just automated.",
+      "hints": [
+        "The question is asking what shape of table comes out of this pivot_table call. Look at the three arguments, index, columns and values. What do you think happens to the unique cities and the unique years, and what number ends up sitting inside the grid?",
+        "Think of a school report card cross-tab: rows are students, columns are subjects, and each cell shows one grade. Here city becomes the row label, year becomes the column label, and revenue is the number placed in each cell, combined using the aggfunc rule whenever more than one row shares the same city and year. Look for the option describing a grid shape rather than a flat list or an error.",
+        "An option describing a single column or a bare list of cities ignores that both index and columns were given, so those do not fit. This call will not raise an error, since pivot_table combines repeated city and year rows instead of rejecting them. The right answer describes a two dimensional grid, one row per city, one column per year, with revenue combined inside each cell."
+      ],
+      "deep": "pivot_table aggregates (default mean, here sum) while pivot requires unique pairs and raises otherwise. The inverse is melt, which turns wide back into long, the shape most plotting and modelling libraries want. Long is for computation, wide is for humans.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "reshaping"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l5.q5",
@@ -882,17 +964,6 @@
       "type": "mcq",
       "prompt": "Why pass index=False when saving?",
       "code": "df.to_csv(\"clean.csv\", index=False)",
-      "explain": "By default to_csv writes the index as the first column, which reappears as Unnamed: 0 when read back.",
-      "hints": [
-        "Think about what the first column of the file would be otherwise."
-      ],
-      "deep": "The Unnamed: 0 column is the tell-tale of a frame saved with its default RangeIndex. Write index=False unless the index carries meaning (dates, ids), and then name it so it round-trips. For data you will reload, Parquet keeps types and is faster than CSV.",
-      "xp": 10,
-      "tags": [
-        "pandas",
-        "files"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "So the row numbers are not written as an extra unnamed column",
         "It sorts the rows",
@@ -901,7 +972,21 @@
       ],
       "answer": [
         "So the row numbers are not written as an extra unnamed column"
-      ]
+      ],
+      "explain": "By default to_csv writes the index as the first column, which reappears as Unnamed: 0 when read back.",
+      "teach": "Every DataFrame has an index, the row labels running down the left edge, which by default are just 0, 1, 2 and so on, not real data. When you save a DataFrame to a file, pandas by default writes that index out as if it were a genuine column. If you do not want that extra column showing up, there is a setting that tells pandas to leave the index out of the saved file. This matters because that extra column can confuse anyone reading the CSV later, including your own code.",
+      "hints": [
+        "The question is asking what problem index=False actually solves when saving a file. Look at what a DataFrame's index normally contains, just row numbers with no real meaning, and think about what happens to those numbers when pandas writes the file by default.",
+        "Imagine printing a spreadsheet that automatically adds a column showing 1, 2, 3 down the side, one you never asked for, and when someone reopens the file that column looks mislabeled. That is what happens when you save a DataFrame without this setting, an extra column of row numbers appears. Look for the option about removing that unwanted column, not one about sorting, size, or file format.",
+        "This has nothing to do with sorting rows or shrinking the file, and CSV files allow an index just fine, so those explanations do not hold up. The real issue is that default row number labels get written into the file as if they were real data, confusing the next person or program that reads it. The correct option describes preventing exactly that unwanted column from appearing."
+      ],
+      "deep": "The Unnamed: 0 column is the tell-tale of a frame saved with its default RangeIndex. Write index=False unless the index carries meaning (dates, ids), and then name it so it round-trips. For data you will reload, Parquet keeps types and is faster than CSV.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "files"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t5.l5.q6",
@@ -909,18 +994,6 @@
       "level": 5,
       "type": "order",
       "prompt": "Order the steps of a clean load-join-summarise script.",
-      "explain": "Validate the keys before joining, verify the join did not duplicate or drop rows, then aggregate.",
-      "hints": [
-        "The key check belongs before the merge, the row-count check right after it."
-      ],
-      "deep": "Data pipelines fail quietly: a duplicated key doubles revenue and nothing crashes. The two checks around the merge are the difference between a script and a pipeline. In production they become assertions or a validation library such as pandera, and they run on every batch.",
-      "xp": 20,
-      "tags": [
-        "pandas",
-        "pipelines",
-        "joins"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "check the join keys are unique",
         "load both CSVs",
@@ -935,7 +1008,22 @@
         "compare row counts before and after",
         "group by city and sum revenue"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Validate the keys before joining, verify the join did not duplicate or drop rows, then aggregate.",
+      "teach": "A data pipeline is a series of steps done in a specific order, like a recipe: you cannot frost a cake before you bake it. When a later step depends on something from an earlier one, such as needing both tables loaded before you can join them, the order is not just neat, it is required for the code to work at all. Good pipelines also add safety checks around risky steps, like a join, so a mistake gets caught early instead of silently producing wrong numbers. Thinking about which steps must happen before others, and where a sanity check belongs, is the skill this question tests.",
+      "hints": [
+        "The question is really asking which steps must come before others because they depend on each other. Look at the five steps: which ones need something to already exist before they can run, such as needing data loaded before it can be checked or joined, or needing a join to happen before you can measure its effect?",
+        "Think of tightening bolts on a table: you check they are the right kind before use, tighten them, then wiggle the table to confirm nothing is loose. Around a merge the same care applies: check the keys before joining, so the join is trustworthy, then check the outcome right after, so you catch problems it caused. Look for loading first, with the key check before the merge.",
+        "A row count comparison before the merge makes no sense, since there is nothing yet to compare, and a key check after the merge is too late to prevent a bad join, so those orderings are wrong. Grouping and summing must be the very last step, since it needs the final, verified, joined table, not a partial one. The right order loads data, validates keys, merges, verifies row counts, then aggregates."
+      ],
+      "deep": "Data pipelines fail quietly: a duplicated key doubles revenue and nothing crashes. The two checks around the merge are the difference between a script and a pipeline. In production they become assertions or a validation library such as pandera, and they run on every batch.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "pipelines",
+        "joins"
+      ],
+      "reviewed": "2026-09-05"
     }
   ]
 }

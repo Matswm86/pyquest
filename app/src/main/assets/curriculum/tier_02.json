@@ -18,17 +18,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "print(7 / 2)",
-      "explain": "A single slash is true division and always gives a float, even when the numbers divide evenly.",
-      "hints": [
-        "There are two kinds of division in Python, and this is the one that keeps the remainder."
-      ],
-      "deep": "Python 3 made / always return a float (PEP 238), fixing the Python 2 trap where 7 / 2 was 3. Floor division is the separate // operator. Even 6 / 2 gives 3.0, not 3, so an int is only guaranteed by // or int().",
-      "xp": 10,
-      "tags": [
-        "types",
-        "arithmetic"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "3",
         "3.5",
@@ -37,7 +26,21 @@
       ],
       "answer": [
         "3.5"
-      ]
+      ],
+      "explain": "A single slash is true division and always gives a float, even when the numbers divide evenly.",
+      "teach": "In Python there are two division operators. The single slash `/` is called true division, and it always gives you back a float, a number with a decimal point, even when the numbers divide evenly like 6 and 2. This is different from other operators that round the result down. Knowing this matters because it tells you what type of value comes back, which affects what you can do with it next.",
+      "hints": [
+        "This question is really asking what kind of answer the single slash `/` operator gives. Look at the code: does `/` keep the exact result, or does it round anything away? Think about what type of number comes out the other side.",
+        "Think of `/` like measuring exactly how many times 2 fits into 7 without throwing away the leftover part. If you split 7 cookies evenly between 2 people using exact math, each person gets three and a half cookies, not three whole ones. Look for an option showing a decimal value matching that exact split.",
+        "An option written as a whole number, with no decimal at all, is wrong because true division never drops the leftover part, even when it would divide evenly. A rounded-down whole number is also wrong since that belongs to a different operator. The right answer is a decimal number sitting exactly halfway between two whole numbers."
+      ],
+      "deep": "Python 3 made / always return a float (PEP 238), fixing the Python 2 trap where 7 / 2 was 3. Floor division is the separate // operator. Even 6 / 2 gives 3.0, not 3, so an int is only guaranteed by // or int().",
+      "xp": 10,
+      "tags": [
+        "types",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l1.q2",
@@ -46,18 +49,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "print(7 // 2)",
-      "explain": "Double slash is floor division: it divides and rounds down to the nearest whole number.",
-      "hints": [
-        "Two slashes throw the fraction away.",
-        "Rounding down, not rounding to nearest."
-      ],
-      "deep": "// rounds toward negative infinity, not toward zero: -7 // 2 is -4, and Python's % is defined so that a == (a // b) * b + a % b always holds. That is why -7 % 2 is 1, not -1 as in C. divmod(a, b) returns both at once.",
-      "xp": 10,
-      "tags": [
-        "types",
-        "arithmetic"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "3.5",
         "4",
@@ -66,7 +57,21 @@
       ],
       "answer": [
         "3"
-      ]
+      ],
+      "explain": "Double slash is floor division: it divides and rounds down to the nearest whole number.",
+      "teach": "Python has a second division operator, the double slash `//`, called floor division. It divides two numbers and then rounds the result down to the nearest whole number, throwing away anything after the decimal point. Dividing 7 by 2 exactly gives three and a half, and floor division keeps only the 3. This matters because it lets you get a whole number on purpose, useful for counting how many full groups fit into a total.",
+      "hints": [
+        "This question asks what happens when you divide two numbers and then round the result down instead of keeping the decimal part. Look at the operator in the code: is it a single slash or a double slash? That difference decides whether you get an exact decimal or a rounded whole number.",
+        "Picture splitting 7 apples into groups of 2. You get three full groups, with one apple left over that does not make a whole group, so floor division only counts the full groups and ignores the leftover completely. Look for the option that is a whole number showing how many full groups of 2 fit inside 7.",
+        "An answer with a decimal point is wrong here because floor division always drops the fractional part rather than keeping it. The leftover-remainder value is also wrong since that belongs to a different operator's job. The right answer is a plain whole number, smaller than the exact division result, showing only the complete groups."
+      ],
+      "deep": "// rounds toward negative infinity, not toward zero: -7 // 2 is -4, and Python's % is defined so that a == (a // b) * b + a % b always holds. That is why -7 % 2 is 1, not -1 as in C. divmod(a, b) returns both at once.",
+      "xp": 10,
+      "tags": [
+        "types",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l1.q3",
@@ -74,17 +79,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "What does 7 % 3 give?",
-      "explain": "Percent is the remainder after division: 3 goes into 7 twice with 1 left over.",
-      "hints": [
-        "Think of the leftover after fitting as many 3s as possible into 7."
-      ],
-      "deep": "Modulo is the workhorse of periodic logic: n % 2 == 0 tests evenness, i % width wraps a grid, seconds % 60 gives the seconds hand. For negative numbers Python's result takes the sign of the divisor, which is what you want for wrapping.",
-      "xp": 10,
-      "tags": [
-        "types",
-        "arithmetic"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "2",
         "2.33",
@@ -93,7 +87,21 @@
       ],
       "answer": [
         "1"
-      ]
+      ],
+      "explain": "Percent is the remainder after division: 3 goes into 7 twice with 1 left over.",
+      "teach": "The percent sign `%` in Python is the modulo operator, and it gives you the remainder left over after dividing one number by another. If you divide 7 by 3, 3 fits in twice with something left over, and `%` tells you exactly what that leftover amount is. This is different from division itself, which tells you how many times one number fits into another. Modulo is handy for things like checking if a number is even or wrapping a count back to zero.",
+      "hints": [
+        "This question asks for the leftover amount after dividing 7 by 3, not the number of times 3 fits into 7. Look at the numbers: how many whole times does 3 go into 7, and what remains after that? That remainder is what the percent operator returns.",
+        "Think about handing out 7 candies in groups of 3. You can make two full groups, using 6 candies, and then some candies are left that cannot form another full group. The percent operator cares only about that leftover, not the group count. Look for the small option representing just what is left over.",
+        "An option showing how many full groups fit is wrong because that is the job of a different operator, not percent. A decimal answer is also wrong since a remainder from whole numbers is always a whole number itself. The right answer is small, less than 3, and represents only what remains after removing the full groups."
+      ],
+      "deep": "Modulo is the workhorse of periodic logic: n % 2 == 0 tests evenness, i % width wraps a grid, seconds % 60 gives the seconds hand. For negative numbers Python's result takes the sign of the divisor, which is what you want for wrapping.",
+      "xp": 10,
+      "tags": [
+        "types",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l1.q4",
@@ -102,16 +110,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "x = 42\nprint(type(x))",
-      "explain": "type() returns the class of the object, and print shows it in angle brackets.",
-      "hints": [
-        "type() gives back a class object, and printing a class shows its name in brackets."
-      ],
-      "deep": "type(x) is x.__class__: every object carries a pointer to its type, and every type is itself an object (an instance of type). For checks in real code prefer isinstance(x, int), which also accepts subclasses such as bool.",
-      "xp": 10,
-      "tags": [
-        "types"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "42",
         "int",
@@ -120,7 +118,20 @@
       ],
       "answer": [
         "<class 'int'>"
-      ]
+      ],
+      "explain": "type() returns the class of the object, and print shows it in angle brackets.",
+      "teach": "Every value in Python has a type, telling you what kind of thing it is, like a whole number, text, or a decimal number. You can ask Python directly what type something is using the built-in `type()` function, for example `type(5)`. When you print the result, Python shows it wrapped in a special bracketed format that names the type. This matters because a value's type tells you what you are allowed to do with it, like whether it can be added to another number.",
+      "hints": [
+        "This question asks what `type()` reports back for a whole number like 42, and how that report looks when printed. Look at the variable being checked: is it written with a decimal point or without one? That decides which category it belongs to.",
+        "Imagine a librarian who, shown any object, tells you exactly which shelf category it belongs on. `type()` works the same way for values, and a whole number with no decimal point belongs to the whole-number category. When Python prints that category, it wraps the name in a specific bracket format rather than printing the bare word. Look for an option in that bracketed format naming the correct category.",
+        "An option that is just the number itself, printed plainly, is wrong because that is the value, not its type. An option naming the category meant for numbers with decimal points is also wrong since 42 has none. The right answer is wrapped in angle brackets and names the category for whole numbers, formatted exactly the way Python shows a type."
+      ],
+      "deep": "type(x) is x.__class__: every object carries a pointer to its type, and every type is itself an object (an instance of type). For checks in real code prefer isinstance(x, int), which also accepts subclasses such as bool.",
+      "xp": 10,
+      "tags": [
+        "types"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l1.q5",
@@ -128,18 +139,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Which line fails with TypeError?",
-      "explain": "Python never guesses whether you meant text or a number, so adding a string to an integer is an error.",
-      "hints": [
-        "Python does not silently turn text into numbers or numbers into text.",
-        "Look for the line that mixes quotes and no quotes."
-      ],
-      "deep": "Python is strongly typed: str + int raises TypeError instead of coercing, unlike JavaScript. int + float works because int is promoted to float by the numeric tower. Convert explicitly with int(\"3\") or str(4), or use an f-string.",
-      "xp": 10,
-      "tags": [
-        "types",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "\"3\" + \"4\"",
         "\"3\" + 4",
@@ -148,7 +147,21 @@
       ],
       "answer": [
         "\"3\" + 4"
-      ]
+      ],
+      "explain": "Python never guesses whether you meant text or a number, so adding a string to an integer is an error.",
+      "teach": "Python keeps text and numbers as separate kinds of values: text lives in quotes, like \"3\", while a number like 3 has no quotes. The plus sign means something different for each kind: for two pieces of text it joins them, for two numbers it adds them. Python never quietly turns one kind into the other for you, so mixing a piece of text with a number using plus is not allowed. This strictness is why you sometimes need to convert values on purpose before combining them.",
+      "hints": [
+        "The question is really asking which line Python refuses to run because it tries to combine two things that do not mix. Look at each line and ask whether both sides of the plus sign are the same kind of value, text or number.",
+        "Think of it like trying to add the word five to the number 3 on paper, it just does not make sense without converting one of them first. Two pieces of quoted text can join fine, and two numbers can add fine, since each pair matches. Look for the one line where one side is wrapped in quotes and the other side is a bare number.",
+        "Lines where both sides are quoted text, or both sides are plain numbers even with a decimal point, work because the two sides match in kind. The failing line pairs a quoted piece of text directly with an unquoted number using plus, which Python cannot resolve on its own. That mismatch of one quoted side and one unquoted side is what to look for."
+      ],
+      "deep": "Python is strongly typed: str + int raises TypeError instead of coercing, unlike JavaScript. int + float works because int is promoted to float by the numeric tower. Convert explicitly with int(\"3\") or str(4), or use an f-string.",
+      "xp": 10,
+      "tags": [
+        "types",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l1.q6",
@@ -156,19 +169,6 @@
       "level": 1,
       "type": "fill",
       "prompt": "Fill the gap so the sum is 7, not the text 34.",
-      "explain": "int(a) turns the text \"3\" into the number 3, and then + means addition rather than an error.",
-      "hints": [
-        "The text has to become a number before it can be added.",
-        "Which call converts text to an integer?"
-      ],
-      "deep": "int() parses a string in base 10 and raises ValueError on anything else, including \"3.0\" and \" 3 \" with a stray letter. For user input, parse once at the boundary, then work with numbers. Never let strings and numbers mix deep in the code.",
-      "xp": 20,
-      "tags": [
-        "types",
-        "conversion"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "a = \"3\"\nb = 4\nprint({0} + b)",
       "blocks": [
         {
           "id": "bare",
@@ -191,10 +191,25 @@
           "kind": "call"
         }
       ],
+      "template": "a = \"3\"\nb = 4\nprint({0} + b)",
       "answer": [
         "conv"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "int(a) turns the text \"3\" into the number 3, and then + means addition rather than an error.",
+      "teach": "Sometimes a number arrives as text, like the value \"3\" in quotes, especially from user input or a file. Text that looks like a number is still text to Python, so adding it directly to a real number will not do the arithmetic you expect. To fix this, Python gives you conversion functions: `int()` turns text that looks like a whole number into an actual whole number you can do math with. Picking the right conversion matters because it decides whether your text becomes a whole number, a decimal, or stays as text.",
+      "hints": [
+        "This question asks which block turns the text value \"3\" into something you can actually add to another number, so the print shows 7 instead of the text stuck together as 34. Look at the two variables: which one is in quotes, and which one already looks like a plain number? You need to change the quoted one so it stops being text.",
+        "Picture someone handing you a note with the number three written in words, versus actually handing you three coins. Before adding that note to a pile of real coins, you need to convert what is written into an actual countable amount. In code, that conversion happens through a function built to turn number-shaped text into a real whole number. Look among the blocks for a call that does exactly that to the text variable.",
+        "Leaving the text variable untouched would still be text, so adding it would fail or behave wrong, not give 7. Converting the variable that is already a number, or converting to a decimal type, does not solve the real problem, which is the text variable. The right block is a single function call wrapped around the text variable, whose whole purpose is turning number-looking text into a real integer."
+      ],
+      "deep": "int() parses a string in base 10 and raises ValueError on anything else, including \"3.0\" and \" 3 \" with a stray letter. For user input, parse once at the boundary, then work with numbers. Never let strings and numbers mix deep in the code.",
+      "xp": 20,
+      "tags": [
+        "types",
+        "conversion"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l2.q1",
@@ -203,16 +218,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "print(len(\"hello\"))",
-      "explain": "len counts characters, and hello has five.",
-      "hints": [
-        "Count the letters between the quotes."
-      ],
-      "deep": "len() calls the object's __len__, so it works on strings, lists, dicts and anything else that defines it. For str it counts code points, not bytes: len(\"å\") is 1 but len(\"å\".encode()) is 2. That distinction matters the moment text leaves Python.",
-      "xp": 10,
-      "tags": [
-        "strings"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "5",
         "6",
@@ -221,7 +226,20 @@
       ],
       "answer": [
         "5"
-      ]
+      ],
+      "explain": "len counts characters, and hello has five.",
+      "teach": "The len function tells you how many items are inside something. For a piece of text, that means how many characters it has, counting every letter, space, and punctuation mark. For example, the word cat has three characters, so len would report 3 for it. This is useful any time you need to know the size of something before working with it, like checking if a password is long enough.",
+      "hints": [
+        "The question is really asking how many characters make up the word that gets measured. Look at the word written inside the quotes in the code and think about counting its letters one at a time.",
+        "Imagine spelling the word out loud, tapping a finger for each letter as you say it, then counting the taps at the end. Do exactly that with the word shown in the code, going letter by letter without skipping any. That tap count is the number you are looking for.",
+        "The answer is not the word printed back as text, since len always gives a count, not the text itself. It is also not one more or one less than the true letter count, so do not guess by rounding. Count every single letter in the word exactly once and that total is the right answer."
+      ],
+      "deep": "len() calls the object's __len__, so it works on strings, lists, dicts and anything else that defines it. For str it counts code points, not bytes: len(\"å\") is 1 but len(\"å\".encode()) is 2. That distinction matters the moment text leaves Python.",
+      "xp": 10,
+      "tags": [
+        "strings"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l2.q2",
@@ -230,17 +248,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "word = \"hello\"\nprint(word[0])",
-      "explain": "Indexing starts at 0, so [0] is the first character.",
-      "hints": [
-        "Python starts counting positions at zero, not one."
-      ],
-      "deep": "Zero-based indexing is inherited from C, where an index is an offset from the start. It also makes slicing arithmetic clean: s[:n] has exactly n characters and s[n:] is the rest. s[-1] is the last character and s[len(s)] raises IndexError.",
-      "xp": 10,
-      "tags": [
-        "strings",
-        "indexing"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "h",
         "hello",
@@ -249,7 +256,21 @@
       ],
       "answer": [
         "h"
-      ]
+      ],
+      "explain": "Indexing starts at 0, so [0] is the first character.",
+      "teach": "When Python looks inside a word, it numbers each character's position starting at 0, not 1. So the first character sits at position 0, the second at position 1, and so on. For example, in the word cat, c is at position 0, a is at position 1, and t is at position 2. Knowing this helps you predict exactly which character you get when you ask for a specific position.",
+      "hints": [
+        "The question is really asking which character sits at position 0, the very first slot, inside the word. Look at the word in the code and identify its first letter.",
+        "Picture the word as a row of numbered mailboxes, but the numbering starts at 0 instead of 1, so the first mailbox is number 0, not number 1. Applying that here, whatever letter occupies mailbox 0 is what gets printed. Look among the options for the single letter that opens the word.",
+        "The later letters in the word live at positions 1, 2, 3, and so on, so any option matching those is not what position 0 gives you. The correct option is not the whole word either, only one letter. It is the very first letter you see when you read the word from left to right."
+      ],
+      "deep": "Zero-based indexing is inherited from C, where an index is an offset from the start. It also makes slicing arithmetic clean: s[:n] has exactly n characters and s[n:] is the rest. s[-1] is the last character and s[len(s)] raises IndexError.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "indexing"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l2.q3",
@@ -258,17 +279,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "word = \"hello\"\nprint(word[-1])",
-      "explain": "A negative index counts from the end, and -1 is the last character.",
-      "hints": [
-        "Negative indexes count backwards from the end."
-      ],
-      "deep": "s[-k] is sugar for s[len(s) - k], resolved at runtime. It is the idiomatic way to get the last item and avoids the off-by-one of s[len(s) - 1]. It also works in slices: s[-3:] is the last three characters.",
-      "xp": 10,
-      "tags": [
-        "strings",
-        "indexing"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "o",
         "An error",
@@ -277,34 +287,51 @@
       ],
       "answer": [
         "o"
-      ]
+      ],
+      "explain": "A negative index counts from the end, and -1 is the last character.",
+      "teach": "Besides counting from the start, Python also lets you count backward from the end of a word using negative numbers. Position -1 always means the very last character, -2 means the second to last, and so on, no matter how long the word is. For example, in the word cat, position -1 gives t, the final letter. This trick is handy when you want the last item without needing to know the word's exact length.",
+      "hints": [
+        "The question is really asking what character you land on when counting backward from the end instead of forward from the start. Look at the last letter of the word written in the code.",
+        "Think of walking down a hallway of numbered doors from the far end: door -1 is the very last door you reach, door -2 is the one just before it. Applying that idea to the word here, position -1 always points to its final character, whatever the word is. Look for the single character that closes out the word.",
+        "The answer is not the entire word, and it is not an error either, since counting backward like this is a normal and valid move in Python. The tempting wrong picks are letters from elsewhere in the word or the word as a whole. The correct option is just the one letter you would say last if you read the word aloud."
+      ],
+      "deep": "s[-k] is sugar for s[len(s) - k], resolved at runtime. It is the idiomatic way to get the last item and avoids the off-by-one of s[len(s) - 1]. It also works in slices: s[-3:] is the last three characters.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "indexing"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l2.q4",
       "tier": 2,
       "level": 2,
       "type": "mcq",
-      "prompt": "What does this print?",
+      "prompt": "What does this print? The quotes show where the output starts and ends.",
       "code": "print(\"ha\" * 3)",
-      "explain": "Multiplying a string by an integer repeats it that many times.",
+      "options": [
+        "'ha3'",
+        "'hahaha'",
+        "'ha ha ha'",
+        "An error"
+      ],
+      "answer": [
+        "'hahaha'"
+      ],
+      "explain": "Multiplying a string by an integer repeats it that many times, with nothing added in between, so the three copies run together.",
+      "teach": "Multiplying a string by a whole number repeats that string that many times, joined directly with nothing added in between. For example, \"na\" times 2 gives you \"nana\", with the two copies sitting right next to each other. This is a quick way to build repeated patterns, like a row of dashes for a separator, without typing the text over and over. It works because strings support multiplication by a number, unlike multiplying two strings together.",
       "hints": [
-        "The * operator has a meaning for strings too."
+        "The question is really asking what you get when a short piece of text is repeated a set number of times with nothing extra squeezed between the copies. Look at the text and the number being multiplied together in the code.",
+        "Picture stamping the same short word onto a strip of paper three times in a row without ever lifting the stamp to leave a gap, so each copy touches the next directly. Apply that same idea to the text and the number shown here. Look for the option where the copies run together with no space or separator anywhere.",
+        "The result is not the text with the number tacked onto it, and it does not have spaces or any character inserted between the repeats, since multiplication alone never adds extra symbols. The correct option is the text glued to itself, back to back, exactly as many times as the number says, forming one unbroken block of repeated letters."
       ],
       "deep": "str defines __mul__ for integers, so \"-\" * 40 draws a separator line. It works on lists as well, [0] * 5, which is convenient until the elements are mutable: [[]] * 3 gives three references to one list, the classic aliasing trap.",
       "xp": 10,
       "tags": [
         "strings"
       ],
-      "reviewed": "2026-09-05",
-      "options": [
-        "hahaha",
-        "ha ha ha",
-        "ha3",
-        "An error"
-      ],
-      "answer": [
-        "hahaha"
-      ]
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l2.q5",
@@ -313,18 +340,6 @@
       "type": "mcq",
       "prompt": "Why does this fail?",
       "code": "word = \"hello\"\nword[0] = \"J\"",
-      "explain": "Strings are immutable, so assigning to a character raises TypeError. Build a new string instead.",
-      "hints": [
-        "Think about whether a string can be edited after it is created."
-      ],
-      "deep": "Immutability lets CPython hash strings once, intern common ones and share them freely between threads. To change one character build a new string: \"J\" + word[1:] or word.replace(\"h\", \"J\", 1). The same rule applies to tuples and bytes.",
-      "xp": 10,
-      "tags": [
-        "strings",
-        "immutability",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "You need double quotes",
         "Index 0 does not exist",
@@ -333,7 +348,22 @@
       ],
       "answer": [
         "Strings cannot be changed in place; build a new one instead"
-      ]
+      ],
+      "explain": "Strings are immutable, so assigning to a character raises TypeError. Build a new string instead.",
+      "teach": "In Python, once a piece of text is created, none of its individual characters can be changed in place. This property is called immutability, and it applies to all strings. Think of a word carved into a stone plaque: you cannot erase one letter and carve a new one over it, you would need an entirely new plaque. If you want a changed version of a word, you build a brand new string rather than editing the old one directly.",
+      "hints": [
+        "The question is really asking why changing a single letter of a word directly does not work in Python. Think about whether text values can be edited in place once they already exist, or whether a new one is always needed.",
+        "Imagine a name engraved on a medal: you cannot scratch out one letter and engrave a different one in its place, you would need to make a whole new medal instead. Text in Python behaves the same way once it is created. Look for the option that talks about text not being changeable in place, rather than about quotes or index numbers.",
+        "The trouble here is not about needing different quote marks, and the index used is completely valid, so those explanations miss the point. The correct option plainly states that the text itself cannot be edited character by character, and that getting a changed version means creating a fresh string instead."
+      ],
+      "deep": "Immutability lets CPython hash strings once, intern common ones and share them freely between threads. To change one character build a new string: \"J\" + word[1:] or word.replace(\"h\", \"J\", 1). The same rule applies to tuples and bytes.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "immutability",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l2.q6",
@@ -341,19 +371,6 @@
       "level": 2,
       "type": "fill",
       "prompt": "Fill the gaps so the program prints HELLO WORLD.",
-      "explain": "upper() returns a new string with every letter in capitals.",
-      "hints": [
-        "The method name says what it does to the letters.",
-        "title() and capitalize() only change some letters."
-      ],
-      "deep": "String methods never modify the original, they return a new string, because str is immutable. Chain them freely: s.strip().lower().split(). capitalize() uppercases only the first character, title() the first of every word, and casefold() is the right choice for case-insensitive comparison.",
-      "xp": 20,
-      "tags": [
-        "strings",
-        "methods"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "greeting = \"hello world\"\nprint(greeting.{0}())",
       "blocks": [
         {
           "id": "lower",
@@ -376,10 +393,25 @@
           "kind": "call"
         }
       ],
+      "template": "greeting = \"hello world\"\nprint(greeting.{0}())",
       "answer": [
         "upper"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "upper() returns a new string with every letter in capitals.",
+      "teach": "Strings have several methods that change letter casing, and because strings are immutable, each one returns a brand new string rather than editing the original. For example, calling one of these methods on \"cat\" might give back \"Cat\", \"CAT\", or leave the spelling the same but change only the case. Picking the right one depends on whether you want just the first letter capitalized, every word capitalized, or every single letter turned into a capital. This matters whenever text needs a certain look, like a loud announcement or a tidy title.",
+      "hints": [
+        "The question wants the whole phrase to come out fully shouted, every letter a capital, not just the first word or first letter. Look at the string 'hello world' and picture 'HELLO WORLD' next to it: has only the beginning changed, or literally every letter?",
+        "Think of a text message written ALL CAPS versus one written Like A Title. Turning 'hi mom' into 'HI MOM' is not just capitalizing the first letter, it means every single letter becomes its capital form. Scan the blocks for the one whose job is making everything loud, not the one that only fixes the first letter of each word or just the sentence start.",
+        "The block that only capitalizes the sentence start changes one character and leaves the rest lowercase, so it cannot give 'HELLO WORLD'. The block that capitalizes each word's first letter gives 'Hello World', still mixed with lowercase letters, which is not it either. You need the block whose whole job is turning every letter, from first to last, into its capital form."
+      ],
+      "deep": "String methods never modify the original, they return a new string, because str is immutable. Chain them freely: s.strip().lower().split(). capitalize() uppercases only the first character, title() the first of every word, and casefold() is the right choice for case-insensitive comparison.",
+      "xp": 20,
+      "tags": [
+        "strings",
+        "methods"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l3.q1",
@@ -388,17 +420,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "nums = [1, 2, 3]\nprint(nums[-1] * 2)",
-      "explain": "nums[-1] is the last element, 3, and 3 * 2 is 6.",
-      "hints": [
-        "Read the index first, then do the multiplication."
-      ],
-      "deep": "Index, then operate. Subscription binds tighter than *, so nums[-1] * 2 reads as (nums[-1]) * 2. Negative indexes are resolved at runtime by adding len(nums). This is the exact question from the game's design canvas.",
-      "xp": 10,
-      "tags": [
-        "lists",
-        "indexing"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "-2",
         "3",
@@ -407,7 +428,21 @@
       ],
       "answer": [
         "6"
-      ]
+      ],
+      "explain": "nums[-1] is the last element, 3, and 3 * 2 is 6.",
+      "teach": "Lists let you grab items by position using square brackets, and negative numbers count backward from the end. nums[-1] means 'the last item', nums[-2] means 'second to last', and so on. This is handy because you do not need to know how long the list is to reach its last item. Once you have picked out a single number this way, ordinary math works on it just like any other number, so multiplying it only affects that one value, not the whole list.",
+      "hints": [
+        "The code first picks out one item from the list using nums[-1], then does math on it. Ask yourself: which item does nums[-1] actually point to, and what number is stored there?",
+        "Picture the list as a row of three boxes holding 1, 2, 3, numbered 0, 1, 2 from the left, or -1, -2, -3 from the right. nums[-1] means stepping one back from the end, so it grabs the value in the last box, not the whole row. Once you have that single number, multiplying by 2 just doubles it, so look for the option showing one number, doubled, not a list.",
+        "An answer shown as [3] is wrong because indexing with a single number gives the value inside the box, not a list containing it. An answer of -2 confuses the index itself with the value stored there, and plain 3 forgets the multiplication by 2. The right answer is a single plain number, double the value sitting in the last box of nums."
+      ],
+      "deep": "Index, then operate. Subscription binds tighter than *, so nums[-1] * 2 reads as (nums[-1]) * 2. Negative indexes are resolved at runtime by adding len(nums). This is the exact question from the game's design canvas.",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "indexing"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l3.q2",
@@ -416,17 +451,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "nums = [1, 2, 3]\nnums.append(4)\nprint(nums)",
-      "explain": "append adds one item to the end of the list, in place.",
-      "hints": [
-        "append changes the list itself rather than making a new one."
-      ],
-      "deep": "append is amortised O(1) because CPython over-allocates the list's backing array by about an eighth, so most appends do not reallocate. It returns None, which is a deliberate signal that it mutates rather than builds; nums = nums.append(4) is a classic bug that sets nums to None.",
-      "xp": 10,
-      "tags": [
-        "lists",
-        "methods"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[1, 2, 3]",
         "4",
@@ -435,7 +459,21 @@
       ],
       "answer": [
         "[1, 2, 3, 4]"
-      ]
+      ],
+      "explain": "append adds one item to the end of the list, in place.",
+      "teach": "Lists can grow one item at a time using a method that tacks a new value onto the very end, right after the current last item. Picture a line of people: adding someone to the back does not change anyone already there, it just extends the line by one. This changes the list itself, in place, rather than creating a separate new list. It is one of the most common ways to build up a list step by step, like collecting scores as a game goes on.",
+      "hints": [
+        "The code adds a new value onto the end of the existing list, then prints that same list afterward. Ask yourself: after adding 4 to a list that already holds 1, 2, 3, what does the whole list look like now?",
+        "Think of nums as a train with three cars numbered 1, 2, 3. Adding a new car onto the end does not remove or reorder the existing cars, it just makes the train one car longer, with the new car last. Look for the option that shows all four numbers together, in that original order plus the new one at the end.",
+        "An answer of just 4 mistakes the new item for the whole list, and an answer of None confuses what gets printed with what this kind of in-place method hands back when called directly. An answer with only the original three numbers forgets the list was changed before printing. The right answer lists all four numbers in order, with the newest one at the very end."
+      ],
+      "deep": "append is amortised O(1) because CPython over-allocates the list's backing array by about an eighth, so most appends do not reallocate. It returns None, which is a deliberate signal that it mutates rather than builds; nums = nums.append(4) is a classic bug that sets nums to None.",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "methods"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l3.q3",
@@ -444,19 +482,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "nums = [3, 1, 2]\nprint(nums.sort())",
-      "explain": "sort() sorts the list in place and returns None, so printing its result prints None.",
-      "hints": [
-        "In-place methods return nothing useful. What does Python print for nothing?",
-        "Compare sort() with the built-in sorted()."
-      ],
-      "deep": "sort() mutates and returns None; sorted() returns a new list and works on any iterable. Both use Timsort, which is stable and O(n log n) with linear time on already-sorted data. Use key=, never cmp: sorted(words, key=str.lower).",
-      "xp": 10,
-      "tags": [
-        "lists",
-        "methods",
-        "sorting"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[3, 1, 2]",
         "None",
@@ -465,7 +490,22 @@
       ],
       "answer": [
         "None"
-      ]
+      ],
+      "explain": "sort() sorts the list in place and returns None, so printing its result prints None.",
+      "teach": "Some list methods rearrange the list itself and then hand back nothing at all, represented in Python by the special value None. This differs from methods that build and return a brand new arranged list while leaving yours untouched. It matters because if you print or store the result of one of these in-place methods, you get None, not the tidy list you expected, even though the list really did get reordered behind the scenes. Knowing which style a method uses saves you from a confusing bug.",
+      "hints": [
+        "The code calls a method that rearranges the list's numbers into order, but then prints whatever that method call itself hands back, not the list afterward. Ask yourself: does this method give you the new arrangement, or does it quietly do its work and hand back nothing?",
+        "Think of a librarian who reorganizes books on a shelf but, when asked what they handed you, says 'nothing, I just moved the books'. The shelf is now in order, but the librarian's reply carries no books. This method reorders nums in place and its call produces no useful value to print, so look for the option meaning 'nothing to report' rather than a list of numbers.",
+        "An answer showing [1, 2, 3] confuses what nums becomes afterward with what the method call itself prints right now. An answer showing [3, 1, 2] forgets the numbers do get rearranged behind the scenes, and there is no error since the method runs fine. The right answer is the special value Python uses to mean 'this call produced nothing to hand back'."
+      ],
+      "deep": "sort() mutates and returns None; sorted() returns a new list and works on any iterable. Both use Timsort, which is stable and O(n log n) with linear time on already-sorted data. Use key=, never cmp: sorted(words, key=str.lower).",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "methods",
+        "sorting"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l3.q4",
@@ -474,19 +514,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "a = [1, 2, 3]\nb = a\nb[2] = 99\nprint(a)",
-      "explain": "b = a does not copy the list. Both names point at the same list, so a change through b shows through a.",
-      "hints": [
-        "Assignment copies the reference, not the contents.",
-        "How many list objects exist after line 2?"
-      ],
-      "deep": "Names are labels on objects; b = a binds a second label to the same list. Mutating through either label is visible through both. To copy: a.copy(), a[:], or list(a) for a shallow copy, and copy.deepcopy(a) when the list holds mutable items.",
-      "xp": 10,
-      "tags": [
-        "lists",
-        "aliasing",
-        "mutability"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[1, 2, 99]",
         "An error",
@@ -495,7 +522,22 @@
       ],
       "answer": [
         "[1, 2, 99]"
-      ]
+      ],
+      "explain": "b = a does not copy the list. Both names point at the same list, so a change through b shows through a.",
+      "teach": "When you write b = a for a list, you are not making a copy, you are giving a second name to the very same list, like two nicknames for one person. Change the list through either name and both names see the change, because there is really only one list in memory. This is called aliasing, and it trips up a lot of beginners who expect a fresh independent copy. To actually get a separate list you have to ask for a copy explicitly.",
+      "hints": [
+        "The code makes b point at the same list as a, then changes one item through b. Ask yourself: since a and b are really just two names for the one and only list, what happens to a when b changes something?",
+        "Imagine two people holding different corners of one shared piece of paper with a shopping list on it. If one crosses out an item and writes something new, the other person sees the change too, since it is the same paper. Changing an item through b changes the one shared list, so printing a afterward shows that same change. Look for the option where the third item has been replaced.",
+        "An answer showing [1, 2, 3] would only be right if a and b were separate lists, but here they are the same list, so that option ignores the change made through b. There is no error, since changing an item by index on an existing list is normal. The right answer keeps the first two original numbers and shows the last one replaced with the new value assigned through b."
+      ],
+      "deep": "Names are labels on objects; b = a binds a second label to the same list. Mutating through either label is visible through both. To copy: a.copy(), a[:], or list(a) for a shallow copy, and copy.deepcopy(a) when the list holds mutable items.",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "aliasing",
+        "mutability"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l3.q5",
@@ -503,18 +545,6 @@
       "level": 3,
       "type": "blocks",
       "prompt": "Build the line that removes and returns the last item of nums.",
-      "explain": "pop() with no argument removes the last element and hands it back, so it can be stored in a name.",
-      "hints": [
-        "The method is called on the list with a dot.",
-        "remove takes a value; you want the one that takes no argument and returns the item."
-      ],
-      "deep": "pop() from the end is O(1); pop(0) is O(n) because every remaining element shifts left. For a queue that pops from the front use collections.deque, whose popleft is O(1). remove(x) deletes the first match by value and returns None.",
-      "xp": 15,
-      "tags": [
-        "lists",
-        "methods"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "[-1]",
         ")",
@@ -535,7 +565,21 @@
         "(",
         ")"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "pop() with no argument removes the last element and hands it back, so it can be stored in a name.",
+      "teach": "Lists have a method that removes the final item and, unlike some other methods, actually hands that removed item back to you so it can be stored in a variable. This differs from a method that just deletes something without telling you what it was. Picture a stack of plates: lifting the top plate off both removes it from the stack and puts it in your hands at the same time. This pattern, removing and receiving in one step, is common whenever you want to process items one by one from the end of a list.",
+      "hints": [
+        "The goal is to write one line that both shrinks nums by one item and saves that removed item into a new variable called last. Ask yourself: which list method removes the final item and also hands it back, so it can sit on the right side of an equals sign?",
+        "Think of unstacking trays one at a time: lifting the top tray off shrinks the pile, and you are now holding that tray to use. A line like last = something needs a method call on the right that removes an item from nums and produces it as a value. Arrange the pieces so the variable comes first, then equals, then the list name, a dot, the method name, and empty parentheses.",
+        "A piece that just peeks at the last value leaves nums full afterward, since nothing gets removed that way. A method that deletes by matching a value, not a position, is the wrong tool too, since we want to remove by position with nothing specified and get the item back. The right shape is variable, equals, list name, dot, a method meaning take-and-remove-from-the-end, then empty parentheses."
+      ],
+      "deep": "pop() from the end is O(1); pop(0) is O(n) because every remaining element shifts left. For a queue that pops from the front use collections.deque, whose popleft is O(1). remove(x) deletes the first match by value and returns None.",
+      "xp": 15,
+      "tags": [
+        "lists",
+        "methods"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l3.q6",
@@ -543,19 +587,6 @@
       "level": 3,
       "type": "fill",
       "prompt": "Fill the gap so the program prints True.",
-      "explain": "in checks whether a value is one of the items, and \"pear\" is.",
-      "hints": [
-        "The item has to be written as text, with quotes.",
-        "One block would look up a variable that does not exist."
-      ],
-      "deep": "in on a list is a linear scan comparing with == in order, O(n). On a set or dict key it is a hash lookup, O(1) on average. When you test membership many times, build a set first. fruits[0] in fruits is also True but tests the wrong thing.",
-      "xp": 20,
-      "tags": [
-        "lists",
-        "membership"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "fruits = [\"apple\", \"pear\"]\nprint({0} in fruits)",
       "blocks": [
         {
           "id": "pear",
@@ -578,10 +609,25 @@
           "kind": "call"
         }
       ],
+      "template": "fruits = [\"apple\", \"pear\"]\nprint({0} in fruits)",
       "answer": [
         "pear"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "in checks whether a value is one of the items, and \"pear\" is.",
+      "teach": "You already know a list is just an ordered box of items, like `fruits = [\"apple\", \"pear\"]`. Python lets you ask a yes or no question about a list using the word `in`: `value in a_list` checks whether that exact value is sitting inside the box. It matters because you often need to decide something based on whether an item exists, like checking if a fruit is in stock, without writing a loop yourself.",
+      "hints": [
+        "The question is really asking: what value, when you write value in fruits, comes back True? Look at the list on the first line. Which of the two fruit names is actually sitting inside those square brackets?",
+        "Think of it like checking a guest list at a door: if the exact name written on your card matches a name on the list, you get let in. Fruits holds text values, so what you compare must be written as text too, with quotes, spelling one of the fruits exactly. Look for a block that is quoted text matching an item already in the list.",
+        "A bare word without quotes is treated as a variable name Python would try to look up, which is not what you want here. Checking the first item by its position, or checking how many items the list has, both answer a different question than membership. The block you want is short quoted text that spells out, letter for letter, a fruit already written in the list above."
+      ],
+      "deep": "in on a list is a linear scan comparing with == in order, O(n). On a set or dict key it is a hash lookup, O(1) on average. When you test membership many times, build a set first. fruits[0] in fruits is also True but tests the wrong thing.",
+      "xp": 20,
+      "tags": [
+        "lists",
+        "membership"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l4.q1",
@@ -590,16 +636,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "stock = {\"apple\": 3, \"pear\": 0}\nprint(stock[\"apple\"])",
-      "explain": "Square brackets with a key look up that key's value.",
-      "hints": [
-        "A dict maps keys to values; the bracket asks for the value behind a key."
-      ],
-      "deep": "dict lookup hashes the key and probes an open-addressing table, O(1) on average. Keys must be hashable, so strings, numbers and tuples work and lists do not. Since Python 3.7 dicts preserve insertion order as a language guarantee.",
-      "xp": 10,
-      "tags": [
-        "dicts"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "apple",
         "An error",
@@ -608,7 +644,20 @@
       ],
       "answer": [
         "3"
-      ]
+      ],
+      "explain": "Square brackets with a key look up that key's value.",
+      "teach": "A dict pairs up keys and values, like a small lookup table: `stock = {\"apple\": 3}` means the key \"apple\" is linked to the value 3. When you write `stock[\"apple\"]`, Python does not print the key back to you, it finds that key and hands you the value stored next to it. This matters because dicts are how you store labeled data, like stock counts per fruit, and look it up fast by name instead of searching.",
+      "hints": [
+        "The real question is: when you use square brackets with a key on a dict, what do you actually get back? Look at the dict on the first line and find what is written right after the key you are looking up.",
+        "Picture a coat check: you hand over a ticket number and the person hands you the coat, not the ticket back. The key is the ticket, the value is the coat. So find, right after the colon following that key in the dict, the small piece of data that gets handed back to you.",
+        "Printing the key itself would ignore what square brackets do, and there is no error here because the key you asked for really exists in the dict. Printing the whole dict would mean you never used the brackets at all. The right answer is just the plain value sitting next to that key, nothing wrapped in braces or quotes around a fruit name."
+      ],
+      "deep": "dict lookup hashes the key and probes an open-addressing table, O(1) on average. Keys must be hashable, so strings, numbers and tuples work and lists do not. Since Python 3.7 dicts preserve insertion order as a language guarantee.",
+      "xp": 10,
+      "tags": [
+        "dicts"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l4.q2",
@@ -617,17 +666,6 @@
       "type": "mcq",
       "prompt": "What happens here?",
       "code": "stock = {\"apple\": 3}\nprint(stock[\"kiwi\"])",
-      "explain": "Reading a key that is not there raises KeyError. Use .get() when a missing key is normal.",
-      "hints": [
-        "Reading and writing a missing key behave differently."
-      ],
-      "deep": "d[k] raises KeyError so bugs surface early; d.get(k, default) returns the default silently; d.setdefault(k, default) inserts it. collections.defaultdict(list) makes grouping one line: groups[key].append(item). Choose based on whether a missing key is a bug or a normal case.",
-      "xp": 10,
-      "tags": [
-        "dicts",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "It prints None",
         "It adds kiwi with value None",
@@ -636,7 +674,21 @@
       ],
       "answer": [
         "KeyError, because there is no key called kiwi"
-      ]
+      ],
+      "explain": "Reading a key that is not there raises KeyError. Use .get() when a missing key is normal.",
+      "teach": "A dict only knows about the keys you actually put into it. `stock = {\"apple\": 3}` has exactly one key, \"apple\", and nothing else. If you ask for a key that was never added, Python cannot make up a value for you, so it has to tell you something went wrong instead of guessing. This matters because it helps you catch typos and missing data early, instead of silently working with a wrong number.",
+      "hints": [
+        "The real question is: what does Python do when you look up a key that simply is not in the dict? Look at the dict on the first line and check whether kiwi appears there at all.",
+        "Imagine asking a librarian for a book that was never in the library. She cannot hand you an empty book or guess a title, she has to tell you it is not there. Square-bracket lookup on a dict works the same way for a missing key, it does not invent a default value. Think about what kind of message fits that situation.",
+        "Printing None or 0 would mean Python silently invented a value, which plain bracket lookup does not do, and quietly adding the key would mean the dict changed just from reading it, which also does not happen. The right answer is the specific kind of error Python raises whenever a dict lookup key does not exist, named after the very thing that is missing."
+      ],
+      "deep": "d[k] raises KeyError so bugs surface early; d.get(k, default) returns the default silently; d.setdefault(k, default) inserts it. collections.defaultdict(list) makes grouping one line: groups[key].append(item). Choose based on whether a missing key is a bug or a normal case.",
+      "xp": 10,
+      "tags": [
+        "dicts",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l4.q3",
@@ -644,18 +696,6 @@
       "level": 4,
       "type": "fill",
       "prompt": "Fill the gap so a missing key prints 0 instead of crashing.",
-      "explain": "get returns the value if the key exists and the fallback you pass if it does not.",
-      "hints": [
-        "You want to read with a fallback, not remove or list keys."
-      ],
-      "deep": "get(key, default) is the idiom for optional keys. pop(key, default) also takes a default but removes the entry. Counting pattern: counts[w] = counts.get(w, 0) + 1, or better, collections.Counter(words).",
-      "xp": 20,
-      "tags": [
-        "dicts",
-        "methods"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "stock = {\"apple\": 3}\nprint(stock.{0}(\"kiwi\", 0))",
       "blocks": [
         {
           "id": "items",
@@ -678,10 +718,25 @@
           "kind": "call"
         }
       ],
+      "template": "stock = {\"apple\": 3}\nprint(stock.{0}(\"kiwi\", 0))",
       "answer": [
         "get"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "get returns the value if the key exists and the fallback you pass if it does not.",
+      "teach": "Sometimes you want to look up a dict key that might not be there, but you do not want your program to crash. Python's dicts have a method for exactly this: it looks up a key, and if the key is missing, it hands you back a fallback value you choose instead of raising an error. For example, checking a shopping list for an item that was never added can quietly return zero instead of stopping the program.",
+      "hints": [
+        "The question is really asking: which dict method lets you look up a key and get a safe fallback instead of a crash when the key is missing? Look at the blank right after the dot on the stock dict and think about what kind of action fits there.",
+        "Think of asking a friend a question where you say, if you do not know, just say zero. That is exactly the shape of the method call here: it takes the key you want, plus a second value to use only when that key is not found. Look among the blocks for the one whose job is exactly to fetch a value while accepting a fallback.",
+        "Methods that list all keys or all key-value pairs would not use kiwi the way this blank does, and the method that removes an entry changes the dict instead of just reading it safely. The one you need takes two things in its parentheses, the key to look up and the value to use if that key is missing, and it never crashes."
+      ],
+      "deep": "get(key, default) is the idiom for optional keys. pop(key, default) also takes a default but removes the entry. Counting pattern: counts[w] = counts.get(w, 0) + 1, or better, collections.Counter(words).",
+      "xp": 20,
+      "tags": [
+        "dicts",
+        "methods"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l4.q4",
@@ -690,16 +745,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "print(set([1, 1, 2, 3, 3]))",
-      "explain": "A set keeps one copy of each value and drops the duplicates.",
-      "hints": [
-        "Sets have no duplicates by definition."
-      ],
-      "deep": "set(iterable) is the fastest way to deduplicate, O(n), but it loses order. To dedupe and keep first-seen order use list(dict.fromkeys(items)), which works because dict keys are unique and ordered. Sets are unordered, so never rely on their print order.",
-      "xp": 10,
-      "tags": [
-        "sets"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "{1, 2, 3}",
         "[1, 2, 3]",
@@ -708,7 +753,20 @@
       ],
       "answer": [
         "{1, 2, 3}"
-      ]
+      ],
+      "explain": "A set keeps one copy of each value and drops the duplicates.",
+      "teach": "A set is a collection that only keeps one copy of each value, unlike a list which happily keeps duplicates. If you feed a list with repeated numbers into set(...), Python throws away the extra copies and keeps just the unique ones. This matters whenever you need to know what distinct values exist, like finding out which fruits were ordered without counting each order separately.",
+      "hints": [
+        "The real question is: what happens to repeated numbers when you build a set out of them? Look at the list inside set([...]) and count how many different numbers actually appear, ignoring how many times each one shows up.",
+        "Think of pouring a bag full of duplicate marbles into a jar that only keeps one marble of each color. No matter how many red marbles you pour in, the jar ends up with just one red marble. A set behaves the same way with the numbers you give it, so figure out which distinct numbers survive and in what kind of brackets a set is shown.",
+        "An answer that keeps every duplicate is really just describing the original list, not what a set does, and square brackets around the result would suggest a list rather than a set. The right answer shows only the distinct numbers, each appearing once, wrapped in the curly-brace style Python uses to display a set."
+      ],
+      "deep": "set(iterable) is the fastest way to deduplicate, O(n), but it loses order. To dedupe and keep first-seen order use list(dict.fromkeys(items)), which works because dict keys are unique and ordered. Sets are unordered, so never rely on their print order.",
+      "xp": 10,
+      "tags": [
+        "sets"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l4.q5",
@@ -717,16 +775,6 @@
       "type": "mcq",
       "prompt": "Which values are in both sets?",
       "code": "a = {1, 2, 3}\nb = {2, 3, 4}\nprint(a & b)",
-      "explain": "& is set intersection: the values present in both.",
-      "hints": [
-        "The ampersand asks for the overlap."
-      ],
-      "deep": "Set algebra reads like maths: & intersection, | union, - difference, ^ symmetric difference, <= subset. Each is O(len) with hashing, so a & b on two large sets beats a nested loop by orders of magnitude. Sets of strings are how you diff two lists of ids.",
-      "xp": 10,
-      "tags": [
-        "sets"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "{}",
         "{1, 4}",
@@ -735,7 +783,20 @@
       ],
       "answer": [
         "{2, 3}"
-      ]
+      ],
+      "explain": "& is set intersection: the values present in both.",
+      "teach": "Sets can be compared to each other with special symbols borrowed from math. The & symbol between two sets means intersection, which gives you only the values that show up in both sets at the same time. For example, if one set has friends who like tea and another has friends who like coffee, the intersection tells you who likes both.",
+      "hints": [
+        "The question is really asking: which values appear in both set a and set b at once? Look at the two sets defined on the first two lines and find the numbers that show up in each of them.",
+        "Imagine two overlapping circles in a Venn diagram, one for set a and one for set b. The & symbol only cares about the little lens-shaped area where the two circles overlap, ignoring anything that sits in just one circle. Go through each number in set a and check whether that same number also shows up in set b.",
+        "An empty result would mean nothing overlaps, which is not true here since some numbers clearly repeat between the two sets, and including numbers that only appear in one set would describe a union, not an intersection. The right answer keeps only the small handful of numbers that genuinely belong to both sets, nothing more and nothing less."
+      ],
+      "deep": "Set algebra reads like maths: & intersection, | union, - difference, ^ symmetric difference, <= subset. Each is O(len) with hashing, so a & b on two large sets beats a nested loop by orders of magnitude. Sets of strings are how you diff two lists of ids.",
+      "xp": 10,
+      "tags": [
+        "sets"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l4.q6",
@@ -743,18 +804,6 @@
       "level": 4,
       "type": "order",
       "prompt": "Order the lines so the program prints the word with count 2.",
-      "explain": "Create the dict, add the key, then loop over items() unpacking each key and value.",
-      "hints": [
-        "The dict must exist before a key is added, and the loop comes last.",
-        "Indented lines belong under the line that opens their block."
-      ],
-      "deep": "items() yields (key, value) tuples and the loop header unpacks each one into two names. It is the idiomatic way to walk a dict; looping over keys and indexing inside is slower and noisier. Iteration order is insertion order.",
-      "xp": 15,
-      "tags": [
-        "dicts",
-        "loops"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "counts[\"b\"] = 2",
         "counts = {\"a\": 1}",
@@ -769,7 +818,21 @@
         "    if n == 2:",
         "        print(word)"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Create the dict, add the key, then loop over items() unpacking each key and value.",
+      "teach": "A dictionary holds pairs of key and value, like a little lookup table: `scores = {\"tom\": 5}` means the key \"tom\" points to the value 5. You can add a brand new pair later with `scores[\"amy\"] = 7`, using square brackets on an existing dictionary. When you want to visit every pair, `for key, value in scores.items():` hands you both parts together, one pair per loop turn, in the order they were added. Knowing this order, build then grow then walk, is what lets you read dictionary code correctly.",
+      "hints": [
+        "This puzzle is really asking in what order you must build a dictionary, add to it, and then read through it. Look at the tray and ask which line could not run first because it needs something to already exist. What needs to exist before a new key can be added to it?",
+        "Think of a dictionary like a shelf of labeled boxes: you must build the shelf before adding a new box, and you must have boxes before walking past each one to check its label. In code, the loop header line sits above the lines that use the two names it creates, and those must be indented under it. Find which tray line makes the dictionary, which one grows it, and which one starts the walk.",
+        "The two lines with different bracket styles are not the same step: one builds a whole new dictionary, the other only works if a dictionary already exists, so building comes first. The line naming two variables from items() must be the loop header, sitting above the indented check and print that depend on it. Order it as creation, then the added entry, then that loop line with its two indented lines beneath."
+      ],
+      "deep": "items() yields (key, value) tuples and the loop header unpacks each one into two names. It is the idiomatic way to walk a dict; looping over keys and indexing inside is slower and noisier. Iteration order is insertion order.",
+      "xp": 15,
+      "tags": [
+        "dicts",
+        "loops"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l5.q1",
@@ -778,17 +841,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "s = \"Python\"\nprint(s[1:3])",
-      "explain": "A slice runs from the start index up to but not including the stop index.",
-      "hints": [
-        "The stop index is not included."
-      ],
-      "deep": "Half-open intervals [start, stop) are why s[a:b] has b - a characters and s[:i] + s[i:] == s. Slicing a string or list makes a new object; slicing never raises IndexError even when the bounds run past the end, it just clips.",
-      "xp": 10,
-      "tags": [
-        "slicing",
-        "strings"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "yt",
         "Pyt",
@@ -797,7 +849,21 @@
       ],
       "answer": [
         "yt"
-      ]
+      ],
+      "explain": "A slice runs from the start index up to but not including the stop index.",
+      "teach": "Python numbers the characters in a string starting at 0, so in the word Python, the letter P sits at index 0, y at index 1, and so on. A slice written as `s[a:b]` grabs the characters starting at index a and stops right before index b, so it never includes the character at index b itself. For example, `s[0:2]` takes the characters at index 0 and 1 only. This start included, stop excluded rule is why slices are so predictable once you get used to counting from 0.",
+      "hints": [
+        "This question is about reading a slice with two numbers in it. Look at the two index numbers in the brackets and ask which index the slice starts at and which index it stops before, never including that one. Can you count out the letters of Python by their index position?",
+        "Imagine numbering each letter of Python like fence posts: P is 0, y is 1, t is 2, h is 3, o is 4, n is 5. A slice from index 1 to index 3 walks from post 1 up to, but not touching, post 3, collecting exactly two letters. Count which two letters sit at those two positions and in what order.",
+        "An option with three letters is wrong because it stretches one index too far past the stop, and an option starting with the capital letter is wrong because index 1 is not where the string begins. The right answer has exactly two lowercase letters, taken from the positions right after the very first letter of the word, in the same order they appear in Python."
+      ],
+      "deep": "Half-open intervals [start, stop) are why s[a:b] has b - a characters and s[:i] + s[i:] == s. Slicing a string or list makes a new object; slicing never raises IndexError even when the bounds run past the end, it just clips.",
+      "xp": 10,
+      "tags": [
+        "slicing",
+        "strings"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l5.q2",
@@ -806,17 +872,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "s = \"Python\"\nprint(s[::-1])",
-      "explain": "A step of -1 walks the sequence backwards, which reverses it.",
-      "hints": [
-        "The third slice number is the step, and it can be negative."
-      ],
-      "deep": "s[::-1] is the idiomatic reverse for strings, which have no reverse() method. For lists, reversed(lst) gives an iterator without copying and lst.reverse() flips in place. s[::2] takes every second character.",
-      "xp": 10,
-      "tags": [
-        "slicing",
-        "strings"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "An error",
         "Pto",
@@ -825,7 +880,21 @@
       ],
       "answer": [
         "nohtyP"
-      ]
+      ],
+      "explain": "A step of -1 walks the sequence backwards, which reverses it.",
+      "teach": "A slice can include a third number called the step, written as `s[start:stop:step]`, telling Python how many positions to jump each time. A step of 2 in `s[::2]` skips every other character, and a negative step tells Python to move backwards through the string instead of forwards. Leaving start and stop empty, like `s[::-1]`, means use the whole string but walk it in that stepping direction. This is handy because strings have no built-in reverse method of their own.",
+      "hints": [
+        "This question is about what a negative step does to the direction Python reads a sequence. Look at the three parts inside the brackets, especially the very last number, and ask which way through the string a step of minus one would move. Does it go from the front toward the back, or the back toward the front?",
+        "Picture reading a row of lockers left to right normally, then imagine reading them right to left instead, one at a time, skipping none. A step of positive one reads forward one character at a time, so a step of negative one reads backward, starting from the last letter. With start and stop both blank, the slice covers every letter in that backward direction.",
+        "An option that keeps the letters in their original order is wrong because it ignores what a negative step does, and an option with only three letters is wrong because it confuses this with skipping, not reversing. The right answer contains every letter of the original word, none dropped, but written starting from the last letter and ending at the first."
+      ],
+      "deep": "s[::-1] is the idiomatic reverse for strings, which have no reverse() method. For lists, reversed(lst) gives an iterator without copying and lst.reverse() flips in place. s[::2] takes every second character.",
+      "xp": 10,
+      "tags": [
+        "slicing",
+        "strings"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l5.q3",
@@ -833,19 +902,6 @@
       "level": 5,
       "type": "fill",
       "prompt": "Fill the gap so only the first two items print.",
-      "explain": "[:2] means from the start up to index 2, which is the first two items.",
-      "hints": [
-        "Leaving the start empty means from the beginning.",
-        "You want two items, so where does the slice stop?"
-      ],
-      "deep": "Omitting start means 0, omitting stop means len, so [:2] and [2:] split a list cleanly in two. Slice objects can be named: head = slice(0, 2); nums[head]. numpy and pandas reuse the same syntax on multiple axes.",
-      "xp": 20,
-      "tags": [
-        "slicing",
-        "lists"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "nums = [10, 20, 30, 40]\nprint(nums{0})",
       "blocks": [
         {
           "id": "s12",
@@ -868,10 +924,25 @@
           "kind": "expr"
         }
       ],
+      "template": "nums = [10, 20, 30, 40]\nprint(nums{0})",
       "answer": [
         "s02"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "[:2] means from the start up to index 2, which is the first two items.",
+      "teach": "A list keeps its items in order, and each one has a position starting at 0, so in `nums = [10, 20, 30, 40]`, 10 is at position 0 and 20 is at position 1. When you write a slice and leave out the number before the colon, Python assumes you mean the very start of the list, position 0. So a slice like `nums[:n]` always means from the beginning up through, but not including, position n. This shortcut is handy whenever you want the first few items without typing the starting position every time.",
+      "hints": [
+        "This question asks you to grab only the first two items of the list, no more and no less. Look at the four bracket options and think about what happens when the number before the colon is missing versus present. Which one starts counting from the very beginning of the list automatically?",
+        "Think of a slice with a blank before the colon like saying from the very start without needing to say the word start out loud. If you wanted the first two people in a queue, you would just say the first two, not starting from position zero. Look for the option whose blank-before-colon shape naturally means starting from position zero up to, but not including, position two.",
+        "An option using a single number in brackets only grabs one item at one position, not a range, so it prints just one number. An option that starts counting from position two is wrong because it skips the first two items instead of keeping them. The right option leaves the space before the colon empty and puts the number two after it, capturing exactly the first pair of items from the front of the list."
+      ],
+      "deep": "Omitting start means 0, omitting stop means len, so [:2] and [2:] split a list cleanly in two. Slice objects can be named: head = slice(0, 2); nums[head]. numpy and pandas reuse the same syntax on multiple axes.",
+      "xp": 20,
+      "tags": [
+        "slicing",
+        "lists"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l5.q4",
@@ -880,18 +951,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "letters = [\"a\", \"b\", \"c\"]\nprint(\"-\".join(letters))",
-      "explain": "join puts the separator between the items of the list.",
-      "hints": [
-        "The string before the dot is what goes between the items."
-      ],
-      "deep": "\"sep\".join(iterable) is called on the separator, not the list, which surprises everyone once. It is O(n) and the right way to build a string from parts; += in a loop is O(n^2) in principle. All items must already be strings, so map(str, nums) first.",
-      "xp": 10,
-      "tags": [
-        "strings",
-        "lists",
-        "conversion"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "a-b-c",
         "-a-b-c-",
@@ -900,7 +959,22 @@
       ],
       "answer": [
         "a-b-c"
-      ]
+      ],
+      "explain": "join puts the separator between the items of the list.",
+      "teach": "A string method is an action you call on a string using a dot, like `\"hi\".upper()`. The `join` method is a bit unusual because you call it on the separator string, and you hand it a list of strings to glue together. Calling join with a separator on a list of words places that separator between each pair of neighboring words, but not before the first or after the last. This matters because it is the clean, fast way to turn a list of strings into one combined string.",
+      "hints": [
+        "This question is about how the join method combines items from a list into one string. Look at which piece of text join is being called on, and think about where that text ends up placed in the result. Does it appear only between items, or also at the very start and very end?",
+        "Picture three friends holding hands in a line: the separator is like a handshake placed between each pair of neighbors, never before the first friend or after the last one. Joining three letters with a dash between them produces two dashes total, one for each gap between neighbors, not three. Count how many gaps exist between the items in the list and match that to how many separators should appear.",
+        "An option with a separator glued onto both outer ends is wrong because join never adds anything before the first item or after the last. An option showing the list with brackets and quotes is wrong because join always produces a plain string, not a printed list. The right answer shows the three letters run together with exactly one separator character sitting in each of the two gaps between them, nowhere else."
+      ],
+      "deep": "\"sep\".join(iterable) is called on the separator, not the list, which surprises everyone once. It is O(n) and the right way to build a string from parts; += in a loop is O(n^2) in principle. All items must already be strings, so map(str, nums) first.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "lists",
+        "conversion"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l5.q5",
@@ -909,17 +983,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "print(int(3.9))",
-      "explain": "int() truncates toward zero; it does not round.",
-      "hints": [
-        "Converting a float to int throws away the fraction rather than rounding it."
-      ],
-      "deep": "int(3.9) is 3 and int(-3.9) is -3, truncation toward zero. round(3.9) is 4, but round(2.5) is 2 because Python rounds half to even (banker's rounding) to avoid bias. math.floor and math.ceil are the explicit choices when the direction matters.",
-      "xp": 10,
-      "tags": [
-        "conversion",
-        "types"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "3",
         "4",
@@ -928,7 +991,21 @@
       ],
       "answer": [
         "3"
-      ]
+      ],
+      "explain": "int() truncates toward zero; it does not round.",
+      "teach": "Converting a value from one type to another is called type conversion, and `int()` is one common way to do it, turning a number into a whole number. When you give `int()` a decimal number, it does not round to the nearest whole number, it simply chops off everything after the decimal point. So `int()` moves toward zero, dropping the fractional part entirely rather than asking whether that part is closer to the next number up or down. This distinction matters because rounding and truncating often give different answers, especially near the middle.",
+      "hints": [
+        "This question is testing whether int rounds a decimal number or just cuts off the decimal part. Look at the number inside the parentheses and ask what is left if you simply remove everything after the decimal point, without checking how close it is to the next whole number. What whole number sits right before that decimal value?",
+        "Think about trimming a piece of string at a mark: cutting off everything past that point keeps only what was already there, it does not stretch out to the next mark. In the same way, int keeps only the whole number part sitting to the left of the decimal point, ignoring how close the fraction was to rounding up. Decide what whole number comes just before the given decimal value.",
+        "An option matching what proper rounding would give is wrong, because int never checks how close the fraction is to the next whole number. An option that keeps the decimal point is wrong because int always produces a whole number type. The right answer is the whole number that already sits immediately to the left of the decimal point in the original value, with nothing added or rounded up."
+      ],
+      "deep": "int(3.9) is 3 and int(-3.9) is -3, truncation toward zero. round(3.9) is 4, but round(2.5) is 2 because Python rounds half to even (banker's rounding) to avoid bias. math.floor and math.ceil are the explicit choices when the direction matters.",
+      "xp": 10,
+      "tags": [
+        "conversion",
+        "types"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t2.l5.q6",
@@ -937,19 +1014,6 @@
       "type": "blocks",
       "prompt": "Build the line that turns the string into a list of words.",
       "code": "text = \"the quick fox\"",
-      "explain": "split() with no argument splits on any run of whitespace and returns a list of the words.",
-      "hints": [
-        "The method is called on the string.",
-        "join builds a string; you want the one that breaks one apart."
-      ],
-      "deep": "split() with no separator collapses runs of whitespace and strips the ends, which is what you want for words. split(\",\") keeps empty fields, which is what you want for CSV-like data. For real CSV use the csv module, which handles quotes.",
-      "xp": 15,
-      "tags": [
-        "strings",
-        "methods",
-        "lists"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "words",
         "(",
@@ -970,7 +1034,22 @@
         "(",
         ")"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "split() with no argument splits on any run of whitespace and returns a list of the words.",
+      "teach": "Strings have built-in methods, which are actions you call with a dot after the string, like name.upper(). One handy string method breaks a sentence apart wherever there is blank space and hands you back a list of the separate pieces. For example, splitting the text cat dog bird with no separator given produces a list of three separate word strings. This matters because programs often need to work with one word at a time instead of one long chunk of text.",
+      "hints": [
+        "The question wants you to turn one long string into several separate words stored in a list. What single action takes a whole sentence and chops it apart at each blank space? Look at the tray and think about which piece names that chopping action.",
+        "Picture a strip of paper with words written on it, torn apart at every gap between words, so you end up with separate slips, one per word. That tearing action is different from gluing the slips back into one strip, which is the opposite job. Look for a block whose name means breaking a string apart, and pair it with the dot that lets you call it on your text variable.",
+        "The block that means gluing pieces of a list back into one string does the opposite of what you need here, so set that one aside. The block you want is called directly on the string with a dot, needs no argument inside its parentheses because blank space is assumed by default, and its result gets stored using the equals sign into your new list name."
+      ],
+      "deep": "split() with no separator collapses runs of whitespace and strips the ends, which is what you want for words. split(\",\") keeps empty fields, which is what you want for CSV-like data. For real CSV use the csv module, which handles quotes.",
+      "xp": 15,
+      "tags": [
+        "strings",
+        "methods",
+        "lists"
+      ],
+      "reviewed": "2026-09-05"
     }
   ]
 }

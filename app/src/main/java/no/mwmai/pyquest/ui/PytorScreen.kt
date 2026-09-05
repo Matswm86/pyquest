@@ -49,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import no.mwmai.pyquest.data.CodexSearch
+import no.mwmai.pyquest.data.EventLog
 import no.mwmai.pyquest.model.CodexDomain
 import no.mwmai.pyquest.model.CodexEntry
 import no.mwmai.pyquest.pytor.PytorClient
@@ -69,6 +70,7 @@ class PytorChat {
 
     val messages = mutableStateListOf<Message>()
     var draft by mutableStateOf("")
+    var log: EventLog? = null
     var busy by mutableStateOf(false)
         private set
     var lastBackend by mutableStateOf("")
@@ -82,6 +84,8 @@ class PytorChat {
         messages += Message(fromPytor = false, text = q)
         draft = ""
         busy = true
+        log?.log("chat_question", "text" to q, "online" to online, "context" to context.take(300))
+        val startedAt = System.currentTimeMillis()
         scope.launch {
             val related = CodexSearch.search(codex, q, limit = 2)
             val history = messages.dropLast(1).takeLast(6).map {
@@ -98,6 +102,12 @@ class PytorChat {
             }
             messages += message
             busy = false
+            log?.log(
+                "chat_answer",
+                "source" to message.source, "backend" to (reply as? PytorClient.PytorReply.Answer)?.backend,
+                "failure" to (reply as? PytorClient.PytorReply.Failure)?.reason,
+                "ms" to (System.currentTimeMillis() - startedAt), "text" to message.text,
+            )
         }
     }
 
@@ -145,6 +155,8 @@ fun PytorScreen(
     var selected by remember { mutableStateOf<CodexEntry?>(null) }
 
     BackHandler(enabled = selected != null) { selected = null }
+    // Once per opened entry, not once per recomposition.
+    LaunchedEffect(selected?.id) { selected?.let { chat.log?.log("codex_open", "id" to it.id) } }
 
     Column(
         modifier = modifier

@@ -37,16 +37,15 @@ object PytorCoach {
         return if (next != null) {
             Line("Next up: tier ${next.first.tier}, ${next.first.title}, level ${next.second}.", next.first.tier, next.second)
         } else {
-            Line("Every tier mastered. Now go build something and send me the bug reports.")
+            Line("Every level cleared. Replay the ones under 100% mastery, or go build something and send me the bug reports.")
         }
     }
 
-    /** The first level that is not yet mastered, walking the ladder in order. */
+    /** The first level not yet cleared, walking the ladder in order. */
     fun nextLevel(progress: Progress, tiers: List<Tier>): Pair<Tier, Int>? {
         for (tier in tiers) {
             for (level in tier.levels) {
-                val ids = tier.level(level).map { it.id }
-                if (progress.masteryOf(ids) < 1f) return tier to level
+                if (!progress.isCleared(tier.tier, level)) return tier to level
             }
         }
         return null

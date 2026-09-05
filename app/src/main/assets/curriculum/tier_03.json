@@ -17,18 +17,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Which line checks whether x equals 5?",
-      "explain": "A single = assigns, a double == compares. The if line ends with a colon.",
-      "hints": [
-        "One equals sign gives a value a name; comparing needs a different spelling.",
-        "There is no triple-equals in Python."
-      ],
-      "deep": "= is a statement, == is an expression that returns a bool. Because assignment is not an expression in Python, if x = 5: is a SyntaxError rather than the silent bug it is in C. The walrus operator := (PEP 572) is the deliberate exception for assignment inside expressions.",
-      "xp": 10,
-      "tags": [
-        "conditions",
-        "comparison"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "if x equals 5:",
         "if x === 5:",
@@ -37,7 +25,21 @@
       ],
       "answer": [
         "if x == 5:"
-      ]
+      ],
+      "explain": "A single = assigns, a double == compares. The if line ends with a colon.",
+      "teach": "In Python, one equals sign is used to store a value in a name, like x = 5, which puts the number 5 inside the box called x. That is an action, not a question, and Python needs a completely different symbol when you want to ask whether two values are the same. This matters because mixing the two up is one of the most common beginner mistakes, and Python actually stops you from doing it by accident inside an if. Every if line also needs to end with a colon, which tells Python that an indented block of code follows.",
+      "hints": [
+        "This question is testing whether you can tell the difference between storing a value in a name and asking whether two values match. Look closely at the middle of each option: is it doing something to x, or is it asking a question about x? Which symbol usually signals a comparison rather than an action?",
+        "Think of a locker with a name tag: writing that the locker holds a 5 is one action, but asking whether the locker currently holds a 5 is a completely different question, and Python needs its own symbol for that question so the two never get confused. Look for the option that uses the comparison symbol written twice in a row, still ending the line the same way every if line must end.",
+        "The option with a single symbol used for storing is really a command, not a question, so Python would not even let it run inside an if. The option that spells out a whole word instead of a symbol, and the one that uses three symbols together, are not real Python at all. The correct option repeats the equals symbol back to back and still finishes with the colon every if line needs."
+      ],
+      "deep": "= is a statement, == is an expression that returns a bool. Because assignment is not an expression in Python, if x = 5: is a SyntaxError rather than the silent bug it is in C. The walrus operator := (PEP 572) is the deliberate exception for assignment inside expressions.",
+      "xp": 10,
+      "tags": [
+        "conditions",
+        "comparison"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l1.q2",
@@ -46,16 +48,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "x = 10\nif x > 5:\n    print(\"big\")\nelse:\n    print(\"small\")",
-      "explain": "10 > 5 is True, so the first branch runs and the else is skipped.",
-      "hints": [
-        "Evaluate the comparison first, then follow the branch that matches."
-      ],
-      "deep": "if evaluates its condition once, calls bool() on the result, and runs exactly one branch. The comparison operators return real bool objects, True and False, which are the integers 1 and 0 underneath: True + True is 2, which is occasionally useful and usually a smell.",
-      "xp": 10,
-      "tags": [
-        "conditions"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "small",
         "big",
@@ -64,7 +56,20 @@
       ],
       "answer": [
         "big"
-      ]
+      ],
+      "explain": "10 > 5 is True, so the first branch runs and the else is skipped.",
+      "teach": "An if statement lets your program choose between two different paths depending on whether something is true or false. You write a condition, such as comparing one number with another, and only the indented lines under the matching branch actually run. Python checks the condition exactly once, decides true or false, and skips the other branch completely, it never runs both. This is like deciding whether to grab an umbrella before leaving the house: you check the sky once and then act on that single decision.",
+      "hints": [
+        "This question wants you to trace through the code and work out which branch actually runs. Look at the condition written next to the if, plug in the real number involved, and decide for yourself whether that comparison comes out true or false.",
+        "Think about a security guard checking ages at a door: if a person is over a certain number they go through one door, otherwise they go through the other, never both. Here the program compares a stored number against a smaller number, so work out honestly which side wins with the actual value given. Once you know if the condition is true or false, only one of the two print lines will ever run.",
+        "The branch tied to the smaller sounding word only fires when the comparison turns out false, and that is not what happens with the numbers given here. Nothing printing at all, or an error happening, would only make sense if the code were broken, but this if and else pair is written correctly. The right answer is the word sitting inside the branch that matches a true comparison between the two numbers."
+      ],
+      "deep": "if evaluates its condition once, calls bool() on the result, and runs exactly one branch. The comparison operators return real bool objects, True and False, which are the integers 1 and 0 underneath: True + True is 2, which is occasionally useful and usually a smell.",
+      "xp": 10,
+      "tags": [
+        "conditions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l1.q3",
@@ -73,18 +78,6 @@
       "type": "mcq",
       "prompt": "Why is this a SyntaxError?",
       "code": "if x > 5:\nprint(\"big\")",
-      "explain": "Python uses indentation to know which lines belong to the if. A block with nothing indented under it is a syntax error.",
-      "hints": [
-        "Look at what comes after the colon on the next line."
-      ],
-      "deep": "Indentation is syntax, not style. The tokenizer emits INDENT and DEDENT tokens, and the grammar requires a block after the colon. PEP 8 says four spaces, never tabs mixed with spaces; Python 3 refuses inconsistent mixing outright with TabError.",
-      "xp": 10,
-      "tags": [
-        "conditions",
-        "indentation",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "print cannot be used inside if",
         "if needs parentheses around the condition",
@@ -93,7 +86,22 @@
       ],
       "answer": [
         "The line after if must be indented"
-      ]
+      ],
+      "explain": "Python uses indentation to know which lines belong to the if. A block with nothing indented under it is a syntax error.",
+      "teach": "Python does not use curly braces or extra keywords to mark where a block of code starts and ends, it uses indentation, meaning the blank space at the start of a line. Any line that belongs inside an if, a loop, or a function must be pushed in further than the line above it, usually by four spaces, so Python can tell it belongs to that block. If a line that should belong to the block starts at the very same position as the line above it, Python has no way to know it is part of that block. Because of this, Python refuses to even run the program and reports the problem immediately.",
+      "hints": [
+        "This question asks you to notice what is missing between the if line and the line right below it. Look closely at how far each of the two lines starts from the left edge of the screen. Does the second line begin further to the right than the first one, or does it start in exactly the same place?",
+        "Think of a bulleted outline where sub-points are pushed in under the main heading so you can tell at a glance what belongs where. Python needs the same visual pushing in, it expects the line meant to run only when the condition is true to sit further right than the if line itself. Look among the options for the one that talks about spacing at the start of the line, rather than about punctuation or about what print is allowed to do.",
+        "It has nothing to do with print being restricted, print can appear almost anywhere, and it is not about needing parentheses either, since if never required those in Python. The colon itself is written correctly here and colons are required, so that is not the problem. The real issue is that the second line sits flush with the if instead of being pushed in further, which is exactly the kind of spacing mistake the right answer describes."
+      ],
+      "deep": "Indentation is syntax, not style. The tokenizer emits INDENT and DEDENT tokens, and the grammar requires a block after the colon. PEP 8 says four spaces, never tabs mixed with spaces; Python 3 refuses inconsistent mixing outright with TabError.",
+      "xp": 10,
+      "tags": [
+        "conditions",
+        "indentation",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l1.q4",
@@ -102,17 +110,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "items = []\nif not items:\n    print(\"empty\")\nelse:\n    print(\"full\")",
-      "explain": "An empty list is falsy, so not items is True.",
-      "hints": [
-        "Python treats empty containers as False in a condition."
-      ],
-      "deep": "Truthiness: None, False, 0, 0.0, \"\", [], {}, set() and any object whose __bool__ or __len__ says so are falsy; everything else is truthy. So write if not items:, never if len(items) == 0:. Be careful with 0 as a legitimate value: if count: skips zero.",
-      "xp": 10,
-      "tags": [
-        "conditions",
-        "truthiness"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "empty",
         "An error",
@@ -121,7 +118,21 @@
       ],
       "answer": [
         "empty"
-      ]
+      ],
+      "explain": "An empty list is falsy, so not items is True.",
+      "teach": "Besides True and False, Python treats many everyday values as automatically true or false when they appear inside an if. A list holding nothing at all behaves like false, while a list holding at least one item behaves like true. This means you can write `if not items:` to ask whether a list has nothing inside it, without ever checking its length by hand. The same shortcut works for text with no characters, dictionaries with no keys, and the number zero, so learning it once saves you many lines of code later.",
+      "hints": [
+        "This question is testing whether you know how Python treats a list that starts out with nothing added to it, when that list sits inside a condition. Look at what the variable holds right now, and ask yourself whether a list like that counts as true or as false to Python.",
+        "Picture a basket holding zero apples: most people would agree it has nothing in it, so asking is there nothing here about that basket would come out true. Python treats a list with nothing inside it the same way, and the word not in the condition flips that answer one more time. Follow that flip through the if and the else to see which printed word actually matches this situation.",
+        "The branch that only runs when a list actually holds something cannot be right, since this list starts out with nothing added to it at all. There is no error either, since checking a list inside a condition is completely normal, and the raw brackets themselves are never printed as text. The correct answer is the short, plain word that simply describes a list with nothing inside it."
+      ],
+      "deep": "Truthiness: None, False, 0, 0.0, \"\", [], {}, set() and any object whose __bool__ or __len__ says so are falsy; everything else is truthy. So write if not items:, never if len(items) == 0:. Be careful with 0 as a legitimate value: if count: skips zero.",
+      "xp": 10,
+      "tags": [
+        "conditions",
+        "truthiness"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l1.q5",
@@ -130,16 +141,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "age = 15\nif age < 13:\n    print(\"child\")\nelif age < 18:\n    print(\"teen\")\nelse:\n    print(\"adult\")",
-      "explain": "Branches are tested top to bottom and the first true one wins. 15 is not under 13, but it is under 18.",
-      "hints": [
-        "Only the first matching branch runs; the rest are never tested."
-      ],
-      "deep": "elif chains are checked in order and stop at the first true condition, so order the tests from most specific to least. Python has no switch; for many fixed cases use a dict of functions, or match/case (PEP 634, Python 3.10) when you need structural patterns.",
-      "xp": 10,
-      "tags": [
-        "conditions"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "teen",
         "child",
@@ -148,7 +149,20 @@
       ],
       "answer": [
         "teen"
-      ]
+      ],
+      "explain": "Branches are tested top to bottom and the first true one wins. 15 is not under 13, but it is under 18.",
+      "teach": "When there are more than two possible outcomes, you can chain extra conditions onto an if using elif, short for else if. Python checks each condition in order from top to bottom and runs the first branch whose condition turns out true, then skips every condition written below it, even if one of those would also be true. This works like sorting people into age groups at an event: you check the smallest cutoff first, and only move to the next cutoff if the person does not fit the first one. The order you write the conditions in really matters, because once an earlier one matches, later ones never even get checked.",
+      "hints": [
+        "This question wants you to walk through each condition in the exact order it is written, stopping at the first one that matches the age given. Reading from the top down, which range does that specific age actually land in first?",
+        "Imagine three lines at an amusement park sorted by age: first you check if someone is under a small cutoff, and only if that fails do you check the next bigger cutoff. The age given here fails that very first check, so Python moves on to try the next condition down the list. Find the point where the age finally satisfies a condition, and the word printed in that branch is your answer.",
+        "The word tied to the very first condition cannot be right, because the age given does not fall under that first small cutoff. The word tied to the final else also cannot be right, because the age does satisfy one of the conditions before the chain ever reaches that point. The correct answer is the word attached to the condition in between, the one that only gets checked once the first test has already failed."
+      ],
+      "deep": "elif chains are checked in order and stop at the first true condition, so order the tests from most specific to least. Python has no switch; for many fixed cases use a dict of functions, or match/case (PEP 634, Python 3.10) when you need structural patterns.",
+      "xp": 10,
+      "tags": [
+        "conditions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l1.q6",
@@ -156,19 +170,6 @@
       "level": 1,
       "type": "fill",
       "prompt": "Fill the gap so the message prints only when both are true.",
-      "explain": "and requires both sides to be true. or would let either one through.",
-      "hints": [
-        "Both conditions must hold at once.",
-        "& is for bits and sets, not for this."
-      ],
-      "deep": "and and or short-circuit: a and b never evaluates b when a is falsy, and they return the deciding operand, not a bool. That gives idioms like name = given or \"anon\". The bitwise & does not short-circuit and has different precedence, a classic bug in pandas conditions.",
-      "xp": 20,
-      "tags": [
-        "conditions",
-        "boolean"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "logged_in = True\nis_admin = True\nif logged_in {0} is_admin:\n    print(\"welcome, admin\")",
       "blocks": [
         {
           "id": "and",
@@ -191,10 +192,25 @@
           "kind": "expr"
         }
       ],
+      "template": "logged_in = True\nis_admin = True\nif logged_in {0} is_admin:\n    print(\"welcome, admin\")",
       "answer": [
         "and"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "and requires both sides to be true. or would let either one through.",
+      "teach": "Sometimes a condition should only be true when two separate things are both true at the same time. Python gives you words that combine conditions differently: one demands that both sides be true before the whole thing counts as true, while another is satisfied if even just one side is true. For example, getting into a members-only event might require having a ticket and being on the guest list, both conditions together, not just one alone. Choosing the right combining word changes whether your program is strict about needing everything, or relaxed about accepting just one match.",
+      "hints": [
+        "This question is about joining two true or false values into a single condition. The welcome message should only print when both variables are true at once, so which word demands that both sides hold rather than letting just one be enough?",
+        "Think about needing both a key and a code to open a safe: having only the key does nothing, and having only the code does nothing either, you need both at the same time. That is different from a looser rule where having either one alone would already open the safe. Look among the blocks for the word that means both conditions must hold together, not the one that flips a single value around, and not the one that is satisfied by just one side.",
+        "The block that flips a single true or false value around does not combine two conditions at all, so it cannot fit this gap. The block that would let either condition alone satisfy the check is looser than what this message needs, since it would welcome someone without admin rights too. The block that belongs here is the short word that insists both conditions hold at the same time, keeping the welcome message strict."
+      ],
+      "deep": "and and or short-circuit: a and b never evaluates b when a is falsy, and they return the deciding operand, not a bool. That gives idioms like name = given or \"anon\". The bitwise & does not short-circuit and has different precedence, a classic bug in pandas conditions.",
+      "xp": 20,
+      "tags": [
+        "conditions",
+        "boolean"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l2.q1",
@@ -203,17 +219,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "for i in range(3):\n    print(i, end=\" \")",
-      "explain": "range(3) produces 0, 1, 2: it starts at 0 and stops before 3.",
-      "hints": [
-        "range starts at zero and never reaches its stop value."
-      ],
-      "deep": "range(stop) is a lazy sequence, not a list, so range(10**9) costs nothing until iterated. It supports len, indexing and membership in O(1). range(start, stop, step) mirrors slicing, and negative steps count down: range(3, 0, -1) is 3, 2, 1.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "range"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "0 1 2",
         "3",
@@ -222,7 +227,21 @@
       ],
       "answer": [
         "0 1 2"
-      ]
+      ],
+      "explain": "range(3) produces 0, 1, 2: it starts at 0 and stops before 3.",
+      "teach": "A for loop repeats its body once for each item in a sequence. range(n) is a built-in way to generate whole numbers without writing them by hand, like a ticket dispenser. range(3) does not include 3 itself, it stops right before it, the same way a slice up to index 3 leaves out index 3. This start-at-zero, stop-before-the-limit habit shows up everywhere in Python, so get comfortable with it now.",
+      "hints": [
+        "This question is about how many numbers range(3) hands out and where counting begins. Look at the code: what number does the loop print first, and does it ever reach 3? Work out the full list of values before picking an answer.",
+        "Picture range(3) as three raffle tickets pulled one at a time: ticket zero, ticket one, ticket two, then the dispenser is empty. It is the same idea as a list of 3 items using positions 0, 1, 2, never position 3. Walk through the loop by hand and write down each value of i as it prints.",
+        "An option with the number 3 in it misreads the stop value, since range(3) stops before printing 3. An option starting from 1 forgets range begins at 0 by default, and an option with only two numbers skips a trip through the loop. The right answer has exactly three numbers, starting at zero, one apart, separated by single spaces."
+      ],
+      "deep": "range(stop) is a lazy sequence, not a list, so range(10**9) costs nothing until iterated. It supports len, indexing and membership in O(1). range(start, stop, step) mirrors slicing, and negative steps count down: range(3, 0, -1) is 3, 2, 1.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "range"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l2.q2",
@@ -231,17 +250,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "for i in range(1, 7, 2):\n    print(i, end=\" \")",
-      "explain": "range(1, 7, 2) starts at 1, steps by 2, and stops before 7.",
-      "hints": [
-        "Three arguments: start, stop, step."
-      ],
-      "deep": "The step argument makes range the tool for every-nth patterns without an if inside the loop. When you need both the index and the item, do not write range(len(items)); write for i, item in enumerate(items), which is clearer and cannot go out of bounds.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "range"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "0 2 4",
         "1 3 5 7",
@@ -250,7 +258,21 @@
       ],
       "answer": [
         "1 3 5"
-      ]
+      ],
+      "explain": "range(1, 7, 2) starts at 1, steps by 2, and stops before 7.",
+      "teach": "range can take three numbers: where to start, where to stop before, and how big a jump to take between values, called the step. With one number Python assumes start 0 and step 1, but all three let you skip through values, like counting every other stair. For example, range(0, 10, 2) walks even numbers up to but not including 10. Reading start, stop, and step together is the key skill whenever you need a pattern instead of every number.",
+      "hints": [
+        "This question checks whether you can read the three numbers inside range and figure out the sequence they build. Which of the three numbers is the starting point, which is the boundary the loop never reaches, and which tells you how far to jump each time?",
+        "Think of climbing stairs two at a time starting from step 1: you land on 1, then 3, then 5, and would land on 7 next but the stop value says halt before reaching it. The middle number in range is a boundary, never a printed value. Trace the numbers by hand, adding the step each time, and stop before reaching the stop number.",
+        "An option including 7 forgets the stop value is never reached, and an option jumping by 1 ignores the step entirely. An option using even numbers started from the wrong place. The right sequence has three numbers, begins at the first number inside range, and grows by the step size each time, staying below the stop."
+      ],
+      "deep": "The step argument makes range the tool for every-nth patterns without an if inside the loop. When you need both the index and the item, do not write range(len(items)); write for i, item in enumerate(items), which is clearer and cannot go out of bounds.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "range"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l2.q3",
@@ -258,18 +280,6 @@
       "level": 2,
       "type": "fill",
       "prompt": "Fill the gap so every fruit is printed on its own line.",
-      "explain": "The loop variable is the name used inside the body, so it must be fruit.",
-      "hints": [
-        "Look at the name used inside the loop body.",
-        "Loop over the list directly; no range needed."
-      ],
-      "deep": "for x in iterable calls iter() once and next() until StopIteration. Iterating over the collection itself is the Pythonic form; indexes are only for when you need the position. The loop variable keeps its last value after the loop, a scoping quirk worth knowing.",
-      "xp": 20,
-      "tags": [
-        "loops"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "fruits = [\"apple\", \"pear\"]\nfor {0} in fruits:\n    print(fruit)",
       "blocks": [
         {
           "id": "range",
@@ -292,10 +302,24 @@
           "kind": "var"
         }
       ],
+      "template": "fruits = [\"apple\", \"pear\"]\nfor {0} in fruits:\n    print(fruit)",
       "answer": [
         "fruit"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "The loop variable is the name used inside the body, so it must be fruit.",
+      "teach": "When you write a for loop, you choose the name of the loop variable, but Python only knows what you actually typed, not what you meant. Whatever name follows the word for is the exact name you must reuse inside the loop body to refer to the current item. For example, in for item in basket: print(item), the word item has to match on both lines. A mismatch causes an error because Python looks for a name that was never created.",
+      "hints": [
+        "This question is about matching the name introduced in the for line to the name already used in the loop body. Look at the print statement below the blank, what word does it use to refer to the current fruit?",
+        "Think of the for line as introducing a nickname for whatever item is being visited right now, and the body can only use that exact nickname. If a recipe says for each egg in the carton, crack egg into the bowl, the word after for each and the word in the instruction must match. Check the print line and find the nickname it already relies on.",
+        "A block repeating the collection's own name would loop over the whole list again and again instead of one item at a time, and a made-up index letter would leave the print line pointing at nothing. A call built around range does not fit since fruits is already a list, not a count. The right piece is simply the same single word that print already uses."
+      ],
+      "deep": "for x in iterable calls iter() once and next() until StopIteration. Iterating over the collection itself is the Pythonic form; indexes are only for when you need the position. The loop variable keeps its last value after the loop, a scoping quirk worth knowing.",
+      "xp": 20,
+      "tags": [
+        "loops"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l2.q4",
@@ -304,17 +328,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "for i, ch in enumerate(\"ab\"):\n    print(i, ch)",
-      "explain": "enumerate yields (index, item) pairs starting from 0, and the loop unpacks them.",
-      "hints": [
-        "enumerate hands back two things per item, and the index comes first."
-      ],
-      "deep": "enumerate(iterable, start=0) is the idiom that replaces manual counters and range(len(x)). start=1 gives human-friendly numbering. It is lazy and works on any iterable, including files and generators, where len() would not even exist.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "enumerate"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "a 0 / b 1",
         "a / b",
@@ -323,7 +336,21 @@
       ],
       "answer": [
         "0 a / 1 b"
-      ]
+      ],
+      "explain": "enumerate yields (index, item) pairs starting from 0, and the loop unpacks them.",
+      "teach": "Sometimes you need both an item and its position while looping, like knowing you are on the second letter of a word. enumerate wraps a sequence and hands you pairs of position and item, counting from 0 by default. Looping enumerate applied to the text hi gives 0 paired with h, then 1 paired with i. Writing for i, ch in enumerate unpacks each pair into two names at once, which is why it is the classic way to loop with numbering.",
+      "hints": [
+        "This question checks whether you know the order enumerate hands back its two pieces, and what number it starts from. Look at the loop header, which name comes first, i or ch, and what does enumerate normally count from?",
+        "Think of enumerate as stapling a numbered sticky note onto each letter before you see it, starting the first note at 0, not 1. Enumerating the text hi pairs 0 with h, then 1 with i. Since the header writes i and ch in that order, the number always lands in i and the letter always lands in ch, so trace each pair in that order.",
+        "An option starting the count at 1 forgets enumerate defaults to 0, and an option printing the letter before the number has the two unpacked names swapped. An option missing numbers ignores that enumerate was used at all. The right output pairs the starting index 0 with the first letter, then 1 with the second letter, number then letter."
+      ],
+      "deep": "enumerate(iterable, start=0) is the idiom that replaces manual counters and range(len(x)). start=1 gives human-friendly numbering. It is lazy and works on any iterable, including files and generators, where len() would not even exist.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "enumerate"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l2.q5",
@@ -332,17 +359,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "d = {\"a\": 1, \"b\": 2}\nfor k, v in d.items():\n    print(f\"{k}={v}\", end=\" \")",
-      "explain": "items() gives each key and value as a pair, unpacked into k and v.",
-      "hints": [
-        "items() yields pairs; the loop header takes them apart."
-      ],
-      "deep": "Looping over a dict directly gives keys; .items() gives (key, value) tuples, unpacked in the header. Never modify the dict's size while iterating it, that raises RuntimeError; iterate over list(d) or build a new dict instead.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "dicts"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "('a', 1) ('b', 2)",
         "1 2",
@@ -351,7 +367,21 @@
       ],
       "answer": [
         "a=1 b=2"
-      ]
+      ],
+      "explain": "items() gives each key and value as a pair, unpacked into k and v.",
+      "teach": "A dictionary stores information as key-value pairs, like a name paired with a phone number. Looping over a dictionary directly shows only the keys, but calling items gives you the key and its matching value together, as a pair you can unpack into two names. For example, looping name, number over phonebook items lets you use name and number separately inside the loop. This is the standard way to work with both sides of a dictionary at once.",
+      "hints": [
+        "This question is about what items hands you each pass, and how the code then displays it. Look at the print line, does it show the pair the way Python prints a tuple, or does it build a custom string from the two unpacked names?",
+        "Think of a dictionary as labeled boxes, each with a name tag and contents inside. Calling items lets you read both the tag and the contents at once, into two hands named k and v here. The print line weaves k and v into an f-string with a specific format, so trace what that format produces, not the raw pair.",
+        "An option with parentheses and a comma is what printing the raw pair looks like, which this code does not do. An option showing only numbers or only letters ignores that the f-string includes both. The right output pairs each key directly with its value using an equals sign, entries separated by the space the print call specifies."
+      ],
+      "deep": "Looping over a dict directly gives keys; .items() gives (key, value) tuples, unpacked in the header. Never modify the dict's size while iterating it, that raises RuntimeError; iterate over list(d) or build a new dict instead.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "dicts"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l2.q6",
@@ -359,17 +389,6 @@
       "level": 2,
       "type": "order",
       "prompt": "Order the lines so the program prints each name with its position, starting from 1.",
-      "explain": "Define the list, then loop with enumerate, then print inside the loop.",
-      "hints": [
-        "The indented line belongs inside the loop."
-      ],
-      "deep": "enumerate's start argument shifts only the numbering, not the iteration. It is the cleanest way to print 1-based lists to humans while keeping 0-based indexing in the code. Mixing the two conventions inside logic is a reliable source of off-by-one bugs.",
-      "xp": 15,
-      "tags": [
-        "loops",
-        "enumerate"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "for i, name in enumerate(names, start=1):",
         "    print(i, name)",
@@ -380,7 +399,21 @@
         "for i, name in enumerate(names, start=1):",
         "    print(i, name)"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Define the list, then loop with enumerate, then print inside the loop.",
+      "teach": "Python runs top to bottom, and a name must exist before you use it, so a list has to be created before any loop reads it. A for loop also always has one shape: the header line ending in a colon comes first, and the indented instructions that repeat come right after. Think of a recipe: you cannot list a step for an ingredient you have not bought yet. Getting this order right is what makes a program run instead of crash.",
+      "hints": [
+        "This question is about the order things must happen in: what has to exist before a loop can use it, and what has to come before an indented line can run. Look at the three lines, which one creates something the other two depend on?",
+        "Think of a classroom roll call: first you need the list of names written down, then you announce the counting rule, then you read each name following that rule. You cannot announce the rule before the list exists, or read a name before the rule is set. Find the line that builds the data, then the one that sets up counting, then the one that runs per name.",
+        "Putting the loop header before the list exists would make Python fail immediately, since it loops over something not yet defined. Putting the indented print line before the header breaks the structure, since indented code only follows a header ending in a colon. The right order builds the plain list first, sets up numbered counting next, and runs the per-name line last."
+      ],
+      "deep": "enumerate's start argument shifts only the numbering, not the iteration. It is the cleanest way to print 1-based lists to humans while keeping 0-based indexing in the code. Mixing the two conventions inside logic is a reliable source of off-by-one bugs.",
+      "xp": 15,
+      "tags": [
+        "loops",
+        "enumerate"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l3.q1",
@@ -389,17 +422,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "n = 0\nwhile n < 3:\n    print(n, end=\" \")\n    n += 1",
-      "explain": "The loop runs while n is under 3 and n grows by one each time, so it prints 0, 1, 2 and stops.",
-      "hints": [
-        "Trace n: what is its value each time the condition is checked?"
-      ],
-      "deep": "while re-tests the condition before every iteration. The body must change something the condition reads or the loop never ends. Prefer for when the number of iterations is known; while is for wait-until conditions like polling and retry loops.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "while"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "1 2 3",
         "0 1 2",
@@ -408,7 +430,21 @@
       ],
       "answer": [
         "0 1 2"
-      ]
+      ],
+      "explain": "The loop runs while n is under 3 and n grows by one each time, so it prints 0, 1, 2 and stops.",
+      "teach": "A while loop checks its condition first, and only if that condition is true does it run the body, then it checks again. This repeats until the condition turns false. Here n starts at 0, and each pass prints n and then adds 1 to it, so the value printed is always the one from before the addition. It is like tapping a counter and reading it before each tap adds one more. The loop always stops exactly when the check fails, never one round later.",
+      "hints": [
+        "The question is really asking which numbers get printed before the loop gives up on its condition. Look at n < 3 and picture n growing by one each round. What is the last value of n that still makes this condition true?",
+        "Picture a ticket machine that prints the current number, then bumps the counter, then checks if it should print again. Here n prints before it grows, so the printed values always trail one step behind the check. Walk n through 0, then 1, then 2, and see at which point the check would finally say no.",
+        "An answer that ends in 3 assumes printing happens after n has already grown to 3, but the loop checks before printing and stops right there. An answer claiming it never stops ignores that n is changed inside the body every round. An answer starting at 1 forgets n begins at 0. Look for the three smallest whole numbers in order, starting from zero."
+      ],
+      "deep": "while re-tests the condition before every iteration. The body must change something the condition reads or the loop never ends. Prefer for when the number of iterations is known; while is for wait-until conditions like polling and retry loops.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "while"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l3.q2",
@@ -417,18 +453,6 @@
       "type": "mcq",
       "prompt": "What is wrong with this loop?",
       "code": "n = 0\nwhile n < 3:\n    print(n)",
-      "explain": "Nothing in the body changes n, so n < 3 stays true and the loop never ends.",
-      "hints": [
-        "Look for the line that would move n toward 3."
-      ],
-      "deep": "An infinite loop is not always a bug (servers run while True:), but an accidental one hangs the program. In a REPL Ctrl-C raises KeyboardInterrupt. Every while loop deserves a one-line answer to: what makes the condition false?",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "while",
-        "errors"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "while needs parentheses",
         "Nothing, it prints 0 once",
@@ -437,7 +461,22 @@
       ],
       "answer": [
         "n never changes, so the loop runs forever"
-      ]
+      ],
+      "explain": "Nothing in the body changes n, so n < 3 stays true and the loop never ends.",
+      "teach": "Every while loop needs something inside its body that eventually makes the condition false, or it keeps going forever. Think of a condition like a locked door: something in the room has to change the lock, or you are stuck in there forever. Python does not check this for you, it just keeps testing the condition exactly as written, over and over. This matters because an accidental infinite loop can freeze a whole program or app.",
+      "hints": [
+        "The question wants you to notice that something is missing from the loop body, not that the syntax is broken. Read through the body line by line and ask, does anything here touch the variable used in the condition?",
+        "Imagine a recipe that says keep stirring while the pot is hot, but the recipe never mentions turning off the stove. The pot stays hot forever, so the stirring never ends. Check whether n, the variable the condition depends on, is ever reassigned anywhere inside the loop body.",
+        "An answer about missing parentheses is wrong because while does not need them in Python. An answer saying it prints once misunderstands how while re-checks every round, not just the first. An answer about the starting value is wrong because the starting number is not the problem here. The real issue is that the condition's variable is read but never updated inside the loop."
+      ],
+      "deep": "An infinite loop is not always a bug (servers run while True:), but an accidental one hangs the program. In a REPL Ctrl-C raises KeyboardInterrupt. Every while loop deserves a one-line answer to: what makes the condition false?",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "while",
+        "errors"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l3.q3",
@@ -446,17 +485,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "for n in [1, 2, 3, 4, 5]:\n    if n == 3:\n        break\n    print(n, end=\" \")",
-      "explain": "break leaves the loop the moment n reaches 3, so only 1 and 2 were printed.",
-      "hints": [
-        "break exits immediately; nothing after it in that pass or later passes runs."
-      ],
-      "deep": "break exits the innermost loop only. To leave nested loops, put them in a function and return, or use a flag. A loop's else: clause runs only when no break happened, which is the tidy way to write search-and-not-found.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "break"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "1 2 3 4 5",
         "3 4 5",
@@ -465,7 +493,21 @@
       ],
       "answer": [
         "1 2"
-      ]
+      ],
+      "explain": "break leaves the loop the moment n reaches 3, so only 1 and 2 were printed.",
+      "teach": "The word break is a command you place inside a loop to leave it immediately, skipping any remaining rounds entirely. It is like slamming an exit door the moment you spot what you were looking for, without finishing the current task or starting the next one. Once break runs, Python jumps straight to the line after the whole loop, and nothing after break in that same round happens either. This is useful when you want to stop searching as soon as you find a match.",
+      "hints": [
+        "The question is asking you to notice exactly when the loop gets cut short, not just what the numbers are. Find the line with break and ask yourself, what has already been printed by the time Python reaches that line?",
+        "Picture reading names off a list out loud, and the moment you hear a name you were told to stop at, you close the folder without reading it or anything after it out loud. Here the loop checks each number, and when it hits the one that matches, it closes the folder right then. Compare that to continue, which would just skip one item and keep going instead of closing the folder.",
+        "An answer that lists every number ignores that break stops the loop partway through. An answer that starts from the matching number instead of before it confuses what already got printed with what comes next. An answer that includes the matching number forgets that break fires before that number's print line runs. The right answer holds only the numbers printed strictly before the loop was cut off."
+      ],
+      "deep": "break exits the innermost loop only. To leave nested loops, put them in a function and return, or use a flag. A loop's else: clause runs only when no break happened, which is the tidy way to write search-and-not-found.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "break"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l3.q4",
@@ -474,17 +516,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "for n in [1, 2, 3, 4, 5]:\n    if n % 2 == 0:\n        continue\n    print(n, end=\" \")",
-      "explain": "continue skips the rest of the body for even numbers, so only the odd ones reach print.",
-      "hints": [
-        "continue jumps straight to the next iteration."
-      ],
-      "deep": "continue is a readability tool: an early continue for the cases you skip keeps the main body flat instead of nested under an if. Many linters flag deeply nested loops; guard clauses with continue are the fix.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "continue"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "1 2 3 4 5",
         "2 4",
@@ -493,7 +524,21 @@
       ],
       "answer": [
         "1 3 5"
-      ]
+      ],
+      "explain": "continue skips the rest of the body for even numbers, so only the odd ones reach print.",
+      "teach": "The word continue is a command inside a loop that skips the rest of the current round and jumps straight to the next one, without leaving the loop entirely. It is different from break, which leaves the loop for good. Think of continue like skipping a song you dislike on a playlist: you do not turn off the music, you just move on to the next track. This is handy when you want to ignore certain items but keep processing the rest of the list.",
+      "hints": [
+        "The question is asking which items actually make it past the continue line to get printed. Look at the condition that triggers continue and ask yourself, which numbers in the list satisfy it and get skipped?",
+        "Imagine sorting laundry and tossing every sock straight into a separate pile without folding it, then folding everything else as normal. The socks never reach the folding step, but every other item does. Here the condition catches certain numbers and sends them straight to the next round before the print line runs, so trace which numbers trigger that condition and which do not.",
+        "An answer listing every number forgets that some of them get skipped before printing. An answer with only the skipped numbers has the filter backwards. An answer saying nothing prints misreads what continue actually does, since it only skips the current round, not the whole loop. The right answer contains the numbers that do not satisfy the skip condition, in their original order."
+      ],
+      "deep": "continue is a readability tool: an early continue for the cases you skip keeps the main body flat instead of nested under an if. Many linters flag deeply nested loops; guard clauses with continue are the fix.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "continue"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l3.q5",
@@ -501,20 +546,6 @@
       "level": 3,
       "type": "fill",
       "prompt": "Fill the gap so the loop stops when the user types quit.",
-      "explain": "break is the only way out of a while True loop from inside it.",
-      "hints": [
-        "You want to leave the loop, not skip to the next round.",
-        "return only works inside a function."
-      ],
-      "deep": "while True with a break is the standard event loop shape in Python. Python 3.8's walrus makes some of these one line: while (cmd := input(\"> \")) != \"quit\": print(cmd). Both are fine; the walrus form removes one level of nesting.",
-      "xp": 20,
-      "tags": [
-        "loops",
-        "while",
-        "break"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "while True:\n    cmd = input(\"> \")\n    if cmd == \"quit\":\n        {0}\n    print(cmd)",
       "blocks": [
         {
           "id": "stop",
@@ -537,10 +568,26 @@
           "kind": "expr"
         }
       ],
+      "template": "while True:\n    cmd = input(\"> \")\n    if cmd == \"quit\":\n        {0}\n    print(cmd)",
       "answer": [
         "break"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "break is the only way out of a while True loop from inside it.",
+      "teach": "When a loop is written as while True, the condition is always true, so the only way out is a command inside the body that forcibly exits. That command leaves the loop immediately and lets the program continue with whatever comes right after it. This pattern is common for things like a menu or a chat prompt that should keep asking for input until the user signals they are done. Without such a command, a while True loop would run forever.",
+      "hints": [
+        "The question wants the one word that can actually stop a loop from inside its own body when the condition itself is always true. Look at the four choices and ask yourself, which of these is a real Python keyword that exits a loop right away?",
+        "Think of a revolving door that never locks itself, someone inside has to push a release lever to step out. Three of the words offered either belong to functions, not loops, or do something other than leave the loop entirely. Look for the keyword whose entire job is to jump out of the loop it sits inside, the moment it runs.",
+        "The word that mimics stopping in plain English is not valid Python here, and the word that means skip only jumps to the next round rather than leaving, which would keep the loop running forever. The word tied to functions sends a value back from a function and is not used to leave a bare loop. The correct choice is the short keyword whose sole purpose in Python is to exit the nearest enclosing loop immediately."
+      ],
+      "deep": "while True with a break is the standard event loop shape in Python. Python 3.8's walrus makes some of these one line: while (cmd := input(\"> \")) != \"quit\": print(cmd). Both are fine; the walrus form removes one level of nesting.",
+      "xp": 20,
+      "tags": [
+        "loops",
+        "while",
+        "break"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l3.q6",
@@ -548,18 +595,6 @@
       "level": 3,
       "type": "order",
       "prompt": "Order the lines so the loop adds the numbers and prints 6.",
-      "explain": "Start the accumulator at 0 before the loop, add inside it, print after it.",
-      "hints": [
-        "The accumulator has to exist before the loop touches it.",
-        "The final print is not indented, so it runs once, after the loop."
-      ],
-      "deep": "This is the accumulator pattern, and sum(nums) does it in one built-in. Knowing the long form still matters: it becomes max tracking, running averages and groupby. The print outside the loop at the same indentation as for is the single most common indentation mistake.",
-      "xp": 15,
-      "tags": [
-        "loops",
-        "accumulator"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "for n in [1, 2, 3]:",
         "    total += n",
@@ -572,7 +607,21 @@
         "    total += n",
         "print(total)"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Start the accumulator at 0 before the loop, add inside it, print after it.",
+      "teach": "Adding numbers one at a time with a loop uses a pattern called an accumulator: you start with a variable set to zero, then each time through the loop you add the next number onto it. By the time the loop finishes, that variable holds the total. It is like a piggy bank that starts empty, where you drop in one coin per day, and only count what is inside once the week is over. The order matters: the starting point must come before the loop, the adding must happen inside it, and the final check must come after it ends.",
+      "hints": [
+        "The question is asking you to put four lines in an order that builds a running total correctly. Think about what has to exist before a loop can add anything to it, and what should only happen once the adding is completely finished.",
+        "Imagine filling a jar with marbles: the jar must be empty and ready before any marble goes in, marbles drop in one at a time during a walk around the table, and you only read the total once the walk ends. Set up first, repeat the adding step inside the loop, then report once, afterward.",
+        "Putting the report line inside the loop would print a running count after every number, not once at the end. Starting the walk before the jar exists fails, since there is nothing yet to add to. The right order sets the starting value first, repeats the adding step indented beneath the loop, then reports once, outside and after it."
+      ],
+      "deep": "This is the accumulator pattern, and sum(nums) does it in one built-in. Knowing the long form still matters: it becomes max tracking, running averages and groupby. The print outside the loop at the same indentation as for is the single most common indentation mistake.",
+      "xp": 15,
+      "tags": [
+        "loops",
+        "accumulator"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l4.q1",
@@ -580,19 +629,6 @@
       "level": 4,
       "type": "fill",
       "prompt": "Fill the gaps so the loop finds the largest number.",
-      "explain": "When the current number beats the best so far, it becomes the new best.",
-      "hints": [
-        "The comparison decides when to replace best.",
-        "What should best become when a bigger number shows up?"
-      ],
-      "deep": "Track-the-best is the shape behind max(), argmax and every leaderboard. Seed it with the first element, never with 0, or negative lists break. max(nums, key=len) generalises it; when you need the position as well, use enumerate and keep the index.",
-      "xp": 20,
-      "tags": [
-        "loops",
-        "accumulator"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "nums = [4, 9, 2]\nbest = nums[0]\nfor n in nums:\n    if n {0} best:\n        best = {1}\nprint(best)",
       "blocks": [
         {
           "id": "best",
@@ -620,11 +656,26 @@
           "kind": "var"
         }
       ],
+      "template": "nums = [4, 9, 2]\nbest = nums[0]\nfor n in nums:\n    if n {0} best:\n        best = {1}\nprint(best)",
       "answer": [
         "gt",
         "n"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "When the current number beats the best so far, it becomes the new best.",
+      "teach": "A very common loop pattern is called track the best so far. You start by assuming the very first item is the best, then look at every other item one at a time and ask whether this one beats what you are holding onto. If it does, you swap it in as the new best. Picture sorting through playing cards for the highest one: you keep the highest card seen so far in your hand and only swap when a higher one appears. This pattern is how you find a maximum or minimum without any built-in function.",
+      "hints": [
+        "This code is trying to find the biggest number in the list by keeping a running best so far and checking each number against it. Look at the if line: what kind of comparison would let a number in only when it beats the current best? Think about what should happen when n is bigger than best versus smaller.",
+        "Think of comparing height with a friend at the door: you only update your tallest person seen note when the new person is actually taller, never when they are shorter. So the if line needs a comparison meaning bigger than, and the line inside the if block needs to store the number that just proved itself bigger. Look for a block expressing that relationship and one referring to the number currently being checked.",
+        "A comparison that catches smaller numbers would make best shrink toward the lowest value instead of growing toward the highest, so that one does not fit. The list name or the running best itself cannot be what you store either, since you want the number you just found to be bigger, not the whole list or the old value again. Pick the strict bigger-than comparison, then store the number currently being examined."
+      ],
+      "deep": "Track-the-best is the shape behind max(), argmax and every leaderboard. Seed it with the first element, never with 0, or negative lists break. max(nums, key=len) generalises it; when you need the position as well, use enumerate and keep the index.",
+      "xp": 20,
+      "tags": [
+        "loops",
+        "accumulator"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l4.q2",
@@ -632,19 +683,6 @@
       "level": 4,
       "type": "fill",
       "prompt": "Fill the gaps so evens holds only the even numbers.",
-      "explain": "An even number leaves no remainder when divided by 2, and append adds it to the list.",
-      "hints": [
-        "A remainder of what means even?",
-        "Lists grow with append; add belongs to sets, push to other languages."
-      ],
-      "deep": "The filter loop is what a list comprehension compresses: [n for n in nums if n % 2 == 0]. Learn the long form first because the comprehension is the same three parts rearranged: the expression, the loop, the condition.",
-      "xp": 20,
-      "tags": [
-        "loops",
-        "lists"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "nums = [1, 2, 3, 4]\nevens = []\nfor n in nums:\n    if n % 2 == {0}:\n        evens.{1}(n)\nprint(evens)",
       "blocks": [
         {
           "id": "one",
@@ -672,22 +710,49 @@
           "kind": "call"
         }
       ],
+      "template": "nums = [1, 2, 3, 4]\nevens = []\nfor n in nums:\n    if n % 2 == {0}:\n        evens.{1}(n)\nprint(evens)",
       "answer": [
         "zero",
         "append"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "An even number leaves no remainder when divided by 2, and append adds it to the list.",
+      "teach": "The percent sign in Python is the modulo operator, and it gives you the remainder left over after division. For example, 7 % 2 is 1, because 7 divided by 2 leaves 1 left over, while a number that divides evenly leaves nothing left over at all. This remainder trick is the standard way to test whether a number is even or odd. Once a number passes that test, you often want to collect it, and Python lists have a way to grow one item at a time, tacking new values onto the end as you go.",
+      "hints": [
+        "This code checks each number to decide whether it is even, then grows a new list with only the even ones. Look at the if line: what should the remainder equal when a number divides evenly by two? Also look inside the if block: what do you call the action of putting one more value onto the end of a list?",
+        "Picture sorting mail into a pile: you check each envelope, and if it matches your rule you set it onto the growing pile, otherwise you leave it and move on. Dividing an odd number by two always leaves something left over, while an even number leaves nothing left over. Look for the value meaning nothing left over, and the action name that means placing a new item at the end of a list.",
+        "A remainder of one would only catch the odd numbers, the opposite of what this code wants, so that value does not belong here. Python lists do not have real actions called add or push, those are just borrowed-sounding words. You want the remainder value meaning the division came out exactly even, followed by the one true list action whose whole job is sticking a new value onto the end."
+      ],
+      "deep": "The filter loop is what a list comprehension compresses: [n for n in nums if n % 2 == 0]. Learn the long form first because the comprehension is the same three parts rearranged: the expression, the loop, the condition.",
+      "xp": 20,
+      "tags": [
+        "loops",
+        "lists"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l4.q3",
       "tier": 3,
       "level": 4,
       "type": "mcq",
-      "prompt": "What does this print?",
+      "prompt": "What does this print? The quotes show where the output starts and ends.",
       "code": "for ch, n in zip(\"ab\", [1, 2]):\n    print(f\"{ch}{n}\", end=\" \")",
-      "explain": "zip pairs items from both lists position by position: a with 1, b with 2.",
+      "options": [
+        "'a1 b2 '",
+        "'a b 1 2 '",
+        "'ab 12 '",
+        "An error"
+      ],
+      "answer": [
+        "'a1 b2 '"
+      ],
+      "explain": "zip pairs items from both lists position by position: a with 1, b with 2. Each print adds a space after its pair because of end=\" \", so the output is a1, a space, b2, and one more space.",
+      "teach": "zip is a tool that walks through two or more sequences side by side, pairing the first items together, then the second items together, and so on. For example, zip of \"xy\" and [9, 8] pairs x with 9 and y with 8. Inside an f-string, writing a value in curly braces drops it directly into the text with no extra spaces added by Python itself. The print function normally ends each call with a new line, but its end argument lets you replace that new line with something else, like a single space, so multiple prints stay on the same line.",
       "hints": [
-        "zip walks two sequences side by side."
+        "This question is about how zip lines up two collections and how print's end argument controls what follows each printed piece. Look at the loop: what pairs of characters and numbers does zip create here, and what character does print glue onto the end of each one instead of a new line?",
+        "Think of zip like matching socks from two baskets: the first sock from each basket pairs together, with no gap inserted inside that pair. An f-string that places two values side by side glues them together with nothing in between. Look for the option where each pair's letter and number sit right next to each other, followed by whatever character print adds at the end.",
+        "An option that puts a space between the letter and the number in each pair is wrong, since the f-string glues them with nothing in between. An option that groups all the letters first and the numbers after is also wrong, since zip interleaves pairs rather than grouping by type. The right option shows each letter touching its matching number, with the end character trailing after every pair, including the last."
       ],
       "deep": "zip stops at the shortest input silently; Python 3.10 added zip(strict=True) to raise instead. Unzipping is zip(*pairs). itertools.zip_longest pads the shorter one. zip is lazy, so it is fine on huge inputs.",
       "xp": 10,
@@ -695,16 +760,7 @@
         "loops",
         "zip"
       ],
-      "reviewed": "2026-09-05",
-      "options": [
-        "a b 1 2",
-        "An error",
-        "a1 b2",
-        "ab 12"
-      ],
-      "answer": [
-        "a1 b2"
-      ]
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l4.q4",
@@ -713,17 +769,6 @@
       "type": "mcq",
       "prompt": "How many times does print run?",
       "code": "for x in range(2):\n    for y in range(3):\n        print(x, y)",
-      "explain": "The inner loop runs fully for each pass of the outer loop: 2 times 3.",
-      "hints": [
-        "Multiply the two loop lengths."
-      ],
-      "deep": "Nested loops multiply: two loops of n are O(n^2), which is fine at 100 and fatal at 100,000. Before nesting, ask if a dict or set lookup turns the inner loop into O(1). itertools.product(a, b) writes the nested pair as one loop.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "nested"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "5",
         "6",
@@ -732,7 +777,21 @@
       ],
       "answer": [
         "6"
-      ]
+      ],
+      "explain": "The inner loop runs fully for each pass of the outer loop: 2 times 3.",
+      "teach": "A loop repeats its block once for every item it goes through, and when one loop sits inside another, the inner loop runs its full set of repeats every time the outer loop takes one step. Picture two loops like a clock: the outer loop is the hour hand and the inner loop is the minute hand, sweeping around once for every hour that passes. So if an outer loop has 4 steps and an inner loop has 5 steps each time, the innermost code runs 4 times 5, not 4 plus 5. This nested looping generates every combination between two lists, like pairing every shirt with every pair of pants.",
+      "hints": [
+        "This question asks how many times the innermost line actually executes when one loop is nested inside another. Look at the two range calls: how many steps does the outer loop take, and how many steps does the inner loop take for each single outer step?",
+        "Think of packing outfits: if you have some number of shirts and, for every shirt, you try on every one of your pants, the total outfits is shirts multiplied by pants, not shirts plus pants. The print line sits inside both loops here, so it fires once for every combination the two loops create together. Count each loop's steps separately, then think about how those two counts combine into one total.",
+        "An answer that just adds the two range values together is a common mistake, because nested loops multiply their repeat counts instead of adding them. An answer equal to only one of the two range values is also wrong, since that ignores the inner loop restarting completely for every pass of the outer loop. The right total is the product of how many values range(2) produces and how many values range(3) produces."
+      ],
+      "deep": "Nested loops multiply: two loops of n are O(n^2), which is fine at 100 and fatal at 100,000. Before nesting, ask if a dict or set lookup turns the inner loop into O(1). itertools.product(a, b) writes the nested pair as one loop.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "nested"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l4.q5",
@@ -740,18 +799,6 @@
       "level": 4,
       "type": "order",
       "prompt": "Order the lines to count how many words are longer than 3 letters.",
-      "explain": "Initialise the counter, loop, test each word, increment inside the test, print once at the end.",
-      "hints": [
-        "Each indentation level nests inside the line above it.",
-        "count += 1 is two levels deep: inside the if inside the for."
-      ],
-      "deep": "Counting with a condition compresses to sum(1 for w in words if len(w) > 3), or sum(len(w) > 3 for w in words) because True counts as 1. Both are generator expressions, so nothing is built in memory. Prefer the version your reader parses fastest.",
-      "xp": 15,
-      "tags": [
-        "loops",
-        "accumulator"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "print(count)",
         "for w in [\"hi\", \"there\", \"you\", \"Pytor\"]:",
@@ -766,7 +813,21 @@
         "        count += 1",
         "print(count)"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Initialise the counter, loop, test each word, increment inside the test, print once at the end.",
+      "teach": "A counting pattern needs a variable to keep score, and that variable has to exist and start at zero before any counting happens, the same way you would set a scoreboard to 0-0 before a game begins. As you look at each item, you check whether it matches your rule, and only when it matches do you add one to your running tally, right there inside the loop. Finally, since you want a single overall result, you announce the tally only after the loop has looked at every item, never partway through.",
+      "hints": [
+        "This puzzle wants you to arrange lines so a running tally correctly counts words with more than three letters. Ask yourself what has to exist and be set to a starting value before you can add to it at all, and what should happen only once every word has been checked.",
+        "Think about totaling a receipt: you cannot add prices to a total that does not exist yet, so the total is created before looking at any item. For every item you check it against your rule, and if it passes, you add to the total inside that check. Only once every item has been checked do you read out the final number, so sort these lines by what must exist first, what repeats each time, and what comes last.",
+        "Placing the announcement before the loop finishes would show an incomplete total, since not every word has been checked yet, so it has to be the very last line. The line that adds one only makes sense once both the loop and the length check are already running, so it must sit nested inside both, not before or beside them. Everything begins with the counter at its starting value, and ends with reporting it."
+      ],
+      "deep": "Counting with a condition compresses to sum(1 for w in words if len(w) > 3), or sum(len(w) > 3 for w in words) because True counts as 1. Both are generator expressions, so nothing is built in memory. Prefer the version your reader parses fastest.",
+      "xp": 15,
+      "tags": [
+        "loops",
+        "accumulator"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l4.q6",
@@ -775,17 +836,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "nums = [1, 2]\nout = []\nfor n in nums:\n    out.append(n * 2)\nprint(out)",
-      "explain": "Each item is doubled and appended, so [1, 2] becomes [2, 4].",
-      "hints": [
-        "Follow one item through the loop body."
-      ],
-      "deep": "The map loop, transforming every item into a new list, is the other half of comprehensions: [n * 2 for n in nums]. When both a transform and a filter are needed, the comprehension still reads as one line where the loop needs four.",
-      "xp": 10,
-      "tags": [
-        "loops",
-        "lists"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[1, 2]",
         "[2, 4]",
@@ -794,7 +844,21 @@
       ],
       "answer": [
         "[2, 4]"
-      ]
+      ],
+      "explain": "Each item is doubled and appended, so [1, 2] becomes [2, 4].",
+      "teach": "A loop can build a brand new list by transforming each item from an old list and adding the transformed value onto the new one. For example, if you wanted to triple every price in a list, you would loop through the old prices, multiply each by three, and append that new number onto a fresh list, leaving the original list unchanged. The original list and the new list stay two separate objects the whole time, so changes only show up in whichever one you actually modify. This transforming loop is the manual version of what a list comprehension writes in one compact line.",
+      "hints": [
+        "This question asks what ends up inside the new list after every number from the original list gets changed and added to it. Look at the loop: what math is being done to each number before it gets appended, and how many numbers were in the original list to begin with?",
+        "Think of a photocopier set to double-size mode: you feed in one page at a time, and each copy that comes out is twice as large as the page you fed in, with the original untouched. Here, each number from the starting list goes through the same doubling step before landing in the new list, in order. Work out what each original number becomes after that step.",
+        "An option showing the original numbers unchanged is wrong, since each one gets multiplied before being appended. An option that triples instead of doubling applies the wrong operation, and one with the wrong count or order does not match doing this once per item in a two-item list. The correct list has exactly two numbers, each twice the size of its matching original, in the same order."
+      ],
+      "deep": "The map loop, transforming every item into a new list, is the other half of comprehensions: [n * 2 for n in nums]. When both a transform and a filter are needed, the comprehension still reads as one line where the loop needs four.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "lists"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l5.q1",
@@ -803,16 +867,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "nums = [1, 2, 3]\nprint([n ** 2 for n in nums])",
-      "explain": "The comprehension squares each number and builds a new list.",
-      "hints": [
-        "Read it as: for each n, compute n ** 2, collect the results."
-      ],
-      "deep": "A list comprehension is a for loop turned inside out: expression first, loop second, optional condition third. It runs in its own scope, so the loop variable does not leak (unlike Python 2). CPython compiles it inline since 3.12 (PEP 709), making it slightly faster than the loop.",
-      "xp": 10,
-      "tags": [
-        "comprehensions"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[1, 4, 9]",
         "[1, 2, 3]",
@@ -821,7 +875,20 @@
       ],
       "answer": [
         "[1, 4, 9]"
-      ]
+      ],
+      "explain": "The comprehension squares each number and builds a new list.",
+      "teach": "A list comprehension is a short way to build a new list from an existing one, all in one line. It behaves like a for loop that runs a small expression on each item and collects every result. For example, `[n + 1 for n in [1, 2, 3]]` takes each number and adds one, giving a brand new list. This matters because it lets you transform data quickly without writing several lines of loop and append code.",
+      "hints": [
+        "This question asks what new list comes out after an operation is applied to every number in the original list. Look at the little expression written right before the word for, since that tells you what happens to each item. What is that expression doing to a number like 2?",
+        "Picture a small machine on a conveyor belt: each number goes in one end, the expression changes it, and a new number comes out the other end into a fresh list. If the machine added one to every number, feeding in 1, 2, 3 would give 2, 3, 4. Work out what this particular expression does to each of the three numbers here.",
+        "The option showing the numbers completely unchanged ignores that an operation is actually happening to them. The option using a doubling operation is applying the wrong rule to each number. A single lone number cannot be right either, since a comprehension over three items always returns three results, each one being that item multiplied by itself."
+      ],
+      "deep": "A list comprehension is a for loop turned inside out: expression first, loop second, optional condition third. It runs in its own scope, so the loop variable does not leak (unlike Python 2). CPython compiles it inline since 3.12 (PEP 709), making it slightly faster than the loop.",
+      "xp": 10,
+      "tags": [
+        "comprehensions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l5.q2",
@@ -829,21 +896,6 @@
       "level": 5,
       "type": "fill",
       "prompt": "Fill the gaps so squares() returns each number squared.",
-      "explain": "Loop over the input, append the square of each item, return the list you built.",
-      "hints": [
-        "The loop walks the parameter, not the result.",
-        "Squared means to the power of two, and ** is the power operator.",
-        "Return the list you filled, not the last number."
-      ],
-      "deep": "This is the design canvas question, and the comprehension version is return [n ** 2 for n in nums]. Both allocate one list; the comprehension avoids the repeated method lookup of out.append, which is why it benchmarks faster. Returning out, not n, is the mistake this question catches.",
-      "xp": 25,
-      "tags": [
-        "comprehensions",
-        "functions",
-        "loops"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "def squares(nums):\n    out = []\n    for n in {0}:\n        out.append({1})\n    return {2}",
       "blocks": [
         {
           "id": "sq",
@@ -878,12 +930,28 @@
           "kind": "var"
         }
       ],
+      "template": "def squares(nums):\n    out = []\n    for n in {0}:\n        out.append({1})\n    return {2}",
       "answer": [
         "nums",
         "sq",
         "out"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Loop over the input, append the square of each item, return the list you built.",
+      "teach": "When a function receives a list as a parameter, you can loop over that exact parameter name to visit every item inside it. Inside the loop, you often build a brand new list by starting with an empty one and using `.append(value)` to add a computed result for each item you see. For example, a function that doubles numbers might loop over its input, append `item * 2` each time, then hand back the list it built. The habit to watch for is returning the list you actually filled, not the loop variable or the original input.",
+      "hints": [
+        "This function needs to loop over the list that was actually passed in, compute something from each single item, and send back the finished list at the end. There are three blanks: one controls what gets looped over, one decides what gets added each time, and one decides what comes back. What did the function receive as its input, and what container did it build inside the loop?",
+        "Think of sorting mail into a new empty bin: you walk through the original stack one letter at a time and drop a new version of each letter into the bin. When done, you hand over the new bin, not the original stack, and not just the last letter touched. The loop should visit the parameter itself, the addition should raise a single item to a power, and the return should hand back the bin being filled.",
+        "Counting the items or doubling them would give the wrong numbers, since neither one actually squares anything. Returning the loop variable alone would give back only the last item processed, not a full list. The first blank needs the parameter that holds the input list, the middle blank needs the item raised to the second power, and the last blank needs the name of the list that was being filled."
+      ],
+      "deep": "This is the design canvas question, and the comprehension version is return [n ** 2 for n in nums]. Both allocate one list; the comprehension avoids the repeated method lookup of out.append, which is why it benchmarks faster. Returning out, not n, is the mistake this question catches.",
+      "xp": 25,
+      "tags": [
+        "comprehensions",
+        "functions",
+        "loops"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l5.q3",
@@ -892,16 +960,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "nums = [1, 2, 3, 4]\nprint([n for n in nums if n % 2 == 0])",
-      "explain": "The if at the end keeps only items where the condition holds.",
-      "hints": [
-        "The trailing if filters; the expression at the front maps."
-      ],
-      "deep": "The filter clause runs per item and skips the expression when it is false. Do not confuse it with a conditional expression at the front: [a if c else b for x in xs] chooses between two values for every item, while [x for x in xs if c] drops items.",
-      "xp": 10,
-      "tags": [
-        "comprehensions"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "[True, False, True, False]",
         "[1, 3]",
@@ -910,7 +968,20 @@
       ],
       "answer": [
         "[2, 4]"
-      ]
+      ],
+      "explain": "The if at the end keeps only items where the condition holds.",
+      "teach": "A list comprehension can include an extra condition at the end, written as if condition. This condition is checked for every item, and only the items that pass are kept in the new list; the rest are simply skipped, not replaced with True or False. For example, `[w for w in words if len(w) > 3]` keeps only the longer words and drops the short ones entirely. This is different from a comprehension without any condition, which always keeps every item.",
+      "hints": [
+        "This question is testing what happens when a comprehension has an if check tacked onto the end. Does the condition change items into something else, or does it just decide whether each one stays in or gets dropped? Look closely at what the condition here is actually checking about each number.",
+        "Picture a bouncer at a door checking people one at a time: anyone who does not meet the rule does not get in, and the ones who do get in exactly as they were. The condition here checks whether a number leaves no remainder when divided by two. Go through each number in the original list and decide which ones would pass that check.",
+        "A list of True and False values would be wrong, since a filtering condition decides inclusion, it does not become part of the output. Keeping every original number would also be wrong, since the whole point of the if is to remove some, and the odd numbers are not what the check looks for either. The answer is a shorter list holding only the numbers that satisfy the condition, unchanged."
+      ],
+      "deep": "The filter clause runs per item and skips the expression when it is false. Do not confuse it with a conditional expression at the front: [a if c else b for x in xs] chooses between two values for every item, while [x for x in xs if c] drops items.",
+      "xp": 10,
+      "tags": [
+        "comprehensions"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l5.q4",
@@ -919,17 +990,6 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "code": "pairs = [(\"a\", 1), (\"b\", 2)]\nprint({k: v for k, v in pairs})",
-      "explain": "Braces with key: value inside the comprehension build a dict.",
-      "hints": [
-        "Curly braces and a colon between key and value."
-      ],
-      "deep": "Dict comprehensions build lookups in one line: {user.id: user for user in users}. The set comprehension {x for x in xs} is the same syntax without the colon. Both keep the last value for a repeated key, silently.",
-      "xp": 10,
-      "tags": [
-        "comprehensions",
-        "dicts"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "An error",
         "{'a', 'b'}",
@@ -938,7 +998,21 @@
       ],
       "answer": [
         "{'a': 1, 'b': 2}"
-      ]
+      ],
+      "explain": "Braces with key: value inside the comprehension build a dict.",
+      "teach": "A dictionary comprehension looks like a list comprehension but uses curly braces and a key colon value pair instead of a single expression. For every item you loop over, you decide what becomes the key and what becomes the value, and Python assembles those pairs into a new dictionary. For example, `{n: n * n for n in [2, 3]}` pairs each number with its square. This is a fast way to turn a list of pairs into a lookup table you can search by key.",
+      "hints": [
+        "This question is about what kind of container gets built when curly braces with a colon are used inside a comprehension. Ask yourself which Python container is built from key colon value pairs. Look at how the two parts of each tuple in the list are being used inside those braces.",
+        "Think of filling in a phone book: for every entry, one part becomes the name you look things up by, and the other part becomes the number stored next to it. Each pair in the list has two parts, and the comprehension decides which part is the lookup key and which is the stored value. Walk through both pairs and picture what the finished lookup table would hold.",
+        "A set containing only the letters would throw away the numbers entirely, losing half the information in each pair. A plain list of tuples would mean nothing was actually restructured, which defeats the point of using braces and a colon. This code does not raise an error either, since each pair unpacks cleanly into two parts, so the outcome is a dictionary pairing every letter with its matching number."
+      ],
+      "deep": "Dict comprehensions build lookups in one line: {user.id: user for user in users}. The set comprehension {x for x in xs} is the same syntax without the colon. Both keep the last value for a repeated key, silently.",
+      "xp": 10,
+      "tags": [
+        "comprehensions",
+        "dicts"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l5.q5",
@@ -947,17 +1021,6 @@
       "type": "mcq",
       "prompt": "What is the difference between the two lines?",
       "code": "a = sum([n * n for n in range(10**6)])\nb = sum(n * n for n in range(10**6))",
-      "explain": "Square brackets build a full list. Plain parentheses make a generator that yields one value at a time, which sum consumes without storing them all.",
-      "hints": [
-        "Brackets allocate; parentheses stream."
-      ],
-      "deep": "Generator expressions (PEP 289) are the memory-safe default when the result is consumed once: sum, max, any, all, join. They cannot be indexed or reused. In CPython the list version is sometimes marginally faster for small inputs, and irrelevant for large ones that would not fit anyway.",
-      "xp": 10,
-      "tags": [
-        "comprehensions",
-        "generators"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "They are identical in every way",
         "The first builds a list in memory; the second computes lazily as sum consumes it",
@@ -966,7 +1029,21 @@
       ],
       "answer": [
         "The first builds a list in memory; the second computes lazily as sum consumes it"
-      ]
+      ],
+      "explain": "Square brackets build a full list. Plain parentheses make a generator that yields one value at a time, which sum consumes without storing them all.",
+      "teach": "Square brackets around a comprehension build the entire list in memory before anything else happens, so every value exists at once. Plain parentheses around the same expression create a generator instead, which produces one value at a time only when something asks for it, and never stores the whole sequence. For example, `sum([x for x in range(5)])` first builds a five-item list, while `sum(x for x in range(5))` never builds a list at all, it just feeds sum one number at a time. This matters a lot when the range is huge, since the generator version can save a large amount of memory.",
+      "hints": [
+        "This question is about two ways of writing almost the same expression, one with square brackets and one with plain parentheses, and what that means for memory. Do the values need to exist all at once as a full list, or can they be produced one at a time as needed? Look closely at which line has brackets and which one only has parentheses.",
+        "Imagine ordering a huge stack of pancakes all at once versus ordering just one at a time as you eat it. Building the full stack first uses a lot of counter space, even though you only ever eat one at a time anyway. The bracket version behaves like the big stack built up front, while the parentheses version behaves like the one-at-a-time order that matches what sum actually needs.",
+        "Saying both lines behave identically misses a real difference in memory use, and the claim that the second line is a syntax error is false, since a bare generator expression inside one function call is valid. It is also wrong to call the first version the lazy one, since brackets force the full list to build immediately. The real difference is which version delays computing each value until sum asks for it."
+      ],
+      "deep": "Generator expressions (PEP 289) are the memory-safe default when the result is consumed once: sum, max, any, all, join. They cannot be indexed or reused. In CPython the list version is sometimes marginally faster for small inputs, and irrelevant for large ones that would not fit anyway.",
+      "xp": 10,
+      "tags": [
+        "comprehensions",
+        "generators"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t3.l5.q6",
@@ -974,20 +1051,6 @@
       "level": 5,
       "type": "fill",
       "prompt": "Fill the gap so the check passes only when every score is 50 or more.",
-      "explain": "all() is True only when every item is true. any() would pass if just one score qualified.",
-      "hints": [
-        "Every score must qualify, not just one.",
-        "The function takes an iterable of booleans."
-      ],
-      "deep": "all() and any() short-circuit, so pass them a generator, never a list, and they stop at the first decisive item. all([]) is True (vacuous truth) and any([]) is False, which trips people up on empty inputs. They are the readable form of a flag-and-loop.",
-      "xp": 20,
-      "tags": [
-        "comprehensions",
-        "generators",
-        "boolean"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "scores = [70, 55, 90]\nif {0}(s >= 50 for s in scores):\n    print(\"all passed\")",
       "blocks": [
         {
           "id": "all",
@@ -1010,10 +1073,26 @@
           "kind": "call"
         }
       ],
+      "template": "scores = [70, 55, 90]\nif {0}(s >= 50 for s in scores):\n    print(\"all passed\")",
       "answer": [
         "all"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "all() is True only when every item is true. any() would pass if just one score qualified.",
+      "teach": "The functions all() and any() check a whole group of True or False values at once. all() looks at every single value and only reports True if every one of them is true, while any() reports True as soon as it finds just one true value among many. For example, `all([True, True, False])` is False because not every value is true, while `any([True, True, False])` is True because at least one is. Picking the right one depends on whether you need every item to satisfy a condition or just at least one.",
+      "hints": [
+        "This question asks which function should be used so the message only appears when every single score meets the passing mark, not just some of them. Do you want to know if at least one score passed, or if all of them did? Look at the wording of the condition being checked inside the parentheses.",
+        "Think of a teacher checking a whole class: to say the whole class passed, every single student needs a passing grade, but to say at least one student passed, only one student needs it. The generator inside the parentheses checks each score against the passing mark one at a time. You need the function that demands every one of those checks comes back true before agreeing.",
+        "The function that reports true after finding just one match would let the message appear even if some scores failed, which is not what is wanted here. A function that adds up numbers is not checking true or false at all, and a function that finds the biggest value tells you nothing about passing marks. The right choice is the one built to require every single check in the sequence to succeed before agreeing."
+      ],
+      "deep": "all() and any() short-circuit, so pass them a generator, never a list, and they stop at the first decisive item. all([]) is True (vacuous truth) and any([]) is False, which trips people up on empty inputs. They are the readable form of a flag-and-loop.",
+      "xp": 20,
+      "tags": [
+        "comprehensions",
+        "generators",
+        "boolean"
+      ],
+      "reviewed": "2026-09-05"
     }
   ]
 }

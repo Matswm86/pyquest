@@ -41,6 +41,12 @@ data class Question(
     val answer: List<String> = emptyList(),
     val accept: List<List<String>> = emptyList(),
     val explain: String,
+    /**
+     * Pytor's mini-lesson on the concept this question depends on, shown before
+     * any hint. Written for someone who has never met the idea; never points at
+     * the answer.
+     */
+    val teach: String? = null,
     /** Pytor's progressive hints, mildest first. Never contain the answer. */
     val hints: List<String> = emptyList(),
     /** Pytor's expert note after the check: the mechanism, the idiom, the trap. */

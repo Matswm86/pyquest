@@ -32,7 +32,7 @@ in four places:
 | Where | What he does | Needs network |
 |-------|--------------|---------------|
 | Track screen | One line on what to do next: a streak about to lapse, the tag you keep missing, the next level | no |
-| Every question | Progressive hints that never give the answer, then the expert note after you check | no |
+| Every question | A mini-lesson on the concept, then three patient step-by-step hints that never give the answer, then the expert note after you check | no |
 | Pytor tab, Codex | 95 dense reference notes across Python, software engineering and AI/LLMs, searchable offline | no |
 | Pytor tab, Chat | A conversation with the expert, with the game's context attached | yes |
 
@@ -49,6 +49,8 @@ half off in the You tab.
 | `mcq`, `blocks`, `order`, `fill`, `pipeline` question types | shipped |
 | Track, Pytor and You tabs; hint sheet; expert notes; review misses | shipped |
 | Leitner spaced repetition, first-try accuracy, weak-tag tracking, XP, streak | shipped |
+| Per-level progress (cleared, solved, mastered) on the track and the You tab | shipped |
+| Local play log with share sheet export (You tab) | shipped |
 | Tiers 1 to 7 | 30 to 32 questions each, 5 levels each |
 | Tier 8 "AI consultancy sims" | 19 questions, 3 levels, two pipeline sims |
 | Pytor's Codex | 95 entries: 32 Python, 30 engineering, 33 AI/LLM |
@@ -56,6 +58,15 @@ half off in the You tab.
 231 questions in total. Every one carries hints and an expert note, and every
 multiple-choice option order and block tray is shuffled at authoring time so
 nothing can be learnt by position.
+
+## Logs
+
+Every answer, hint, level, chat exchange and Codex read is appended to a
+private JSONL file on the phone. The You tab shows the newest lines and has a
+Share button that sends the whole file through the Android share sheet, which
+is how a play session gets reviewed afterwards. Nothing is uploaded by itself.
+The tutor service keeps its own JSONL of quest-mode exchanges (question, game
+context, answer, backend, timing, no IP) so Pytor's answers can be audited.
 
 ## Building
 
@@ -86,9 +97,10 @@ python3 tools/validate_codex.py
 The validator refuses an answer that uses a block the tray does not supply, an
 `order` question that leaves tray blocks unused, a multiple-choice answer that is
 not among the options, a duplicate id, a level gap, an explanation shorter than
-40 characters, a question without hints, a hint that quotes the correct option,
-and a question without a `deep` note of at least 60 characters. CI runs both
-validators before the APK job starts.
+40 characters, a question without a `teach` lesson or three paragraph-length
+hints, a hint that quotes the correct option, options that differ only by
+whitespace without quotes, and a question without a `deep` note of at least 60
+characters. CI runs both validators before the APK job starts.
 
 ### Question shape
 
@@ -115,8 +127,13 @@ validators before the APK job starts.
 order, distractors allowed), `order` (every tray block must be used), `fill`
 (blocks go into `{0}`-style gaps in `template`) or `pipeline` (blocks are stages
 with `ms` and `cost`, wired against the budget in `brief`). `accept` holds
-alternative orderings that are also correct. `hints` are progressive, mildest
-first, at most three. `deep` is Pytor's note: the mechanism, the idiom, the trap.
+alternative orderings that are also correct. `teach` is Pytor's mini-lesson on
+the concept, shown before any hint. `hints` are exactly three, progressive and
+a paragraph each: restate the question, walk the reasoning with a parallel
+example, narrow it down without saying it. `deep` is Pytor's note after the
+check: the mechanism, the idiom, the trap. Output options whose only difference
+is spacing must be quoted (`'a b'`, `'a b '`); the app then draws each space as
+a middle dot so they can be told apart on a phone.
 
 ### Codex shape
 

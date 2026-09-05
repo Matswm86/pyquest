@@ -18,25 +18,27 @@
       "type": "mcq",
       "prompt": "Which line prints the word hello?",
       "options": [
+        "echo(\"hello\")",
         "printf(\"hello\")",
         "print(\"hello\")",
-        "print hello",
-        "echo(\"hello\")"
+        "print hello"
       ],
       "answer": [
         "print(\"hello\")"
       ],
       "explain": "print is a function, so the thing you want shown goes inside its parentheses. echo and printf belong to other languages.",
+      "teach": "print is a small tool built into Python that shows text on the screen. To use it, you write the word print, then open parentheses, then the text you want to show inside quotes, then close them, like print(\"cat\"). The parentheses tell Python where the instructions begin and end. Other languages have their own words for this same idea, but Python only understands its own name for it.",
+      "hints": [
+        "This question is asking you to spot the one line written the way Python actually understands, using the correct function name and shape. Look at each option, which one starts with a lowercase name Python already knows, followed by parentheses holding quoted text?",
+        "Think of print like a doorbell button, you press the exact button that was installed, not a similar looking button from a different house. The message goes inside, wrapped in the shape name, open paren, quoted text, close paren. Words like echo and printf are buttons from other houses, they do not exist here.",
+        "Lines using echo or printf borrow words from other languages that Python never learned, so those will fail. A line missing its parentheses is left over from a much older version of Python and will not run today. The correct line uses the lowercase function name, an opening parenthesis, the quoted text, and a closing parenthesis, in that order."
+      ],
+      "deep": "print is a built-in function, not a statement. In Python 2 it was a statement, which is why you still see print \"x\" in old tutorials; Python 3 made it a function so it could take keyword arguments like sep and end and be passed around like any other object.",
       "xp": 10,
       "tags": [
         "print"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Python calls a function by writing its name and then parentheses.",
-        "Two of these names come from other languages entirely."
-      ],
-      "deep": "print is a built-in function, not a statement. In Python 2 it was a statement, which is why you still see print \"x\" in old tutorials; Python 3 made it a function so it could take keyword arguments like sep and end and be passed around like any other object."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l1.q2",
@@ -46,9 +48,9 @@
       "prompt": "Build the line that prints hello.",
       "tray": [
         "print",
+        "(",
         ")",
-        "\"hello\"",
-        "("
+        "\"hello\""
       ],
       "answer": [
         "print",
@@ -58,17 +60,19 @@
       ],
       "accept": [],
       "explain": "Function name first, then an opening paren, then the value, then the closing paren.",
+      "teach": "A function call in Python has a strict shape, the function's name, an opening parenthesis, the information it needs, and a closing parenthesis. If you had a function called shout, you would write shout(\"wow\") to run it with the text wow inside. print is a function just like that one, built into Python, whose job is to show things on the screen. Getting the parentheses in the right place and order matters, because Python reads left to right and needs to know exactly where your instructions start and stop.",
+      "hints": [
+        "This puzzle wants you to arrange pieces into a working function call, the same shape any function call needs. Look at your pieces, which one is the function's name, which two are the opening and closing parentheses, and which one is the actual text? Think about the order that makes it readable, almost like a short sentence.",
+        "Picture writing an address on an envelope, the name goes first, then you open a flap to hold the letter, slide it in, then seal the flap shut. In code, the function name always comes first, touching an opening parenthesis, then the value being handed over, then the matching closing parenthesis at the end. Arrange your pieces in that same order, name, open, value, close.",
+        "Putting the closing parenthesis before the opening one, or before the quoted text, breaks the shape and Python will not understand it. Putting the text before the function name fails too, since Python must know which function runs before it sees what you handed it. The right order has the name touching an opening parenthesis, the quoted words inside, then a closing parenthesis right after."
+      ],
+      "deep": "A call is name + ( + arguments + ). The parser reads print, sees the opening paren, collects everything up to the matching close as arguments, and only then runs the function. Unbalanced parens are the most common first error in any Python file.",
       "xp": 15,
       "tags": [
         "print",
         "syntax"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Say it out loud: name, open, value, close.",
-        "The quotes are part of the value block, not separate pieces."
-      ],
-      "deep": "A call is name + ( + arguments + ). The parser reads print, sees the opening paren, collects everything up to the matching close as arguments, and only then runs the function. Unbalanced parens are the most common first error in any Python file."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l1.q3",
@@ -76,27 +80,30 @@
       "level": 1,
       "type": "mcq",
       "prompt": "What appears on screen when this runs?",
+      "code": "print(\"Pytor\")",
       "options": [
+        "print(\"Pytor\")",
         "nothing",
         "Pytor",
-        "\"Pytor\"",
-        "print(\"Pytor\")"
+        "\"Pytor\""
       ],
       "answer": [
         "Pytor"
       ],
       "explain": "The quotes mark where the text starts and ends. They are not part of the text itself, so they are not printed.",
+      "teach": "When you write text inside quotes in Python, the quotes are just markers showing where your text begins and ends, not part of the message itself. Once Python reads the quotes, it keeps only the letters inside them, the quote marks are thrown away. So if you told print to show the word cat using \"cat\", what lands on the screen is just c a t, no quote marks anywhere. This is why printed text looks clean, without any of the punctuation you used to write it.",
+      "hints": [
+        "This question asks what actually shows up on the screen, not what you typed into the code. The idea to think about is that quote marks are instructions for Python, not part of the message itself. Look at the code, then ask yourself, does the screen show everything you typed, or only part of it?",
+        "Imagine writing a name on a sticky note and slipping it inside an envelope just so the mail carrier knows where the note starts and stops. When the note is taken out, you read the name, not the envelope. Python uses quote marks the same way, only to know where text starts and stops, then it shows just the words inside, so look for the option with plain text and nothing wrapped around it.",
+        "An option showing the whole line of code, quotes included, describes what you typed, not what Python displays, so that is not it. An option claiming nothing shows up is wrong too, since print always does its job when the code runs correctly. The right answer is simply the bare word itself, with no quote marks and no parentheses anywhere near it."
+      ],
+      "deep": "Quotes are delimiters for the parser, they tell it where a string literal starts and ends. The str object that gets created holds only the characters between them. repr() shows the quotes back to you, print() shows the object's str() form, which does not.",
       "xp": 10,
       "tags": [
         "print",
         "strings"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(\"Pytor\")",
-      "hints": [
-        "Ask yourself what the quotes are for: are they part of the message or part of the code?"
-      ],
-      "deep": "Quotes are delimiters for the parser, they tell it where a string literal starts and ends. The str object that gets created holds only the characters between them. repr() shows the quotes back to you, print() shows the object's str() form, which does not."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l1.q4",
@@ -105,25 +112,28 @@
       "type": "mcq",
       "prompt": "Python cares about capital letters. Which one runs?",
       "options": [
-        "Print(\"hi\")",
         "Prnt(\"hi\")",
-        "print(\"hi\")",
-        "PRINT(\"hi\")"
+        "PRINT(\"hi\")",
+        "Print(\"hi\")",
+        "print(\"hi\")"
       ],
       "answer": [
         "print(\"hi\")"
       ],
       "explain": "Python is case sensitive. Print with a capital P is a different name, and Python has no idea what it means.",
+      "teach": "Python pays close attention to uppercase and lowercase letters in names, this is called being case sensitive. That means Run and run are treated as two completely different names, even though a person reading them might think they mean the same thing. Python only recognizes the exact spelling, capital letters included, that its own built in tools were written with. Change even one letter's case in a name Python already knows, and Python will no longer recognize it.",
+      "hints": [
+        "This question is testing whether you remember that capital and lowercase letters count as different letters to Python. Look closely at each option, letter by letter, especially the very first letter of the function name. Which spelling exactly matches the one Python was actually built with?",
+        "Think about how a locked door only opens for the exact key cut for it, a key that looks almost the same but is slightly different will not turn the lock. Python's built in tools work the same way, they only respond to their exact spelling, capital letters and all. Scan the options for the one where every single letter, including the first one, matches the spelling Python actually uses.",
+        "Any version with an extra or missing letter is simply misspelled and will never be recognized, no matter how it is capitalized. Any version starting with a capital letter looks like a real word but is treated as a brand new, unknown name, since nothing was ever defined with that spelling. The correct option spells the function's name completely in lowercase letters, with nothing added or changed."
+      ],
+      "deep": "Identifiers are case-sensitive because names are looked up as exact keys in a dictionary (the namespace). Print and print are two different keys; the second exists as a built-in and the first does not, so Python raises NameError. PEP 8 reserves CapWords for class names.",
       "xp": 10,
       "tags": [
         "print",
         "case-sensitivity"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Python matches names exactly, letter for letter."
-      ],
-      "deep": "Identifiers are case-sensitive because names are looked up as exact keys in a dictionary (the namespace). Print and print are two different keys; the second exists as a built-in and the first does not, so Python raises NameError. PEP 8 reserves CapWords for class names."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l1.q5",
@@ -132,10 +142,10 @@
       "type": "blocks",
       "prompt": "Build the line that prints Good morning.",
       "tray": [
-        "(",
         "\"Good morning\"",
         ")",
-        "print"
+        "print",
+        "("
       ],
       "answer": [
         "print",
@@ -145,15 +155,18 @@
       ],
       "accept": [],
       "explain": "A space inside the quotes is just another character in the text.",
+      "teach": "Text inside quotes can contain anything you like, including spaces, and Python treats all of it as one single piece of data. A space between two words inside quotes is just part of the message, the same way a space between words in this sentence is part of what you are reading. Python does not try to split the words apart or treat the space specially, it keeps everything between the opening and closing quote exactly as written. This is different from spaces outside quotes, which Python does pay attention to.",
+      "hints": [
+        "This puzzle asks you to arrange pieces into a working function call again, this time with a message made of two words and a space between them. Look at your pieces, is the whole phrase, space included, already sitting inside one single quoted piece, or is it split apart? Think about which piece is the function name and which two open and close its parentheses.",
+        "Picture mailing a short note with two words on it, you would not tear the note in half and mail each word separately, you send it as one piece of paper. A phrase with a space in it that is already wrapped in quotes travels the same way, as a single piece into the function. Arrange the pieces so the function name comes first, then an opening parenthesis, then that one quoted phrase, then a closing parenthesis.",
+        "Putting a parenthesis in front of the function name, or swapping the order of the two parentheses, breaks the shape Python expects. There is no need to split the quoted phrase into separate words, it already arrived as one complete piece with its space included. The correct order has the name touching an opening parenthesis, the single quoted phrase inside, then a closing parenthesis right after."
+      ],
+      "deep": "A string literal can hold any characters, spaces included, and the space inside the quotes is data, not syntax. Whitespace only matters to Python outside quotes, where indentation and line breaks carry meaning.",
       "xp": 15,
       "tags": [
         "print"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Same shape as the hello line; only the text inside the quotes changes."
-      ],
-      "deep": "A string literal can hold any characters, spaces included, and the space inside the quotes is data, not syntax. Whitespace only matters to Python outside quotes, where indentation and line breaks carry meaning."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l1.q6",
@@ -162,10 +175,10 @@
       "type": "order",
       "prompt": "Put the steps of running your first program in order.",
       "tray": [
-        "save the file",
         "run the file",
         "read the output",
-        "write the code"
+        "write the code",
+        "save the file"
       ],
       "answer": [
         "write the code",
@@ -175,15 +188,18 @@
       ],
       "accept": [],
       "explain": "Unsaved edits are invisible to Python. Save before you run, every time.",
+      "teach": "Writing a Python program is not just one action, it is a small sequence of steps that always happens in the same order. First you type your code into an editor, but until you save it, Python cannot see any of it, saved and unsaved text look completely different to a computer. Once the file is saved, you can run it, which asks Python to actually read your code and carry out the instructions. After it runs, something appears on the screen, and reading that is how you find out whether your code did what you expected.",
+      "hints": [
+        "This question asks you to put the everyday steps of coding into the order they really happen in. The idea to think about is that a computer can only act on what has been saved, not on what is still sitting unsaved in an editor. Look at your four steps, which one has to happen before there is even any code to save?",
+        "Think about baking, you first mix the ingredients, then you put the tray in the oven, you do not check how it tastes before it has even baked. Coding follows a similar order, you create something, you make it official by storing it, then you set it in motion, and only afterward do you check the result. Arrange your steps so creating comes first and checking the result comes last.",
+        "Trying to run or read output before writing anything makes no sense, since there is nothing yet for Python to work with. Running the file before saving it is a common mistake, since Python would then work from an old or empty version of your code. The right order begins with typing the code, followed by saving it, then running it, and finally looking at what appeared as a result."
+      ],
+      "deep": "This edit-save-run-read loop is the whole job in miniature. Professionals shrink the loop: an editor that runs on save, tests that run on every change, a REPL for one-liners. The faster the loop, the faster you learn what the code actually does.",
       "xp": 15,
       "tags": [
         "workflow"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Nothing can run before it exists on disk, and nothing can be read before it runs."
-      ],
-      "deep": "This edit-save-run-read loop is the whole job in miniature. Professionals shrink the loop: an editor that runs on save, tests that run on every change, a REPL for one-liners. The faster the loop, the faster you learn what the code actually does."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l2.q1",
@@ -193,25 +209,27 @@
       "prompt": "Which of these is NOT a valid Python string?",
       "options": [
         "'hello'",
-        "\"hello'",
+        "\"hello\"",
         "\"\"\"hello\"\"\"",
-        "\"hello\""
+        "\"hello'"
       ],
       "answer": [
         "\"hello'"
       ],
       "explain": "A string has to close with the same quote character it opened with. Mixing a double quote and a single quote leaves the string unterminated.",
+      "teach": "In Python, text you want to show is called a string, and you make one by wrapping it in quote marks. You can use single quotes like 'cat', double quotes like \"cat\", or even triple quotes for longer text. The rule that matters is that the quote you open with must be the same one you close with, so Python knows exactly where your text starts and ends. Without a matching pair, Python keeps searching for the end and never finds it.",
+      "hints": [
+        "This question is really asking which line breaks the quoting rule. The idea to think about is whether the quote mark at the start of each string matches the quote mark at the end. Look at each option and ask which one opens with one kind of quote and closes with a different kind.",
+        "Think of quotes like two matching bookends holding a row of books upright. If one bookend is round and the other is square, the books in between are not held properly. In the same way, check each option's first and last symbol: are they the same character, or a mismatched pair?",
+        "Three of the options use single quotes on both sides, double quotes on both sides, or triple quotes on both sides, so those all close cleanly. The odd one out opens with one quote style and switches to the other style at the end, leaving Python still waiting for a proper match. Choose the option whose opening and closing marks are different from each other."
+      ],
+      "deep": "Python accepts single, double and triple quotes, but the closing delimiter must match the opening one. Triple quotes let a string span lines. A mismatched pair leaves the string unterminated and the parser reports a SyntaxError at end of line.",
       "xp": 10,
       "tags": [
         "strings",
         "quotes"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "A string has to close with the same kind of quote it opened with.",
-        "Look at the first and last character of each option."
-      ],
-      "deep": "Python accepts single, double and triple quotes, but the closing delimiter must match the opening one. Triple quotes let a string span lines. A mismatched pair leaves the string unterminated and the parser reports a SyntaxError at end of line."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l2.q2",
@@ -220,11 +238,11 @@
       "type": "blocks",
       "prompt": "Build a line that prints:  it's fine",
       "tray": [
-        ")",
+        "'it's fine'",
         "(",
+        ")",
         "print",
-        "\"it's fine\"",
-        "'it's fine'"
+        "\"it's fine\""
       ],
       "answer": [
         "print",
@@ -234,17 +252,19 @@
       ],
       "accept": [],
       "explain": "Wrap the text in double quotes and the apostrophe inside causes no trouble. Single quotes would end the string at the apostrophe.",
+      "teach": "Sometimes the text you want to print already contains a quote mark, like the apostrophe in it's. If you wrap that text using the same kind of quote, Python thinks the string ends right at the apostrophe, and everything after becomes confusing leftover code. The fix is to pick a quote mark that is different from the one hiding inside your text, so the apostrophe is treated as an ordinary letter. For example, wrapping he said no works fine in double quotes because there is no clash.",
+      "hints": [
+        "This question asks you to print a phrase that has an apostrophe inside it. The everyday idea to focus on is choosing an outer quote mark that will not be confused with the apostrophe already sitting inside the words. Look at the pieces on your screen and ask which quote style keeps that apostrophe from ending the string too soon.",
+        "Picture wrapping a gift with tape that is the exact same material as something already stuck inside the box. It can tear open in the wrong spot. The same happens if you wrap it's fine using the same quote mark as the apostrophe, since Python stops reading right after it. Look for the piece whose outer quote mark differs from the mark hidden inside the phrase.",
+        "The piece that uses the same quote mark outside and inside would cut the string short right at the apostrophe, so that one cannot work here. You want the phrase safely held inside the other kind of quote mark, then placed as the single argument between an opening and closing parenthesis after the function name. Arrange the function name first, then the parenthesis pair wrapping that properly quoted phrase."
+      ],
+      "deep": "Pick the delimiter the text does not contain and you never need a backslash. That is the idiomatic choice over escaping: \"it's\" beats 'it\\'s'. When the text has both kinds, triple quotes or a backslash escape are the fallbacks.",
       "xp": 15,
       "tags": [
         "strings",
         "quotes"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "The text contains an apostrophe. Which quote style leaves it alone?",
-        "One tray block would end the string early at the apostrophe."
-      ],
-      "deep": "Pick the delimiter the text does not contain and you never need a backslash. That is the idiomatic choice over escaping: \"it's\" beats 'it\\'s'. When the text has both kinds, triple quotes or a backslash escape are the fallbacks."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l2.q3",
@@ -262,15 +282,18 @@
         "Starts a comment that Python ignores"
       ],
       "explain": "Everything after # on that line is for humans. Python skips it entirely.",
+      "teach": "As you write code, you will often want to leave a note for yourself or another reader that Python should never try to run. The hash symbol # does exactly that: everything typed after it on that line is set aside as a comment, not as an instruction. For example, in # adds two numbers, Python simply skips over those words when it runs. Comments matter because they let you explain your thinking without changing what the program actually does.",
+      "hints": [
+        "This question asks what job the # symbol actually does inside a line of code. The idea to think about is the difference between text that runs and text that is only there for human readers. Look at the options and ask which one describes something that has zero effect on the program.",
+        "Think of # like a sticky note attached to a machine part, reminding a mechanic what the part does without the note itself moving any gears. The machine runs the same whether the note is there or not. Look for the option describing words set aside for people rather than for the computer to carry out.",
+        "The wrong options describe # as starting output, naming a variable, or changing how text looks, but # never actively does any of those things. What really happens is that everything from # to the end of that line is quietly skipped and never executed. Pick the option saying that text is left for humans and Python passes over it."
+      ],
+      "deep": "The tokenizer drops everything from # to the end of the line, so a comment has zero runtime cost. Good comments explain why, not what: the code already says what it does. A comment that restates the line is noise that goes stale.",
       "xp": 10,
       "tags": [
         "comments"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Python skips it entirely. Who is the comment for, then?"
-      ],
-      "deep": "The tokenizer drops everything from # to the end of the line, so a comment has zero runtime cost. Good comments explain why, not what: the code already says what it does. A comment that restates the line is noise that goes stale."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l2.q4",
@@ -278,26 +301,29 @@
       "level": 2,
       "type": "mcq",
       "prompt": "How many lines does this program print?",
+      "code": "# print(\"first\")\nprint(\"second\")",
       "options": [
-        "2",
         "0",
+        "1",
         "3",
-        "1"
+        "2"
       ],
       "answer": [
         "1"
       ],
       "explain": "The first line is a comment, so only the print runs.",
+      "teach": "A Python program only shows output from lines it actually runs, and a line starting with # is never run, it is just a note for humans. So when two lines both look like print statements but one of them begins with #, only the other one will actually appear on the screen. It is like a to-do list where one item is crossed out: you only complete the ones left unmarked. Counting the output means counting only the print lines that are not turned into comments.",
+      "hints": [
+        "This question is really asking you to count how many print statements actually get executed. The single idea to check is that any line starting with # never runs. Look at the code and ask, for each line, whether it begins with that hash mark or not.",
+        "Picture two people given the same instruction, but one has a sticky note over theirs that says skip this. Only the person without the sticky note follows the instruction and speaks. Go through the code line by line and sort the print calls into commented and uncommented.",
+        "An answer of zero would be wrong, since one line is free of the hash mark, and an answer that counts the commented line would also be wrong, since that line never runs at all. The right count only includes print statements with no leading # in front of them. Count how many uncommented print lines remain."
+      ],
+      "deep": "Only executable lines produce output. Comments and blank lines are stripped before the bytecode compiler sees them, so a file full of comments compiles to nothing. Docstrings are different: a bare string is an expression statement and does survive to runtime.",
       "xp": 10,
       "tags": [
         "comments"
       ],
-      "reviewed": "2026-09-05",
-      "code": "# print(\"first\")\nprint(\"second\")",
-      "hints": [
-        "Count the lines that are not comments."
-      ],
-      "deep": "Only executable lines produce output. Comments and blank lines are stripped before the bytecode compiler sees them, so a file full of comments compiles to nothing. Docstrings are different: a bare string is an expression statement and does survive to runtime."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l2.q5",
@@ -315,16 +341,19 @@
       ],
       "accept": [],
       "explain": "A comment above the line is the normal Python habit, and it reads like a caption.",
+      "teach": "Comments do not need to sit in any particular spot for Python to work, since Python skips them wherever they appear in the file. But programmers share a habit, much like a caption sitting above a photo: an explanatory comment goes on its own line, right above the code it describes. This makes code easier to read later, because a reader's eye meets the explanation first and then sees the action it belongs to. Placing the note before the instruction, rather than after, is simply the accepted style.",
+      "hints": [
+        "This question is about the usual habit for placing a comment relative to the code it explains. The idea to think about is reading order: should a person's eyes meet the explanation or the action first? Look at your two pieces and think about which order reads like a caption followed by a picture.",
+        "Imagine a recipe card that says fold in the eggs written right above that step, rather than tucked in three steps later. Readers expect the explanation to arrive before the action it describes, not after. Arrange your two pieces so the note about what is happening comes before the line that actually does it.",
+        "Putting the note after the code would still run fine in Python, but it reads strangely for a human, like explaining a joke only after everyone has already reacted to it. The accepted order is the descriptive note sitting alone on its own line first, followed right below by the line of code it describes. Place the explanatory piece on top and the action piece underneath."
+      ],
+      "deep": "Convention, not syntax: Python does not care where a comment sits. Humans do. PEP 8 puts block comments above the code they describe, indented to match, and keeps inline comments two spaces after the code and rare.",
       "xp": 15,
       "tags": [
         "comments",
         "style"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "A comment describes the line that follows it."
-      ],
-      "deep": "Convention, not syntax: Python does not care where a comment sits. Humans do. PEP 8 puts block comments above the code they describe, indented to match, and keeps inline comments two spaces after the code and rare."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l2.q6",
@@ -332,27 +361,30 @@
       "level": 2,
       "type": "mcq",
       "prompt": "This line has a mistake. What is it?",
+      "code": "print(\"hello)",
       "options": [
-        "It needs a semicolon",
-        "Nothing is wrong",
         "print should be capitalised",
-        "The closing quote is missing"
+        "The closing quote is missing",
+        "Nothing is wrong",
+        "It needs a semicolon"
       ],
       "answer": [
         "The closing quote is missing"
       ],
       "explain": "Python reads to the end of the line looking for the closing quote, does not find one, and raises SyntaxError.",
+      "teach": "When Python reads a string, it starts at an opening quote mark and keeps reading characters until it finds a matching closing quote mark. If that closing mark never shows up before the line runs out, Python cannot tell where your text was supposed to end, and it reports an error instead of running anything. This is a different problem from misspelling a keyword, which Python would complain about in another way. Every opening quote needs a matching closing quote of the same kind before the line finishes.",
+      "hints": [
+        "This question asks you to spot exactly what is broken in a line meant to print some text. The idea to focus on is whether every quote mark that opens a string actually gets closed again. Look carefully at the quote marks in the code and count how many you can find.",
+        "Think of a quote mark like the opening half of a pair of parentheses in math: open one without closing it, and everything after just hangs there unfinished. Here, a string opens with a quote mark, so scan to the end of the line and check whether a second matching quote mark ever shows up. Compare what you find against each answer choice.",
+        "The line is not a capitalization problem, and Python does not need a semicolon here, so those explanations do not fit, and nothing about the print keyword itself is broken either. The real issue is that only one quote mark appears where two are needed, one to open the text and one to close it. Choose the option naming that missing closing quote as the mistake."
+      ],
+      "deep": "An unterminated string is caught by the tokenizer before any code runs, so the whole file fails, even the lines that were fine. Python 3.10 and later say exactly that: unterminated string literal, with the line number.",
       "xp": 10,
       "tags": [
         "errors",
         "quotes"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(\"hello)",
-      "hints": [
-        "Count the quote marks on the line."
-      ],
-      "deep": "An unterminated string is caught by the tokenizer before any code runs, so the whole file fails, even the lines that were fine. Python 3.10 and later say exactly that: unterminated string literal, with the line number."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l3.q1",
@@ -360,26 +392,29 @@
       "level": 3,
       "type": "mcq",
       "prompt": "Which word appears first on screen?",
+      "code": "print(\"one\")\nprint(\"two\")\nprint(\"three\")",
       "options": [
         "one",
+        "three",
         "They appear at the same time",
-        "two",
-        "three"
+        "two"
       ],
       "answer": [
         "one"
       ],
       "explain": "Python runs a file top to bottom, one line at a time.",
+      "teach": "Python reads your code the same way you read a page: from the very top line down to the very last one, one line at a time. It does not skip around or guess which line matters most. If you write two print lines, whichever one is written first is the one that shows on screen first. This matters because whenever you want to know what a program will show, you can just follow the lines in order, like following steps in a recipe.",
+      "hints": [
+        "This question is really asking you to spot which line of code Python reaches first when it runs the file. The single idea to hold onto is line order: Python does not jump around. Look at the three print lines on screen, which one is sitting at the very top?",
+        "Think of the code like turning pages in a book: you cannot read page three before page one. If print(\"cat\") sat on line one and print(\"dog\") on line two, cat would show up first simply because its line comes first. Look at your three lines the same way and find the one written above the other two.",
+        "The tempting wrong picks are usually the word from the middle line, the word from the last line, or the idea that everything shows at once, which cannot be true since Python only ever does one line at a time. The right pick is simply the text inside the print call that sits physically above the other two on the screen."
+      ],
+      "deep": "Execution is sequential: the interpreter compiles the file to bytecode and then runs it top to bottom, one statement at a time. Only control flow (loops, conditions, function calls) changes that order, and none of it appears here.",
       "xp": 10,
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(\"one\")\nprint(\"two\")\nprint(\"three\")",
-      "hints": [
-        "Python reads a file the way you read a page."
-      ],
-      "deep": "Execution is sequential: the interpreter compiles the file to bytecode and then runs it top to bottom, one statement at a time. Only control flow (loops, conditions, function calls) changes that order, and none of it appears here."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l3.q2",
@@ -388,9 +423,9 @@
       "type": "order",
       "prompt": "Order the lines so the output reads: ready / steady / go",
       "tray": [
-        "print(\"ready\")",
         "print(\"go\")",
-        "print(\"steady\")"
+        "print(\"steady\")",
+        "print(\"ready\")"
       ],
       "answer": [
         "print(\"ready\")",
@@ -399,15 +434,18 @@
       ],
       "accept": [],
       "explain": "Output order is line order. Nothing reorders itself.",
+      "teach": "In Python, the order lines appear in your file is the order they run in and the order their output shows on screen. Nothing rearranges itself: if line one prints an apple and line two prints a banana, apple always shows first. This is different from real life, where you might do things in whatever order feels natural. Here, the only thing that decides the order of output is the order you place the print lines in.",
+      "hints": [
+        "This puzzle is asking you to arrange lines so the words appear on screen in a specific order. The single idea to use is that output order always matches line order, nothing more. Look at the three lines in the tray, which word does each one actually print?",
+        "Imagine lining up three friends to shout one word each. If you want them to shout in a certain order, you place them in that order, you do not rely on them figuring it out themselves. Read the word inside each line's quotes, then think about which word the prompt wants first, second, and third.",
+        "A wrong arrangement usually happens when you place a line by habit instead of checking its actual quoted word, so double check each one rather than guessing from memory. There is no trick here and no hidden condition, just matching each line's word to its place in the requested phrase from the prompt."
+      ],
+      "deep": "Statements run in the order they appear, so output order is source order. This sounds trivial until asynchronous code, where the order lines start in is not the order they finish in. For plain scripts, source order is the whole story.",
       "xp": 15,
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "The output order is the line order."
-      ],
-      "deep": "Statements run in the order they appear, so output order is source order. This sounds trivial until asynchronous code, where the order lines start in is not the order they finish in. For plain scripts, source order is the whole story."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l3.q3",
@@ -415,26 +453,29 @@
       "level": 3,
       "type": "mcq",
       "prompt": "What does an empty print() do?",
+      "code": "print(\"a\")\nprint()\nprint(\"b\")",
       "options": [
         "Prints a blank line",
-        "Does nothing at all",
         "Raises an error",
-        "Prints the word None"
+        "Prints the word None",
+        "Does nothing at all"
       ],
       "answer": [
         "Prints a blank line"
       ],
       "explain": "print always ends with a newline, so calling it with nothing inside gives you an empty line, which is how you space output out.",
+      "teach": "print() is a tool that writes text to the screen, and normally you give it something to write, like print(\"hello\"). But print() can also be called with nothing between its parentheses at all. Every call to print finishes by moving the screen to a new line, and that still happens even when there is no text to show. This is a simple way to add breathing room between chunks of output, the same way a blank line in a letter separates one paragraph from the next.",
+      "hints": [
+        "This question asks what happens when you call print but give it nothing to print. The single idea here is that print always does two things: write your text, then move to a new line. Look at what appears between the two visible words in the code, is there a gap or nothing at all?",
+        "Think of print like pressing enter on a typewriter right after typing a sentence, the enter happens whether the sentence was long, short, or missing entirely. If you type nothing and just press enter, you still get a blank line on the page. Apply that idea to print() with empty parentheses and think about what would show up between the other two lines.",
+        "It does not raise an error, because Python is fine with an empty set of parentheses here, and it does not show a special word, since that only appears if you actually typed it in. It also is not doing nothing, because the newline still happens on its own. The right answer is simply the visible result of that lone newline landing by itself."
+      ],
+      "deep": "print() writes its arguments joined by sep, then writes end, which defaults to a newline. With no arguments it writes only the newline, which is a blank line. That end parameter is why print(\"a\", end=\"\") keeps the cursor on the same line.",
       "xp": 10,
       "tags": [
         "print"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(\"a\")\nprint()\nprint(\"b\")",
-      "hints": [
-        "print always ends its output with something, even with nothing to print."
-      ],
-      "deep": "print() writes its arguments joined by sep, then writes end, which defaults to a newline. With no arguments it writes only the newline, which is a blank line. That end parameter is why print(\"a\", end=\"\") keeps the cursor on the same line."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l3.q4",
@@ -443,13 +484,13 @@
       "type": "blocks",
       "prompt": "Build two lines that print hi and then bye.",
       "tray": [
-        "\"bye\"",
-        "\"hi\"",
         "print",
+        "print",
+        "(",
         ")",
+        "\"hi\"",
         "(",
-        "(",
-        "print",
+        "\"bye\"",
         ")"
       ],
       "answer": [
@@ -464,17 +505,19 @@
       ],
       "accept": [],
       "explain": "Two complete calls, each with its own parentheses. The blocks repeat because the code repeats.",
+      "teach": "A print statement needs three parts in order: the word print, a pair of parentheses, and inside them the text you want to show, wrapped in quotes. For example, print(\"cat\") shows the word cat. If you want to show two different words, you need two separate, complete print statements, each with its own parentheses and its own quoted text, placed one after another. Missing a parenthesis or mixing up the pieces means Python cannot understand the line.",
+      "hints": [
+        "You need to build two full print statements, one that shows the first word and one that shows the second. The single idea is that each print statement is self contained: it needs its own opening parenthesis, its own quoted text, and its own closing parenthesis. Look at the pieces in the tray, how many of each symbol do you actually have?",
+        "Think of a print statement like a sentence with a beginning, middle, and end: the word print starts it, the open parenthesis opens space for the text, the quoted word is the message, and the close parenthesis finishes it. You cannot borrow the ending of one sentence for another. Look for two matching pairs of parentheses and match each one to its own quoted word.",
+        "A wrong build might mix the two closing parentheses into the wrong spot, or place both quoted words inside one pair of parentheses, which would try to show them together instead of on separate lines. Remember that each complete statement stands alone and ends before the next begins. The right build has two clean, separate groups, each starting with the print word and ending with its own closing parenthesis."
+      ],
+      "deep": "Each print is a separate statement, and a statement normally ends at the line break. Python lets you put two on one line with a semicolon, but PEP 8 asks you not to: one statement per line is the readable form.",
       "xp": 15,
       "tags": [
         "print",
         "syntax"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Two complete calls, one after the other.",
-        "Finish the first call's closing paren before starting the second."
-      ],
-      "deep": "Each print is a separate statement, and a statement normally ends at the line break. Python lets you put two on one line with a semicolon, but PEP 8 asks you not to: one statement per line is the readable form."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l3.q5",
@@ -483,24 +526,27 @@
       "type": "mcq",
       "prompt": "Does Python ever run the last line of a file first?",
       "options": [
-        "Yes, files run bottom to top",
-        "Yes, if the last line is a print",
         "Only when the file has comments",
-        "No, it always starts at the top"
+        "Yes, if the last line is a print",
+        "No, it always starts at the top",
+        "Yes, files run bottom to top"
       ],
       "answer": [
         "No, it always starts at the top"
       ],
       "explain": "A Python file executes top to bottom. Functions can delay when code runs, but the reading order never flips.",
+      "teach": "A Python program starts reading at the top of the file and moves downward, the same direction every single time you run it. There is no setting or trick that makes it peek at the bottom first, not even if the last line looks important or is a print statement. Functions can hold code aside and run it later when called, but that is still triggered by something earlier in the file, not by skipping ahead. Knowing this lets you always trust that top to bottom is the one rule that never changes.",
+      "hints": [
+        "This question checks whether you understand which direction Python reads a file in. The single idea is direction: does the program ever start from the bottom instead of the top? Think about every example you have seen so far and where the first output always came from.",
+        "Picture reading a letter: you start at the greeting, not at the signature, even if the signature looks interesting. A computer program is read the same predictable way, always from its very first line onward. Think about whether comments or the type of line at the end could change that starting point, and look for the choice matching one fixed starting direction.",
+        "The choices mentioning comments or a print statement changing things are tempting because they focus on details that do not actually affect reading direction. The choice claiming files run bottom to top describes the opposite of every example you have seen. The right choice simply confirms that the starting point never moves, no matter what kind of line ends the file."
+      ],
+      "deep": "There is no hoisting in Python. A name has to be bound before the line that uses it runs, which is why a function must be defined above its first call in a script. The interpreter never looks ahead.",
       "xp": 10,
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Think of the file as a list of instructions to follow in order."
-      ],
-      "deep": "There is no hoisting in Python. A name has to be bound before the line that uses it runs, which is why a function must be defined above its first call in a script. The interpreter never looks ahead."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l3.q6",
@@ -511,8 +557,8 @@
       "tray": [
         "print(\"liftoff\")",
         "print(\"2\")",
-        "print(\"1\")",
-        "print(\"3\")"
+        "print(\"3\")",
+        "print(\"1\")"
       ],
       "answer": [
         "print(\"3\")",
@@ -522,43 +568,49 @@
       ],
       "accept": [],
       "explain": "Countdown order is just line order. Python has no idea the lines are a countdown, it only runs them from the top down.",
+      "teach": "Counting down means going from a bigger number to a smaller one before reaching a final word, like saying three, two, one, then a special word. In code, this only works if the print lines are placed in that same shrinking order, because Python has no idea what a countdown is, it just runs lines from top to bottom. Placing the lines in the wrong order would make the screen show numbers out of sequence or land on the special word too soon. Arranging the lines correctly is what makes the output feel like a real countdown.",
+      "hints": [
+        "This puzzle wants you to arrange four print lines so they read like a countdown. The single idea is that the computer does not know what a countdown is, it only follows the order you give it. Look at the four lines, each one prints a different number or word, which one represents the biggest count?",
+        "Think about counting down out loud yourself: you would never say the special final word before you finished saying the numbers. You say the biggest number first, then smaller ones, and save the final word for last. Look at the number hidden inside each line's quotes and think about which order makes them shrink correctly before the final word appears.",
+        "A wrong arrangement often puts the final word too early or mixes up which number is bigger than which. Remember that a real countdown always shrinks step by step and only ends with the special word once every number has already been said. Arrange the number lines from largest to smallest, and place the non-number line last of all."
+      ],
+      "deep": "Ordering four independent statements is a warm-up for the ordering questions later in the game, where the pieces are pipeline stages and the wrong order is a data leak or a broken retrieval index rather than a scrambled countdown.",
       "xp": 15,
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Read the required output from top to bottom and match lines to it."
-      ],
-      "deep": "Ordering four independent statements is a warm-up for the ordering questions later in the game, where the pieces are pipeline stages and the wrong order is a data leak or a broken retrieval index rather than a scrambled countdown."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l4.q1",
       "tier": 1,
       "level": 4,
       "type": "mcq",
-      "prompt": "What exactly does this print?",
+      "prompt": "What exactly does this print? The quotes show where the output starts and ends.",
+      "code": "print(\"a\", \"b\")",
       "options": [
-        "a,b",
-        "a b ",
-        "a b",
-        "ab"
+        "'a b '",
+        "'a,b'",
+        "'ab'",
+        "'a b'"
       ],
       "answer": [
-        "a b"
+        "'a b'"
       ],
-      "explain": "print joins several values with a single space between them by default.",
+      "explain": "print joins its arguments with one space and adds nothing after the last one, so the output is a, a space, b, and then the line ends.",
+      "teach": "print can take several pieces of text separated by commas, like print(\"cat\", \"dog\"). When you give it more than one piece, it automatically places a single space between each pair, but it never adds a space before the first piece or after the last one. This spacing comes from a hidden setting print uses every time you do not tell it otherwise. Knowing this helps you predict exactly what characters will appear on screen.",
+      "hints": [
+        "This question is really asking: when print gets two separate pieces of text, what character appears between them, and is there anything extra before or after? Look closely at the quotes in the options: is there a space at the very start or end, or nothing at all?",
+        "Think of print like placing two tiles on a table with a small gap between them: it never adds a gap before the first tile or after the last one, only between tiles. For example, print(\"red\", \"blue\") lands as one word, then exactly one space, then the other word, nothing else. Compare each option's spacing and punctuation against that pattern.",
+        "A comma inside the parentheses just separates arguments and never appears in the output, so that option is wrong. No space between the letters would mean they got glued into one string, which is not what happens with two separate pieces. A trailing space is wrong too, since print stops right after the last piece. The real output has exactly one space in the middle and nothing else."
+      ],
+      "deep": "print joins multiple arguments with sep, which defaults to a single space, and adds end afterwards. That separator is why print(\"a\", \"b\") gives a b and not ab; to glue strings with nothing between them, concatenate them or set sep=\"\".",
       "xp": 10,
       "tags": [
         "print",
         "sep"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(\"a\", \"b\")",
-      "hints": [
-        "print puts something between two arguments. What is it by default?"
-      ],
-      "deep": "print joins multiple arguments with sep, which defaults to a single space, and adds end afterwards. That separator is why print(\"a\", \"b\") gives a b and not ab; to glue strings with nothing between them, concatenate them or set sep=\"\"."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l4.q2",
@@ -566,27 +618,30 @@
       "level": 4,
       "type": "mcq",
       "prompt": "What does this print?",
+      "code": "print(\"2026\", \"09\", \"04\", sep=\"-\")",
       "options": [
         "2026-09-04",
-        "An error",
+        "2026 09 04",
         "2026,09,04",
-        "2026 09 04"
+        "An error"
       ],
       "answer": [
         "2026-09-04"
       ],
       "explain": "sep replaces the space that print normally puts between values.",
+      "teach": "You already know print can join several pieces of text with a space by default. Python lets you change that default by adding sep=\"something\" inside the parentheses, and whatever you put in the quotes becomes the new glue between every piece. For example, print(\"x\", \"y\", sep=\":\") shows x:y instead of x y. This is handy whenever you want dates, paths, or lists to look a certain way without joining the pieces yourself.",
+      "hints": [
+        "The code is telling print to use a different piece of glue between its three values instead of the usual space. Look at what character sits between the quotes after sep= and ask yourself: where should that exact character show up in the output?",
+        "Picture sep as swapping the glue in a glue gun: normally print uses invisible space-glue, but here you handed it one specific character, and it uses that same character between every pair of values, not just the first pair. For example, print(\"1\",\"2\",\"3\", sep=\"*\") produces 1*2*3. Check which option places that same character between all three values with nothing else added.",
+        "An option that still has spaces between the values ignores what sep does, and an option using commas confuses the comma that separates arguments in the code with what actually gets printed, which is different. It is also not an error, because sep=\"-\" is valid, ordinary syntax. The real output is the three values sitting right next to that one glue character, twice, with no spaces anywhere."
+      ],
+      "deep": "sep is a keyword-only argument: you must write sep=\"-\", never pass it by position. print(*args, sep=' ', end='\\n', file=None, flush=False) is the full signature, and file=sys.stderr is how you send errors to the right stream.",
       "xp": 10,
       "tags": [
         "print",
         "sep"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(\"2026\", \"09\", \"04\", sep=\"-\")",
-      "hints": [
-        "The sep argument replaces the default space with something else."
-      ],
-      "deep": "sep is a keyword-only argument: you must write sep=\"-\", never pass it by position. print(*args, sep=' ', end='\\n', file=None, flush=False) is the full signature, and file=sys.stderr is how you send errors to the right stream."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l4.q3",
@@ -595,14 +650,14 @@
       "type": "blocks",
       "prompt": "Build a line that prints:  a-b",
       "tray": [
-        "\"a\"",
-        "(",
         "\"b\"",
+        "(",
+        ",",
+        "sep=\"-\"",
         ")",
-        ",",
+        "\"a\"",
         "print",
-        ",",
-        "sep=\"-\""
+        ","
       ],
       "answer": [
         "print",
@@ -616,17 +671,19 @@
       ],
       "accept": [],
       "explain": "sep is a keyword argument, so it goes inside the parentheses after the values, separated by a comma.",
+      "teach": "A function call in Python is built as the function name, an opening parenthesis, then its arguments separated by commas, then a closing parenthesis. Some arguments are just values, like \"a\", and some are keyword arguments that look like name=value, such as sep=\"-\"; keyword arguments always come after the plain values, never before. For example, print(\"x\", \"y\", sep=\",\") is valid, but writing the sep part first is not. Getting this order right is what makes Python understand which value plays which role.",
+      "hints": [
+        "You need to print two pieces of text with a dash between them instead of the usual space, so think about which two things are the actual values to show and which one thing is just a setting that changes their spacing. Look at the tray: which pieces are plain quoted text, and which piece looks like a name followed by an equals sign?",
+        "Building a print call is like filling a short form: first list the items you want shown, separated by commas, then add any special settings, also separated by a comma. To print two words joined by a colon, arrange it as the function name, parenthesis, first word, comma, second word, comma, the joiner setting, then closing parenthesis. Arrange your blocks the same way, values first, setting last.",
+        "Putting the joiner setting before the two words breaks the rule that settings come after plain values, and forgetting a comma between any two blocks breaks the call entirely. The two quoted words should sit right after the opening parenthesis with a comma between them, and the joiner setting comes last, right before the closing parenthesis, matching the character shown between the letters in the target output."
+      ],
+      "deep": "Positional arguments come first, keyword arguments after; Python raises SyntaxError if you put a positional after a keyword. Every argument, including the keyword ones, is separated by a comma.",
       "xp": 15,
       "tags": [
         "print",
         "sep"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Keyword arguments like sep go after the values.",
-        "Commas separate every argument, including the last value from sep."
-      ],
-      "deep": "Positional arguments come first, keyword arguments after; Python raises SyntaxError if you put a positional after a keyword. Every argument, including the keyword ones, is separated by a comma."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l4.q4",
@@ -634,27 +691,30 @@
       "level": 4,
       "type": "mcq",
       "prompt": "What does end=\"\" change?",
+      "code": "print(\"a\", end=\"\")\nprint(\"b\")",
       "options": [
-        "print writes to a file instead of the screen",
-        "print runs faster",
         "print stops adding a newline at the end",
-        "print stops adding spaces between values"
+        "print stops adding spaces between values",
+        "print writes to a file instead of the screen",
+        "print runs faster"
       ],
       "answer": [
         "print stops adding a newline at the end"
       ],
       "explain": "end is the text print puts after everything else. Set it to an empty string and the next print continues on the same line.",
+      "teach": "Every time print finishes showing its values, it automatically adds an invisible line break so the next thing you print starts on a fresh line. Python lets you change that trailing bit with end=\"something\", and whatever you put there replaces that invisible line break. For example, print(\"Loading\", end=\"\") followed by another print keeps everything on the same line instead of moving down. This matters whenever you want text to continue right where the last print left off, like a progress bar.",
+      "hints": [
+        "The question is about what happens right after print shows its text, not about spacing between values. Ask yourself: normally, after one print call finishes, does the next print start on the same line or a new one, and what would change that?",
+        "Think of end as the punctuation mark print stamps at the very end of its output, and normally that stamp is an invisible line break that pushes the cursor down to a new line. If you replace that stamp with nothing, the cursor stays right where it is, so whatever prints next appears glued onto the same line. For example, print(\"He\", end=\"\") then print(\"llo\") shows Hello on one single line.",
+        "This has nothing to do with the space between values, since that is controlled by a different setting entirely, and it has nothing to do with where the output goes or how fast the code runs. What actually changes is only the invisible line break after the text, so the next printed text lands right next to it instead of dropping to a new line."
+      ],
+      "deep": "end=\"\" suppresses the trailing newline, so the next print continues on the same line. Progress bars and spinners use exactly this, usually together with flush=True so the text appears immediately instead of waiting in the output buffer.",
       "xp": 10,
       "tags": [
         "print",
         "end"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(\"a\", end=\"\")\nprint(\"b\")",
-      "hints": [
-        "Look at what end normally is: a newline character."
-      ],
-      "deep": "end=\"\" suppresses the trailing newline, so the next print continues on the same line. Progress bars and spinners use exactly this, usually together with flush=True so the text appears immediately instead of waiting in the output buffer."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l4.q5",
@@ -662,27 +722,30 @@
       "level": 4,
       "type": "mcq",
       "prompt": "What appears on screen?",
+      "code": "print(3 + 4)",
       "options": [
-        "3 + 4",
         "34",
+        "7",
         "\"3 + 4\"",
-        "7"
+        "3 + 4"
       ],
       "answer": [
         "7"
       ],
       "explain": "There are no quotes, so Python does the arithmetic first and print receives the number 7.",
+      "teach": "When you write something without quotes in Python, it is treated as an expression to calculate, not as text to display as-is. Numbers and math symbols like + work this way: 3 + 4 is computed first, turning into a single number, before print ever sees it. Put quotes around the same characters, like \"3 + 4\", and Python treats it as plain text instead, showing the symbols exactly as typed. Knowing the difference between quoted text and a calculation is one of the most useful habits in reading Python code.",
+      "hints": [
+        "Look closely at the code: are there any quotation marks around the numbers and the plus sign? That tells you whether Python treats this as text to show exactly as written, or as a sum to calculate first.",
+        "Python works like a calculator receipt printer: if you hand it an unquoted sum, it first works out the answer, then hands only that final result to print, the same way print(10 - 3) would show a single result, not the subtraction written out. Since there are no quotes here, treat the plus sign as a real math operation rather than a character to display.",
+        "An option that shows the digits mashed together like they got glued is wrong, because addition does not join digits that way. An option showing the plus sign and spaces exactly as typed is wrong too, since that only happens with quotes around the text. The real output is the small single number you get from actually doing the addition."
+      ],
+      "deep": "Arguments are evaluated before the call happens. 3 + 4 is an expression, Python computes 7, and print receives the integer 7. Wrap it in quotes and it becomes a five-character string that is printed as written.",
       "xp": 10,
       "tags": [
         "print",
         "arithmetic"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(3 + 4)",
-      "hints": [
-        "There are no quotes around 3 + 4, so Python treats it as arithmetic."
-      ],
-      "deep": "Arguments are evaluated before the call happens. 3 + 4 is an expression, Python computes 7, and print receives the integer 7. Wrap it in quotes and it becomes a five-character string that is printed as written."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l4.q6",
@@ -692,10 +755,10 @@
       "prompt": "Build a line that prints:  2 + 2 = 4",
       "tray": [
         "print",
-        "\"2 + 2 =\"",
         "2 + 2",
-        "(",
         ",",
+        "\"2 + 2 =\"",
+        "(",
         ")"
       ],
       "answer": [
@@ -708,16 +771,19 @@
       ],
       "accept": [],
       "explain": "The quoted part is shown literally, the unquoted part is calculated, and print puts a space between them.",
+      "teach": "You can print a label written in quotes together with a value that gets calculated, all in the same print call, just by separating them with a comma. Print automatically turns any number into text for display, so it can sit right next to your quoted words without you doing anything special. For example, print(\"Total:\", 3 + 5) shows the label, then a space, then the computed number. This lets you build readable output without manually joining text and numbers yourself.",
+      "hints": [
+        "This output has two parts: a label made of words and symbols, and a number that comes from doing some math. Look at the pieces available and ask which one belongs inside quotes as fixed text, and which one should be left as a plain calculation for Python to work out.",
+        "Think of it like a price tag: the words Price stay fixed and quoted, while the actual price is computed and shown as a number, and print places them side by side, separated by a comma in the code. Picture print(\"Sum:\", 4 + 4) built piece by piece: function name, parenthesis, quoted label, comma, plain math, closing parenthesis. Arrange your blocks the same way.",
+        "If you put the numbers inside quotes along with the label, Python would show the plus sign and digits exactly as typed instead of calculating anything, which is not what you want here. Leaving out the comma between the label and the math would break the call completely. The right shape starts with the quoted label first, then a comma, then the unquoted arithmetic left for Python to compute, closed off properly."
+      ],
+      "deep": "Mixing a string and a computed number in one print is fine because print converts every argument with str() before writing. Trying to add them with + would fail: \"2 + 2 =\" + 4 raises TypeError, which is why f-strings exist.",
       "xp": 15,
       "tags": [
         "print",
         "arithmetic"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "One string argument, then one arithmetic argument."
-      ],
-      "deep": "Mixing a string and a computed number in one print is fine because print converts every argument with str() before writing. Trying to add them with + would fail: \"2 + 2 =\" + 4 raises TypeError, which is why f-strings exist."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q1",
@@ -735,15 +801,18 @@
       ],
       "accept": [],
       "explain": "A name has to exist before you use it. Reversed, this raises NameError.",
+      "teach": "A variable is like a labeled box: you have to put something in it before you can look inside. In Python, the line that creates the box uses an equals sign, and only after that line runs does the name hold anything. If you try to read the box before it exists, Python has nothing to show you and stops with an error. This is why the line that creates a variable must come before any line that uses it.",
+      "hints": [
+        "This question is really asking which has to happen first: making a variable exist, or reading what it holds. Look at the two lines on your screen. Which one creates something new, and which one just displays something that already exists?",
+        "Think of it like a mailbox: you cannot check what letter is inside until someone has put a letter in it first. If you peek before the mail arrives, there is nothing there to read, and Python reacts the same way with an error. Look for the line with an equals sign, since that one does the creating.",
+        "Reading the value before it is created leaves Python with no idea what you mean, so it stops the whole program right there, which is why that ordering fails. The line with an equals sign is the one that makes the name exist, and it has to sit above the line that shows what the name holds. Put the creating line first, then the displaying line second."
+      ],
+      "deep": "Assignment binds a name to an object in the current namespace. Reading a name that has not been bound yet raises NameError. This order dependency is the reason variables are defined near the top of a function and used below.",
       "xp": 15,
       "tags": [
         "variables"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "A name has to be given a value before it can be printed."
-      ],
-      "deep": "Assignment binds a name to an object in the current namespace. Reading a name that has not been bound yet raises NameError. This order dependency is the reason variables are defined near the top of a function and used below."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q2",
@@ -751,27 +820,30 @@
       "level": 5,
       "type": "mcq",
       "prompt": "What does this print?",
+      "code": "name = \"Pytor\"\nprint(\"name\")",
       "options": [
-        "\"name\"",
-        "Pytor",
         "An error",
-        "name"
+        "Pytor",
+        "name",
+        "\"name\""
       ],
       "answer": [
         "name"
       ],
       "explain": "Quotes make it literal text. Without quotes, print(name) would show what the variable holds.",
+      "teach": "Quotation marks tell Python that whatever is between them is plain text, not a variable to look up. So \"cat\" in quotes is always just the three letters c-a-t, no matter what a variable named cat might hold. Without quotes, a word is treated as a variable name and Python goes looking for its value. This difference between quoted text and a bare name is one of the first things worth training your eye to notice.",
+      "hints": [
+        "This question is asking you to notice something small but important: are the letters inside quotation marks in the print line? Look closely at the code on your screen and check whether the word is wrapped in quotes or standing on its own.",
+        "Imagine writing someone's name on a sign in quotes versus calling out their actual name to get their attention. The quoted sign just shows those letters, it does not summon the person. In the same way, quoted text in Python is only ever those exact letters, while an unquoted word sends Python looking for a variable with that name.",
+        "The variable does hold a different value, but that value is never used here, so answers built around the variable's contents or an error are both wrong. Nothing here breaks the program either, since quoted text is always valid. The right answer is simply the exact letters written between the quotation marks, unchanged."
+      ],
+      "deep": "With quotes, name is a string literal and the variable is never consulted. Without them it is a name lookup. The two look similar in an editor and behave completely differently, which is why syntax highlighting colours strings.",
       "xp": 10,
       "tags": [
         "variables",
         "strings"
       ],
-      "reviewed": "2026-09-05",
-      "code": "name = \"Pytor\"\nprint(\"name\")",
-      "hints": [
-        "Look for quotes around the word inside print."
-      ],
-      "deep": "With quotes, name is a string literal and the variable is never consulted. Without them it is a name lookup. The two look similar in an editor and behave completely differently, which is why syntax highlighting colours strings."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q3",
@@ -780,11 +852,11 @@
       "type": "blocks",
       "prompt": "Build a line that greets by name using an f-string.",
       "tray": [
-        "f\"Hi {name}\"",
-        "(",
         ")",
+        "(",
+        "print",
         "\"Hi {name}\"",
-        "print"
+        "f\"Hi {name}\""
       ],
       "answer": [
         "print",
@@ -794,17 +866,19 @@
       ],
       "accept": [],
       "explain": "The f before the quote is what turns {name} into the value. Without it you print the braces literally.",
+      "teach": "An f-string is a piece of text where you can drop a variable's value right into the middle, using curly braces. Writing f\"Hi {name}\" tells Python to swap {name} for whatever that variable currently holds before printing it. Without the letter f right before the opening quote, Python does not look inside the braces at all, it just shows them as plain text. This little letter is what turns a string from static text into something that can include live values.",
+      "hints": [
+        "The question is really asking which piece of text can actually pull in the variable's value instead of just showing plain words. Look at the pieces you have to arrange and ask yourself, which one is written so that Python knows to peek inside the braces?",
+        "Think of a fill-in-the-blank form letter: writing Dear {name} only works as a greeting if something tells the reader to replace the blank with the real name. In Python, that signal is a small letter placed right before the opening quotation mark. Look for the piece of text where that signal sits directly against the quote, with no gap and no other letters.",
+        "A piece of text that looks almost the same but is missing that small signal will print the braces and the word inside them exactly as typed, which is not a greeting at all. The piece you want starts with that one extra letter glued to the quote mark, and it holds the braces with the variable's name inside the greeting. Pick the one shaped like a normal quoted greeting but with that tiny letter stuck on front."
+      ],
+      "deep": "PEP 498 f-strings evaluate the expression inside the braces at runtime and format the result in place. They are faster than .format() and % because the compiler turns them into direct bytecode, and they accept any expression: f\"{price * 1.25:.2f}\".",
       "xp": 15,
       "tags": [
         "variables",
         "f-string"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "An f-string needs its f prefix before the opening quote.",
-        "Without the prefix the braces are printed as written."
-      ],
-      "deep": "PEP 498 f-strings evaluate the expression inside the braces at runtime and format the result in place. They are faster than .format() and % because the compiler turns them into direct bytecode, and they accept any expression: f\"{price * 1.25:.2f}\"."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q4",
@@ -812,27 +886,30 @@
       "level": 5,
       "type": "mcq",
       "prompt": "What happens when this runs?",
+      "code": "print(age)",
       "options": [
-        "It prints 0",
+        "NameError, because age was never given a value",
         "It prints a blank line",
         "It prints the word age",
-        "NameError, because age was never given a value"
+        "It prints 0"
       ],
       "answer": [
         "NameError, because age was never given a value"
       ],
       "explain": "Python has no default value for a name you never assigned. It stops with NameError.",
+      "teach": "Every variable has to be created with an assignment before Python can use it anywhere else. If you never wrote something like age = 30 earlier in the program, then the name age simply does not exist yet as far as Python is concerned. Trying to use a name that was never created is different from it being empty or zero, it is more like asking for something that was never put on the shelf. Python has a specific, named error it shows in exactly this situation.",
+      "hints": [
+        "This question is asking what Python does when you ask it to show a variable that was never created. Look at the code, is there any line above this one that gives age a value? Think about what happens when you ask for something that simply is not there.",
+        "Imagine asking a friend to hand you the red folder from an empty desk. There is no default folder they can give you, they can only tell you it does not exist. Python behaves the same way here, and it has one specific kind of message it shows for a missing name. Look for the option that names that particular kind of error rather than describing a printed value.",
+        "Python never invents a value like zero or a blank line for a name you never created, so those options do not match what actually happens. It also does not treat the word age as plain text, since there are no quotes around it here. The right answer names the specific error Python raises when a variable was never assigned before it was used."
+      ],
+      "deep": "NameError is Python's way of saying a name was never bound in any enclosing scope. Reading the traceback's last line tells you which name; reading upward tells you which line. Both halves are worth learning to read early.",
       "xp": 10,
       "tags": [
         "variables",
         "errors"
       ],
-      "reviewed": "2026-09-05",
-      "code": "print(age)",
-      "hints": [
-        "Which names on the right have been assigned above?"
-      ],
-      "deep": "NameError is Python's way of saying a name was never bound in any enclosing scope. Reading the traceback's last line tells you which name; reading upward tells you which line. Both halves are worth learning to read early."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q5",
@@ -841,8 +918,8 @@
       "type": "order",
       "prompt": "Order the lines so the program prints 12.",
       "tray": [
-        "score = 10",
         "print(score)",
+        "score = 10",
         "score = 12"
       ],
       "answer": [
@@ -852,15 +929,18 @@
       ],
       "accept": [],
       "explain": "Assigning again replaces the value. The variable holds whatever was put in last before the print.",
+      "teach": "Assigning a variable again does not add to the old value, it replaces it completely. If you write score = 10 and then later write score = 12, the 10 is gone and score now just means 12. Whatever value was assigned most recently, right before you read the variable, is the one you get. This matters because code runs top to bottom, so the order of assignments decides the final value.",
+      "hints": [
+        "This question is asking which value ends up sitting in the variable right before it gets printed. Look at how many times a value gets assigned to the same name here, and think about what happens each time that name is given something new.",
+        "Picture a whiteboard where you write a number, then later erase it and write a different number in its place. Anyone reading the board after both writes only ever sees the second number, the first one is gone. Arrange the lines so both assignments happen, in the order that leaves the wanted number as the last one written, before the line that reads the board.",
+        "If the printing line came first or in the middle, Python would either error or show a value that gets overwritten right after, so those orderings do not give the wanted result. The two assignment lines both need to happen before anything is displayed. Start with the value that gets replaced, follow with the value you actually want to see, and only then read it out."
+      ],
+      "deep": "Rebinding a name replaces which object it points to. The old integer 10 is not modified, it is simply no longer referenced and CPython frees it when its reference count hits zero. Names are labels, objects are the things.",
       "xp": 15,
       "tags": [
         "variables"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "A name can be reassigned; the last assignment before the print wins."
-      ],
-      "deep": "Rebinding a name replaces which object it points to. The old integer 10 is not modified, it is simply no longer referenced and CPython frees it when its reference count hits zero. Names are labels, objects are the things."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q6",
@@ -868,27 +948,30 @@
       "level": 5,
       "type": "mcq",
       "prompt": "What does this print?",
+      "code": "name = \"Pytor\"\nprint(f\"Hi {name}\")",
       "options": [
-        "f\"Hi {name}\"",
-        "Hi {name}",
         "Hi Pytor",
+        "Hi {name}",
+        "f\"Hi {name}\"",
         "An error"
       ],
       "answer": [
         "Hi Pytor"
       ],
       "explain": "The f-string swaps {name} for the value the variable holds at that moment.",
+      "teach": "An f-string looks like normal text but the curly braces inside it are a window into a variable's actual value. When Python runs a line like f\"Hi {name}\", it does not print the braces or the word name, it replaces that whole chunk with whatever the variable currently holds. This swap happens the instant the line runs, using the value stored at that moment. It is how you build a sentence that includes something a variable is holding, without gluing pieces of text together by hand.",
+      "hints": [
+        "This question is asking what actually appears on screen once Python fills in the blank inside the braces. Look at what the variable was set to earlier in the code, and think about what happens to the curly braces and the word inside them once the f-string runs.",
+        "Picture a form letter that says Dear {name}, where a machine automatically swaps that placeholder for the real name before printing the page. The reader never sees the braces or the word name, only the finished sentence. In the same way, think about what finished sentence comes out once the placeholder here gets swapped for the value stored earlier.",
+        "The braces and the word name never appear in the output, so any option showing them literally describes what would happen only without the f in front, not this case. Nothing here causes an error, since the variable was properly created first. The result is a short greeting made of plain words followed directly by the actual value the variable was holding."
+      ],
+      "deep": "Inside an f-string, braces switch from text to expression. {name} looks the variable up in the current scope and inserts its str() form. Double braces {{ }} are how you print a literal brace.",
       "xp": 10,
       "tags": [
         "variables",
         "f-string"
       ],
-      "reviewed": "2026-09-05",
-      "code": "name = \"Pytor\"\nprint(f\"Hi {name}\")",
-      "hints": [
-        "The f prefix is there, so the braces do their job."
-      ],
-      "deep": "Inside an f-string, braces switch from text to expression. {name} looks the variable up in the current scope and inserts its str() form. Double braces {{ }} are how you print a literal brace."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q7",
@@ -896,14 +979,7 @@
       "level": 5,
       "type": "fill",
       "prompt": "Fill the gap so the program prints Pytor.",
-      "template": "name = {0}\nprint(name)",
       "blocks": [
-        {
-          "id": "bare",
-          "code": "Pytor",
-          "plain": "a name called Pytor",
-          "kind": "var"
-        },
         {
           "id": "name",
           "code": "name",
@@ -917,28 +993,37 @@
           "kind": "expr"
         },
         {
+          "id": "bare",
+          "code": "Pytor",
+          "plain": "a name called Pytor",
+          "kind": "var"
+        },
+        {
           "id": "num",
           "code": "42",
           "plain": "the number 42",
           "kind": "expr"
         }
       ],
+      "template": "name = {0}\nprint(name)",
       "answer": [
         "quoted"
       ],
       "accept": [],
       "explain": "Quotes are what make it text. Without them Python goes looking for a variable called Pytor, finds none, and stops with NameError.",
+      "teach": "Python treats words in two very different ways. Wrap letters in quotes, like \"cat\", and Python treats it as plain text, called a string, to use exactly as written. Leave the letters bare, like cat, and Python thinks it is the name of a variable, then goes looking for a value stored under that name. This matters because printing text you meant literally, without quotes, makes Python search for a variable that was never created.",
+      "hints": [
+        "This question is really asking whether the letters after the equals sign should be stored as text, or looked up as the name of some other variable. The single idea here is that quote marks are what turn characters into a string. Look at the gap: does it need to hold literal letters, or search for an existing variable called Pytor?",
+        "Think about writing a name tag at a party. You write the letters M-a-r-y on a sticker, you do not go find the actual person named Mary and staple her to your shirt. In code, quote marks tell Python these letters are literal text, while bare letters tell Python to go look up a variable with that name. Scan the options for the one that wraps the letters snugly instead of leaving them bare or swapping in a number.",
+        "The bare, unquoted letters would make Python hunt for a variable that nobody ever created, which stops the program with an error before anything prints. A number would only ever show digits, never spell out a name. The block you want is the one where the exact letters sit wrapped in a matching pair of quote marks, turning them into ready-to-print text."
+      ],
+      "deep": "Assigning \"Pytor\" creates a str object and binds name to it. Assigning bare Pytor would try to read a variable called Pytor first, which raises NameError. Kind colours help: an amber expression block belongs where a value is computed or written.",
       "xp": 15,
       "tags": [
         "variables",
         "strings"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "The value assigned has to be text, so it needs quotes.",
-        "A bare word without quotes would be a name lookup, and that name does not exist yet."
-      ],
-      "deep": "Assigning \"Pytor\" creates a str object and binds name to it. Assigning bare Pytor would try to read a variable called Pytor first, which raises NameError. Kind colours help: an amber expression block belongs where a value is computed or written."
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t1.l5.q8",
@@ -946,13 +1031,12 @@
       "level": 5,
       "type": "fill",
       "prompt": "Fill the gaps so the line prints: Hi Pytor, you have 3 messages",
-      "template": "name = \"Pytor\"\ncount = 3\nprint(f\"Hi {0}, you have {1} messages\")",
       "blocks": [
         {
-          "id": "lit3",
-          "code": "{3}",
-          "plain": "the number three",
-          "kind": "expr"
+          "id": "pname",
+          "code": "name",
+          "plain": "the letters n-a-m-e",
+          "kind": "var"
         },
         {
           "id": "bcount",
@@ -961,35 +1045,38 @@
           "kind": "var"
         },
         {
+          "id": "lit3",
+          "code": "{3}",
+          "plain": "the number three",
+          "kind": "expr"
+        },
+        {
           "id": "bname",
           "code": "{name}",
           "plain": "the value of name",
           "kind": "var"
-        },
-        {
-          "id": "pname",
-          "code": "name",
-          "plain": "the letters n-a-m-e",
-          "kind": "var"
         }
       ],
+      "template": "name = \"Pytor\"\ncount = 3\nprint(f\"Hi {0}, you have {1} messages\")",
       "answer": [
         "bname",
         "bcount"
       ],
       "accept": [],
       "explain": "Inside an f-string the braces are the instruction to swap in a value. Drop them and you print the letters of the name instead.",
+      "teach": "An f-string is text that starts with an f right before the opening quote, and it lets you drop live values into the middle of a sentence. Inside that string, anything wrapped in its own curly braces is not printed as literal characters; Python swaps it for the current value of that variable. So with x set to 3, an f-string with count followed by braces around x prints count: 3, not the letter x. This matters because the message then updates itself whenever the variable changes, instead of you retyping it by hand.",
+      "hints": [
+        "This question wants two spots inside one f-string filled so the printed message shows the real values stored in name and count, not just plain words. The single idea to think about is that each spot needs its own curly braces to tell Python to swap in a value. Look at the two blank spots in the print line and ask what each one must fetch and how it needs to be wrapped.",
+        "Picture curly braces in an f-string as a mail slot. Whatever you slide in is what shows up when the message prints, so a variable wrapped in braces fetches its current value, while a bare word with no braces just prints those letters unchanged. Look for the two blocks that already carry their own curly braces around a real variable name, not ones missing braces or holding a fixed number.",
+        "A block with braces around a fixed digit would always print that same digit no matter what count actually holds, so it cannot track a changing value. A bare variable name with no braces would show up as stray plain letters in the sentence instead of being swapped for anything. The two blocks you want are simply the two existing variables, each tucked inside its own pair of curly braces."
+      ],
+      "deep": "Inside f-string braces you can put any expression, and a bare variable name is the simplest one. {3} would insert the literal 3 rather than the count, which is why the count gap needs the variable. In Python 3.12+ you can even nest quotes inside the braces.",
       "xp": 20,
       "tags": [
         "f-string",
         "variables"
       ],
-      "reviewed": "2026-09-05",
-      "hints": [
-        "Each gap wants a name wrapped in braces so the f-string substitutes it.",
-        "One tray block has braces but holds a number, not a name."
-      ],
-      "deep": "Inside f-string braces you can put any expression, and a bare variable name is the simplest one. {3} would insert the literal 3 rather than the count, which is why the count gap needs the variable. In Python 3.12+ you can even nest quotes inside the braces."
+      "reviewed": "2026-09-05"
     }
   ]
 }

@@ -17,19 +17,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "A Norwegian law firm has 40,000 PDFs, wants internal question answering, the data may not leave the EU, the budget is 150,000 NOK and they want it live in six weeks. What do you propose?",
-      "explain": "Fine-tuning teaches style and format, not retrievable facts, and has to be redone whenever the corpus changes. Long-context-per-query still needs retrieval to choose the documents and multiplies the token bill. Training from scratch costs years and millions. Retrieval against an EU-hosted endpoint is the only option that meets residency, budget and timeline at once.",
-      "hints": [
-        "Four constraints: residency, budget, timeline, and facts that live in documents. Which option satisfies all four?",
-        "Ask of each option: what happens when a new PDF arrives next month?"
-      ],
-      "deep": "The consultant's first job is to map constraints to architecture before anyone says the word model. Residency rules out US-region endpoints without a data-processing agreement; budget and six weeks rule out training; a changing corpus rules out baking facts into weights. Say this in the proposal, in that order, and the client learns to reason the same way.",
-      "xp": 40,
-      "tags": [
-        "scoping",
-        "rag-vs-finetune",
-        "data-residency"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Retrieval over the PDFs with an EU-hosted model",
         "Fine-tune an open model on the 40,000 PDFs",
@@ -38,7 +25,22 @@
       ],
       "answer": [
         "Retrieval over the PDFs with an EU-hosted model"
-      ]
+      ],
+      "explain": "Fine-tuning teaches style and format, not retrievable facts, and has to be redone whenever the corpus changes. Long-context-per-query still needs retrieval to choose the documents and multiplies the token bill. Training from scratch costs years and millions. Retrieval against an EU-hosted endpoint is the only option that meets residency, budget and timeline at once.",
+      "teach": "Imagine you have a mountain of documents and someone will keep asking questions about them. One way is to memorize the documents by retraining the model on them, which is slow and expensive, and has to be redone every time a document changes. Another way is to keep the documents in place and have the system search them at the exact moment of the question, called retrieval, and hand only the relevant bits to the model. Where that model runs also matters when documents are not allowed to leave a region.",
+      "hints": [
+        "The question is really about matching a solution to three limits at once: where the data can live, how much money there is, and how little time there is. Look at the four choices and ask yourself which ones need extra weeks or months of extra work before anything can even answer a question.",
+        "Picture a small local library that just got a huge new shipment of books and a librarian who needs to answer visitor questions starting tomorrow. Shipping every book overseas to be copied into someone's memory takes far too long, and building a brand new library from nothing takes even longer. Look for the option that lets the librarian search the books already on the shelf, right where they must legally stay.",
+        "Teaching a model by retraining it changes how it writes, not what facts it knows, and it goes stale the moment new PDFs arrive. Building something from nothing costs far more than six weeks and 150,000 NOK allow, and pasting every document into one prompt each time gets pricey and ignores where the data must stay. The right approach searches the documents at question time, hosted inside the allowed region."
+      ],
+      "deep": "The consultant's first job is to map constraints to architecture before anyone says the word model. Residency rules out US-region endpoints without a data-processing agreement; budget and six weeks rule out training; a changing corpus rules out baking facts into weights. Say this in the proposal, in that order, and the client learns to reason the same way.",
+      "xp": 40,
+      "tags": [
+        "scoping",
+        "rag-vs-finetune",
+        "data-residency"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l1.q2",
@@ -46,18 +48,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Each request sends 40,000 input tokens and returns 800 output tokens, and the client expects 12,000 requests a month. Input costs $3 per million tokens and output $15 per million. What is the monthly model bill?",
-      "explain": "Input is 40,000 x 12,000 = 480 million tokens, which is 480 x $3 = $1,440. Output is 800 x 12,000 = 9.6 million tokens, which is 9.6 x $15 = $144. The total is $1,584. $1,440 forgets output entirely and $1,468.80 prices output at the input rate.",
-      "hints": [
-        "Work out input and output separately, in millions of tokens.",
-        "Output has its own, higher price per million."
-      ],
-      "deep": "Ninety-one percent of this bill is input, so 40,000 tokens per request is the number to attack: retrieve fewer chunks, cache the stable prefix, shorten the system prompt. Put the arithmetic in the proposal with the assumptions visible; a client who can check your numbers trusts the ones they cannot.",
-      "xp": 40,
-      "tags": [
-        "cost",
-        "token-math"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "$158.40",
         "$1,440",
@@ -66,7 +56,21 @@
       ],
       "answer": [
         "$1,584"
-      ]
+      ],
+      "explain": "Input is 40,000 x 12,000 = 480 million tokens, which is 480 x $3 = $1,440. Output is 800 x 12,000 = 9.6 million tokens, which is 9.6 x $15 = $144. The total is $1,584. $1,440 forgets output entirely and $1,468.80 prices output at the input rate.",
+      "teach": "Every request to a language model is billed in tokens, small pieces of text, and input tokens (what you send in) and output tokens (what comes back) are usually priced differently, with output often costing more per token. To find a monthly bill, you multiply tokens per request by how many requests happen in a month, then by the price per token for that type, doing this separately for input and output before adding the two together. Missing this split makes a budget completely wrong.",
+      "hints": [
+        "This question is really asking you to add two separate costs together instead of one: what it costs to send text in, and what it costs to get text back, each at its own price per million tokens. Look at the numbers on the screen: have you worked out the input tokens and the output tokens as two separate totals before combining them?",
+        "Think of a shop charging one price per kilogram for apples and a different, higher price per kilogram for cherries. If you buy both, you weigh each separately, multiply each by its own price, then add the two totals, never using the apple price for the cherries. Do the same here, then look for the option that is the sum of both parts, not just one of them.",
+        "One tempting number only counts the input side and quietly drops the output cost, and another applies the input's cheaper price to the output tokens by mistake, understating the real bill. The correct total is a little larger than the input-only figure, because it adds a smaller but real output charge on top, calculated at its own higher rate."
+      ],
+      "deep": "Ninety-one percent of this bill is input, so 40,000 tokens per request is the number to attack: retrieve fewer chunks, cache the stable prefix, shorten the system prompt. Put the arithmetic in the proposal with the assumptions visible; a client who can check your numbers trusts the ones they cannot.",
+      "xp": 40,
+      "tags": [
+        "cost",
+        "token-math"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l1.q3",
@@ -74,18 +78,6 @@
       "level": 1,
       "type": "blocks",
       "prompt": "Assemble the evaluation harness the client's procurement team will accept. Leave out anything that is not evidence.",
-      "explain": "A fixed question set comes first because nothing else is measurable without it. The rubric defines what good means, the automated judge applies it at scale, the regression run makes it a gate rather than a one-off, and cost plus latency logging is what procurement actually signs against. A vibe check is not evidence.",
-      "hints": [
-        "Start with the thing every other piece depends on: something to measure against.",
-        "One tray block would embarrass you in front of procurement."
-      ],
-      "deep": "The order is a dependency chain: no rubric without questions, no judge without a rubric, no regression gate without a judge, and no SLA without logging. Procurement wants a number and a way to re-check it after you leave. Deliver the harness as code in their repo, not as a slide.",
-      "xp": 45,
-      "tags": [
-        "evals",
-        "procurement"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "vibe check in the chat window",
         "regression run on every deploy",
@@ -101,7 +93,21 @@
         "regression run on every deploy",
         "cost and latency logging"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "A fixed question set comes first because nothing else is measurable without it. The rubric defines what good means, the automated judge applies it at scale, the regression run makes it a gate rather than a one-off, and cost plus latency logging is what procurement actually signs against. A vibe check is not evidence.",
+      "teach": "When you want to prove an AI system actually works well, a single chat where it happens to answer nicely is not proof, because you cannot repeat it or compare it later. Real evidence starts with a fixed, unchanging set of test questions, then a clear written standard for what a good answer looks like, then a fast way to check answers against that standard, and finally a habit of re-checking this every time something changes plus tracking speed and price. Think of it like a driving test: the same route, the same scoring checklist, applied the same way to every driver, every time.",
+      "hints": [
+        "The question is asking you to build a chain of evidence where each piece depends on the one before it, and to throw out the one item that is not really evidence at all. Look at the six items on the tray: which one is just someone glancing at a reply and saying it looks fine, with nothing written down or repeatable?",
+        "Think about a driving test: examiners agree on a fixed route and a scoring sheet before anyone gets in the car, so they can grade drivers consistently, then re-test whenever rules change, while timing each test. Each step needs the one before it: you cannot write a scoring sheet for a route that keeps changing. Look for the item that has to exist first because nothing else can be built without it.",
+        "The item to leave out is the casual glance at a single answer in a chat window, since it cannot be repeated, compared, or shown to anyone as proof. The correct order begins with something fixed to test against, moves to a written standard for grading it, then a fast automatic way of applying that standard, then making that check run on every change, and ends with tracking speed and cost."
+      ],
+      "deep": "The order is a dependency chain: no rubric without questions, no judge without a rubric, no regression gate without a judge, and no SLA without logging. Procurement wants a number and a way to re-check it after you leave. Deliver the harness as code in their repo, not as a slide.",
+      "xp": 45,
+      "tags": [
+        "evals",
+        "procurement"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l1.q4",
@@ -109,18 +115,6 @@
       "level": 1,
       "type": "blocks",
       "prompt": "Order the ingestion pipeline. One block belongs to query time, not ingestion.",
-      "explain": "Re-ranking scores candidates that came back from a search, so it can only happen once a query exists. Putting it in the ingestion path is the mistake this level is built to catch.",
-      "hints": [
-        "Ingestion prepares documents before any user asks anything.",
-        "One block needs a query to make sense. Which one?"
-      ],
-      "deep": "Ingestion and query are two pipelines with one shared contract: the chunk. Anything that needs a question (re-ranking, query rewriting, generation) is query-time; anything that needs only documents (parsing, chunking, embedding, metadata) is ingest-time. Draw them as two boxes and the client stops asking why re-indexing takes a night.",
-      "xp": 45,
-      "tags": [
-        "rag",
-        "pipeline"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "load the PDF",
         "embed chunks",
@@ -134,7 +128,21 @@
         "embed chunks",
         "upsert to the vector store"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Re-ranking scores candidates that came back from a search, so it can only happen once a query exists. Putting it in the ingestion path is the mistake this level is built to catch.",
+      "teach": "Getting documents ready for a search system and actually answering a search question are two different moments in time. Getting ready happens once, before anyone asks anything: you take in a document, cut it into smaller pieces, and turn those pieces into a searchable form that gets stored away. Answering a question happens later, every single time someone asks something, and can involve deciding which stored pieces matter most for that particular question. Mixing up which step belongs to which moment is a common planning mistake.",
+      "hints": [
+        "The question wants you to order the steps that happen when documents first come in, before anyone has asked anything, and to spot the one step that cannot happen without a question already in hand. Look at the five items: which one only makes sense once someone has actually typed something in?",
+        "Picture a library preparing a new shipment: unpacking a box, cutting a long book into labeled sections, making a searchable index card for each section, and filing those cards can all happen on a quiet day with no visitors. Deciding which found cards to hand a specific visitor first only makes sense once that visitor has asked something. Look for the four items that only need the documents themselves.",
+        "The step that sounds like it belongs but does not is the one that judges which already-found results matter most, since judging results needs a question to have been asked first, which happens later. The correct order starts with bringing the raw document in, then breaking it into smaller pieces, then turning those pieces into a searchable numeric form, and ends with storing them away for later retrieval."
+      ],
+      "deep": "Ingestion and query are two pipelines with one shared contract: the chunk. Anything that needs a question (re-ranking, query rewriting, generation) is query-time; anything that needs only documents (parsing, chunking, embedding, metadata) is ingest-time. Draw them as two boxes and the client stops asking why re-indexing takes a night.",
+      "xp": 45,
+      "tags": [
+        "rag",
+        "pipeline"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l1.q5",
@@ -142,18 +150,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Two weeks after launch the client reports the assistant is inventing case numbers. What do you check first?",
-      "explain": "Most invented facts in a retrieval system are a retrieval miss: nothing relevant came back and the model filled the gap. Measure retrieval hit rate on the exact failing questions before you touch temperature, model size, or prompt wording, or you will spend the budget tuning generation to cover a search bug.",
-      "hints": [
-        "Where would a correct case number have to come from?",
-        "Debug the pipeline from the input side, not the output side."
-      ],
-      "deep": "Pull the retrieved chunk ids for the failing queries from the logs. If the right chunk was not retrieved, it is a search problem: chunking, embedding version, filters. If it was retrieved and ignored, it is a prompt or context-length problem. Without per-request chunk logging you cannot tell, which is why logging is in the harness.",
-      "xp": 40,
-      "tags": [
-        "failure-triage",
-        "hallucination"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Whether temperature is set above zero",
         "Whether the system prompt says not to make things up",
@@ -162,7 +158,21 @@
       ],
       "answer": [
         "Whether the retrieved chunks actually contain the answer"
-      ]
+      ],
+      "explain": "Most invented facts in a retrieval system are a retrieval miss: nothing relevant came back and the model filled the gap. Measure retrieval hit rate on the exact failing questions before you touch temperature, model size, or prompt wording, or you will spend the budget tuning generation to cover a search bug.",
+      "teach": "When an AI system answers using retrieval, it works from documents pulled up and shown to it at the moment of the question, like handing someone a stack of relevant handouts before asking them to write an answer. If the handouts do not actually contain the needed fact, a model will often fill the gap with something that sounds plausible but is not true, which people call an invented or hallucinated fact. Because the answer can only be as good as the material it was actually given, the first thing to check when facts go wrong is what material was given, not how the model phrased things.",
+      "hints": [
+        "The question is really asking you to figure out where in the pipeline the mistake most likely started, before touching anything about how the model writes its answers. Look at the options and ask yourself: which one checks what information the system actually had in front of it when it wrote the answer?",
+        "Imagine asking someone to answer a question using only a folder of handouts you gave them, and they write something wrong. Before assuming they are careless or dishonest, you would first open the folder and check whether the correct fact was even in there. Look for the option that checks the material actually retrieved and shown to the model, rather than settings that only affect wording or model size.",
+        "Checking randomness settings or adding a warning not to make things up does not help if the needed fact was never handed to the model, and swapping in a bigger model cannot invent knowledge it was never given either. The right first check looks directly at whatever was pulled from the documents for that exact question, to see whether the real answer was actually sitting inside it."
+      ],
+      "deep": "Pull the retrieved chunk ids for the failing queries from the logs. If the right chunk was not retrieved, it is a search problem: chunking, embedding version, filters. If it was retrieved and ignored, it is a prompt or context-length problem. Without per-request chunk logging you cannot tell, which is why logging is in the harness.",
+      "xp": 40,
+      "tags": [
+        "failure-triage",
+        "hallucination"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l1.q6",
@@ -170,18 +180,6 @@
       "level": 1,
       "type": "mcq",
       "prompt": "The contract sets p95 response time under 2 seconds and you are measuring 6. Which change buys the most?",
-      "explain": "Streaming changes time-to-first-token, which is what a user experiences as speed, and a smaller context cuts real prefill time. The other three each add work: more chunks means more prefill, a second pass doubles the round trips, and a whole-corpus prompt is the slowest and most expensive option on the list.",
-      "hints": [
-        "Three options add work. One removes it.",
-        "What does the user perceive as the answer starting?"
-      ],
-      "deep": "Break the 6 seconds down before choosing: queueing, retrieval, re-ranking, prefill, decode. Prefill scales with input tokens, decode with output tokens. Streaming hides decode; trimming input cuts prefill. If retrieval itself is 3 seconds, the fix is the index, not the model. Measure per stage, then pick the lever.",
-      "xp": 40,
-      "tags": [
-        "latency",
-        "sla"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Stream tokens to the UI and shrink the retrieved context",
         "Put the whole corpus in the prompt and skip retrieval",
@@ -190,7 +188,21 @@
       ],
       "answer": [
         "Stream tokens to the UI and shrink the retrieved context"
-      ]
+      ],
+      "explain": "Streaming changes time-to-first-token, which is what a user experiences as speed, and a smaller context cuts real prefill time. The other three each add work: more chunks means more prefill, a second pass doubles the round trips, and a whole-corpus prompt is the slowest and most expensive option on the list.",
+      "teach": "How fast an AI system feels to a user depends on more than just how powerful the model is. Part of the wait is the model reading everything it was given before it can start responding at all, and part is how the reply gets delivered: all at once at the very end, or piece by piece as it is produced, called streaming. Less material to read means the model can start sooner, and streaming means the user sees the first words quickly instead of staring at a blank screen. Fixing a slow response often means attacking both of these at once.",
+      "hints": [
+        "The question is asking which change would cut the actual waiting time the most, so think about what makes a reply feel slow: how much the model has to read before it can begin, and whether the user sees anything before the whole answer is ready. Look at the four options and ask which ones add more reading and waiting, and which one changes both of these at once.",
+        "Think of a cook who must read the whole recipe card before starting, and a customer who feels a meal is fast once the first plate reaches the table. A longer recipe card means a slower start, and food arriving course by course feels faster than waiting for everything to be plated first. Look for the option that shortens what must be read and also changes how soon something reaches the screen.",
+        "Skipping the search step and stuffing everything into one prompt means far more reading than before, which slows things down, and pulling many more retrieved pieces or adding a second check on the answer both add extra work on top of what is already too slow. The right change trims how much the model must read before it starts, and lets the reply appear right away instead of arriving all at once at the end."
+      ],
+      "deep": "Break the 6 seconds down before choosing: queueing, retrieval, re-ranking, prefill, decode. Prefill scales with input tokens, decode with output tokens. Streaming hides decode; trimming input cuts prefill. If retrieval itself is 3 seconds, the fix is the index, not the model. Measure per stage, then pick the lever.",
+      "xp": 40,
+      "tags": [
+        "latency",
+        "sla"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l1.q7",
@@ -198,34 +210,6 @@
       "level": 1,
       "type": "pipeline",
       "prompt": "Wire the ticket-routing pipeline inside the client's budget.",
-      "explain": "Redaction goes first, because every stage after it would otherwise see raw personal data. Retrieval then gives the classifier past tickets to reason from, and the escalation route is what keeps the low-confidence cases from being routed wrongly. That wiring costs 660 ms and EUR 0.0029, inside both ceilings. Swap the small classifier for the self-hosted 7B and you are at 1140 ms and EUR 0.0042, over on latency and over on cost at the same time.",
-      "hints": [
-        "Watch the two readouts as you place stages; coral means a ceiling is breached.",
-        "Personal data must be handled before anything else reads the ticket.",
-        "A routing system needs somewhere to send the cases it is not sure about."
-      ],
-      "deep": "Four stages, two budgets, six candidates: this is the shape of every architecture decision. The self-hosted 7B looks like the serious choice and breaches both ceilings; the small classifier plus retrieval beats it on this task because routing is a narrow problem. Escalation is not a failure path, it is the accuracy guarantee. Pytor's rule: the budget readout is the design review.",
-      "xp": 80,
-      "tags": [
-        "pipeline",
-        "budgets",
-        "architecture"
-      ],
-      "reviewed": "2026-09-05",
-      "brief": {
-        "client": "Nordic Logistics AS",
-        "initials": "NL",
-        "quote": "40k support tickets a month, all triaged by hand. Automate the routing, but our data cannot leave the EU and the agent console has to stay snappy.",
-        "constraints": [
-          "p95 < 900 ms",
-          "at most EUR 0.004 per ticket",
-          "EU residency"
-        ],
-        "stages": 4,
-        "maxMs": 900,
-        "maxCost": 0.004,
-        "currency": "EUR"
-      },
       "blocks": [
         {
           "id": "knn",
@@ -276,13 +260,42 @@
           "plain": "a big model you run yourself"
         }
       ],
+      "brief": {
+        "client": "Nordic Logistics AS",
+        "initials": "NL",
+        "quote": "40k support tickets a month, all triaged by hand. Automate the routing, but our data cannot leave the EU and the agent console has to stay snappy.",
+        "constraints": [
+          "p95 < 900 ms",
+          "at most EUR 0.004 per ticket",
+          "EU residency"
+        ],
+        "stages": 4,
+        "maxMs": 900,
+        "maxCost": 0.004,
+        "currency": "EUR"
+      },
       "answer": [
         "pii",
         "knn",
         "small",
         "esc"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Redaction goes first, because every stage after it would otherwise see raw personal data. Retrieval then gives the classifier past tickets to reason from, and the escalation route is what keeps the low-confidence cases from being routed wrongly. That wiring costs 660 ms and EUR 0.0029, inside both ceilings. Swap the small classifier for the self-hosted 7B and you are at 1140 ms and EUR 0.0042, over on latency and over on cost at the same time.",
+      "teach": "A pipeline is a chain of steps a piece of data moves through, each one doing its own small job and taking its own slice of time and money. Think of a factory line: the item passes station to station, and every station adds seconds and cost, even one that barely changes the outcome. When a client sets a speed limit, like p95 latency (how slow the slowest 5 percent of requests are), and a cost limit per item, you must pick only the stations that earn their place, because bigger or extra stations are not automatically better for a narrow task like sorting tickets.",
+      "hints": [
+        "This question asks which four stages, in which order, keep the ticket pipeline under both the speed limit and the price limit the client set. Look at the two numbers given, the maximum time and maximum cost per ticket, and picture a ticket flowing through stages one at a time. Which stage should touch the ticket first, and which one exists only as a safety net for unsure cases?",
+        "Think of sorting mail: photocopying a letter before blacking out the name and address means the copy already leaked the details, so privacy work must happen before anything else reads it. A sorter also benefits from seeing similar letters sorted before, and should be sized to the job, since a clerk does not need a law degree. Look for stages matching those roles, plus one catching letters nobody is sure about.",
+        "The larger self-hosted model and extra re-ranking step sound impressive, but they add heavy computation this narrow task does not need, blowing the budget. The stage that strips personal details belongs right at the front, and a small, fast decision-maker with a lookup of similar past tickets plus a fallback for uncertain cases completes the chain. Pick the four quiet stages, not the ones sounding most advanced."
+      ],
+      "deep": "Four stages, two budgets, six candidates: this is the shape of every architecture decision. The self-hosted 7B looks like the serious choice and breaches both ceilings; the small classifier plus retrieval beats it on this task because routing is a narrow problem. Escalation is not a failure path, it is the accuracy guarantee. Pytor's rule: the budget readout is the design review.",
+      "xp": 80,
+      "tags": [
+        "pipeline",
+        "budgets",
+        "architecture"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l2.q1",
@@ -290,19 +303,6 @@
       "level": 2,
       "type": "mcq",
       "prompt": "The client's CTO says: we want to train our own GPT on our documents. What do you say?",
-      "explain": "The request is a goal wearing the wrong solution. Reframe to the outcome, propose the architecture that reaches it, and leave the door open with evidence rather than opinion.",
-      "hints": [
-        "What does the CTO actually want: a trained model, or answers from their documents?",
-        "Never argue with a client about methods. Argue with numbers."
-      ],
-      "deep": "Translate every technology request into an outcome and a metric. Training their own model would cost more, take longer, go stale, and still hallucinate; retrieval answers from live documents with citations. Offer the comparison as a table in the proposal, and put fine-tuning in a phase-2 box so nobody feels overruled.",
-      "xp": 40,
-      "tags": [
-        "scoping",
-        "client-management",
-        "rag-vs-finetune"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Suggest they wait for a better model",
         "Agree, and quote for a fine-tuning project",
@@ -311,7 +311,22 @@
       ],
       "answer": [
         "Explain that retrieval gets their documents into answers this quarter, propose a measured pilot, and keep fine-tuning as a later option for style if the evals show a need"
-      ]
+      ],
+      "explain": "The request is a goal wearing the wrong solution. Reframe to the outcome, propose the architecture that reaches it, and leave the door open with evidence rather than opinion.",
+      "teach": "When a client says train our own GPT, they are naming a technology, not the outcome they want, which is usually get answers that use our documents. Retrieval, often called RAG, fetches the most relevant pieces of a company's documents and hands them to an existing model so it can answer with citations, no retraining needed. Fine-tuning, what training your own GPT usually means, reshapes a model's behavior with many examples, which costs more, takes longer, and still needs fresh data to stay current. Good scoping matches the request to the real goal before matching it to a technique.",
+      "hints": [
+        "This question is testing whether you respond to the technology a client names or to the outcome they actually want. Ask yourself: what is the client really trying to achieve by having their own trained model, and is there a faster, cheaper way to reach that same result?",
+        "Imagine a client says I want to build my own car from scratch when what they need is to reach the airport by five. Renting a car or calling a taxi gets them there this week, while building one takes months and might not even drive better. Look for the option offering the client's real goal sooner, using what already exists, while leaving room to revisit the bigger build later if evidence says it is worth it.",
+        "Agreeing and quoting for the training project ignores how slow, costly, and quick to go stale that path is, refusing outright damages the relationship for no reason, and telling them to wait helps nobody today. The fit answer explains the faster route using their own documents, proposes a small measured trial, and treats the bigger training approach as something to consider only later if the evidence calls for it."
+      ],
+      "deep": "Translate every technology request into an outcome and a metric. Training their own model would cost more, take longer, go stale, and still hallucinate; retrieval answers from live documents with citations. Offer the comparison as a table in the proposal, and put fine-tuning in a phase-2 box so nobody feels overruled.",
+      "xp": 40,
+      "tags": [
+        "scoping",
+        "client-management",
+        "rag-vs-finetune"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l2.q2",
@@ -319,19 +334,6 @@
       "level": 2,
       "type": "mcq",
       "prompt": "Which setup keeps the data in the EU?",
-      "explain": "Residency is a legal and physical fact: where the data is processed and under what contract. Only an EU-region deployment with the right agreement, or self-hosting in the EU, satisfies it.",
-      "hints": [
-        "Where are the bytes processed, and what does the contract say about them?",
-        "A model cannot answer questions about text it cannot read."
-      ],
-      "deep": "Ask the provider three things in writing: processing region, whether prompts are retained or used for training, and whether a DPA under GDPR is available. Self-hosting on EU hardware (Hetzner, OVH, a national cloud) trades convenience for control. Document the answer in the architecture, because the client's auditor will ask.",
-      "xp": 40,
-      "tags": [
-        "data-residency",
-        "compliance",
-        "architecture"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Encrypting the prompt before sending it so the model cannot read it",
         "An EU-region endpoint under a data-processing agreement that excludes training on your data, or a model self-hosted in an EU data centre",
@@ -340,7 +342,22 @@
       ],
       "answer": [
         "An EU-region endpoint under a data-processing agreement that excludes training on your data, or a model self-hosted in an EU data centre"
-      ]
+      ],
+      "explain": "Residency is a legal and physical fact: where the data is processed and under what contract. Only an EU-region deployment with the right agreement, or self-hosting in the EU, satisfies it.",
+      "teach": "Data residency means controlling the real, physical and legal location where data is processed, plus the rules the provider must follow once they have it, similar to a courier contract that says a package never leaves a certain country and never gets opened along the way. It is not about disguising data so it looks private, and it is not satisfied just because a company says nice things about privacy. True residency needs both a location guarantee and a written agreement about what can and cannot be done with the data once it arrives there.",
+      "hints": [
+        "This question asks what actually keeps data inside the EU, physically and legally, rather than what merely feels safer. Ask yourself: does the setup you are picturing control both where the processing computer sits and what the provider is contractually allowed to do with what passes through it?",
+        "Picture mailing a parcel: sealing the box with tape is like encryption, it hides the contents in transit, but does not stop the truck crossing into another country to sort it. What matters is the address of the warehouse doing the sorting and a contract promising the parcel never leaves that country or gets opened elsewhere. Look for the option naming both a location and a data-handling promise.",
+        "Encrypting a prompt only hides it along the way, it does not change which country's server reads it, so residency is not solved. A personal laptop is not real, reliable infrastructure regardless of where it sits, and a friendly privacy sentence is not a binding guarantee. The right answer names a genuine location constraint plus a written data-use promise, or full control inside EU infrastructure."
+      ],
+      "deep": "Ask the provider three things in writing: processing region, whether prompts are retained or used for training, and whether a DPA under GDPR is available. Self-hosting on EU hardware (Hetzner, OVH, a national cloud) trades convenience for control. Document the answer in the architecture, because the client's auditor will ask.",
+      "xp": 40,
+      "tags": [
+        "data-residency",
+        "compliance",
+        "architecture"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l2.q3",
@@ -348,19 +365,6 @@
       "level": 2,
       "type": "mcq",
       "prompt": "Six-week timeline. What is the right week-one deliverable?",
-      "explain": "Everything after week one is measured against the golden set. Building it with the client first turns quality from an argument into a number.",
-      "hints": [
-        "What must exist before you can say any later week went well?",
-        "Interfaces and prompts can be changed cheaply; a missing yardstick cannot be recovered later."
-      ],
-      "deep": "Co-writing the golden set forces the client to define good answers and reveals the questions they really care about. The baseline (retrieval recall, a first answer quality score) becomes the number every later demo improves on. Consultants who skip this end up defending vibes at the acceptance meeting.",
-      "xp": 40,
-      "tags": [
-        "planning",
-        "evals",
-        "client-management"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "A fine-tuned model",
         "A 30-question golden set agreed with the client and a measured retrieval baseline on it",
@@ -369,7 +373,22 @@
       ],
       "answer": [
         "A 30-question golden set agreed with the client and a measured retrieval baseline on it"
-      ]
+      ],
+      "explain": "Everything after week one is measured against the golden set. Building it with the client first turns quality from an argument into a number.",
+      "teach": "A golden set is a small collection of example questions paired with answers everyone agrees are correct, working like an answer key for a test, so later you can check whether a system actually improved instead of just feeling better. A baseline is the very first measurement you take, before any real building, so every later change has a number to beat rather than a vague impression. Together they turn is this any good from an opinion into something you can measure, which matters enormously once a client is paying for six weeks of work.",
+      "hints": [
+        "This question is about what to build in the very first week, before writing anything fancy, so that every later week has something concrete to measure against. Ask yourself: what would let you and the client agree, in plain numbers, on what a good answer actually looks like?",
+        "Think of a teacher who writes the exam questions and the model answers before teaching a single class, so that grading later is fair and consistent, or a running coach who times your current mile before starting any training plan. Look for the option that produces a shared answer key the client helped write, plus an honest first measurement of how the simplest approach performs.",
+        "A fine-tuned model, a finished system prompt, or a polished chat interface are all things worth building later, once you actually know the target, and jumping straight to them means you cannot prove progress or agree with the client on what counts as good. The right first deliverable is small, written together with the client, and comes with an initial measured score that later weeks are judged against."
+      ],
+      "deep": "Co-writing the golden set forces the client to define good answers and reveals the questions they really care about. The baseline (retrieval recall, a first answer quality score) becomes the number every later demo improves on. Consultants who skip this end up defending vibes at the acceptance meeting.",
+      "xp": 40,
+      "tags": [
+        "planning",
+        "evals",
+        "client-management"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l2.q4",
@@ -377,19 +396,6 @@
       "level": 2,
       "type": "blocks",
       "prompt": "Assemble the security controls for a customer-facing assistant. One block is not a control.",
-      "explain": "Redact before data spreads, isolate tenants where the query runs, test injection like any other bug class, verify grounding on output, and cap abuse. A system prompt is a request to the model, not a control.",
-      "hints": [
-        "A control is something enforced by code, not by asking the model nicely.",
-        "Think in layers: ingest, retrieval, testing, output, abuse."
-      ],
-      "deep": "Defence in depth for LLM systems mirrors web security: validate at the boundary, enforce authorisation in the data layer, test adversarial inputs, verify outputs, limit blast radius. The tenant filter belongs in the index query itself; filtering after retrieval leaves the wrong tenant's chunks in the top-k list and one bug away from the prompt.",
-      "xp": 45,
-      "tags": [
-        "security",
-        "architecture",
-        "multi-tenant"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "prompt-injection cases in the eval suite",
         "PII redaction at ingest",
@@ -405,7 +411,22 @@
         "citation check on every answer",
         "rate limiting per user"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Redact before data spreads, isolate tenants where the query runs, test injection like any other bug class, verify grounding on output, and cap abuse. A system prompt is a request to the model, not a control.",
+      "teach": "Defense in depth means using several small, independent safeguards instead of trusting one big one, like a building that has a locked gate, a guard, and a camera rather than relying only on a sign that says no entry. In software, a real control is something enforced by code, a filter, a test, or infrastructure, something that happens whether or not anyone remembers to ask nicely. Telling a system's instructions to please don't leak data is words, not enforcement, because a clever or malformed input can talk right past plain instructions.",
+      "hints": [
+        "This question asks you to spot the one item in the list that sounds like a safeguard but has nothing actually enforcing it. For each item, ask yourself: is there a real mechanism, some code, filter, test, or limit, making this happen, or is it just an instruction someone hopes gets followed?",
+        "Telling a houseguest please don't go into the back room is not the same as locking that door, since a confused or determined guest can still wander in anyway. Real controls work more like locks, badges, and cameras, they act on their own regardless of whether anyone remembers the rule. Go through each tray item and ask which ones describe an actual mechanism versus a polite request aimed at the model itself.",
+        "Most tray items describe genuine mechanisms at different points, cleaning data early, restricting what a search can see at database level, testing adversarial inputs on purpose, checking answers against sources, and capping how often someone can call the system. The one to leave out just asks the model's own instructions to keep it safe, since instructions can be argued with or bypassed and are not real enforcement."
+      ],
+      "deep": "Defence in depth for LLM systems mirrors web security: validate at the boundary, enforce authorisation in the data layer, test adversarial inputs, verify outputs, limit blast radius. The tenant filter belongs in the index query itself; filtering after retrieval leaves the wrong tenant's chunks in the top-k list and one bug away from the prompt.",
+      "xp": 45,
+      "tags": [
+        "security",
+        "architecture",
+        "multi-tenant"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l2.q5",
@@ -413,20 +434,6 @@
       "level": 2,
       "type": "fill",
       "prompt": "Fill the gap so a user can only ever retrieve their own company's documents.",
-      "explain": "The filter must come from the authenticated request, not from anything the caller can type. request.body is user input.",
-      "hints": [
-        "Which value did the server verify, and which did the user supply?",
-        "A wildcard or None filter returns every tenant's documents."
-      ],
-      "deep": "This is the LLM version of an IDOR bug: authorisation data must come from the session the server established, never from the payload. Test it explicitly: a golden-set question that asks for another tenant's document must return the abstain phrase. Put that test in CI and in the handover.",
-      "xp": 40,
-      "tags": [
-        "security",
-        "multi-tenant",
-        "retrieval"
-      ],
-      "reviewed": "2026-09-05",
-      "template": "results = index.search(\n    vector=query_vec,\n    filter={\"tenant_id\": {0}},\n    top_k=8,\n)",
       "blocks": [
         {
           "id": "body",
@@ -451,10 +458,26 @@
           "kind": "expr"
         }
       ],
+      "template": "results = index.search(\n    vector=query_vec,\n    filter={\"tenant_id\": {0}},\n    top_k=8,\n)",
       "answer": [
         "tenant"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "The filter must come from the authenticated request, not from anything the caller can type. request.body is user input.",
+      "teach": "In a system that serves many different companies from one shared database, you must be very careful about where the which company is this value comes from before using it to filter a search. Anything a caller can freely type into their own request, like a field in the message body, cannot be trusted, because anyone could change it to ask for someone else's data. The safe value is one the server itself already worked out and attached when it verified who was logged in, similar to a hotel key card that is coded at the front desk from your booking, not written by the guest on a slip of paper.",
+      "hints": [
+        "This question is about making sure a search only ever reaches inside one company's own documents, and where that company identifier should be pulled from. Look at the candidates on screen: some come from something the caller sends along in their own message, and one comes from information the server already established about who is making the request.",
+        "Imagine a locker room where the front desk assigns your locker at check-in, versus a system where each visitor writes their own number on a slip of paper, letting anyone open someone else's locker by writing a different number. Filtering by company works the same way, the value must come from the trusted record the server holds, not a field the visitor filled in. Look for the option tied to that verified record.",
+        "An empty value or a wildcard removes the restriction, mixing every company's documents together, which defeats the purpose. A value pulled from the message body cannot be trusted, since anyone sending the request could edit it to peek at another company's data. The right choice is the piece of information the server already attached to the authenticated request, describing who is asking, not what they claimed."
+      ],
+      "deep": "This is the LLM version of an IDOR bug: authorisation data must come from the session the server established, never from the payload. Test it explicitly: a golden-set question that asks for another tenant's document must return the abstain phrase. Put that test in CI and in the handover.",
+      "xp": 40,
+      "tags": [
+        "security",
+        "multi-tenant",
+        "retrieval"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l2.q6",
@@ -462,36 +485,6 @@
       "level": 2,
       "type": "pipeline",
       "prompt": "Wire the adviser question-answering pipeline so it cites sources, stays in the EU and fits the budget.",
-      "explain": "Redact, retrieve wide with hybrid search, re-rank narrow, generate on an EU-hosted model with streaming, then verify every citation against the chunks. That is 1,830 ms and EUR 0.0144. The frontier model breaks residency, latency and cost at once; the self-hosted 70B fits the cost ceiling but pushes p95 to 2,530 ms; fifty un-ranked chunks make generation slower and answers worse.",
-      "hints": [
-        "Residency is a constraint, not a preference: one block violates it outright.",
-        "Retrieve wide, then narrow, then generate, then verify.",
-        "Watch both readouts and the constraint chips as you place stages."
-      ],
-      "deep": "The tempting choices are the big ones, and both fail: the frontier model on residency, the 70B on latency by 30 ms, which is exactly the margin a contract is lost on. The mid-size EU model wins because re-ranking does the hard work before generation. The citation check costs 30 ms and is the control that makes the cited-page promise true rather than hoped.",
-      "xp": 80,
-      "tags": [
-        "pipeline",
-        "budgets",
-        "architecture",
-        "data-residency"
-      ],
-      "reviewed": "2026-09-05",
-      "brief": {
-        "client": "Vestkyst Forsikring",
-        "initials": "VF",
-        "quote": "Our advisers search 12,000 policy documents by hand. Answers must show the source page, nothing leaves the EU, and the console has to feel instant.",
-        "constraints": [
-          "p95 < 2.5 s",
-          "at most EUR 0.02 per question",
-          "EU residency",
-          "every answer cites a page"
-        ],
-        "stages": 5,
-        "maxMs": 2500,
-        "maxCost": 0.02,
-        "currency": "EUR"
-      },
       "blocks": [
         {
           "id": "cite",
@@ -558,6 +551,21 @@
           "plain": "keyword plus vector search"
         }
       ],
+      "brief": {
+        "client": "Vestkyst Forsikring",
+        "initials": "VF",
+        "quote": "Our advisers search 12,000 policy documents by hand. Answers must show the source page, nothing leaves the EU, and the console has to feel instant.",
+        "constraints": [
+          "p95 < 2.5 s",
+          "at most EUR 0.02 per question",
+          "EU residency",
+          "every answer cites a page"
+        ],
+        "stages": 5,
+        "maxMs": 2500,
+        "maxCost": 0.02,
+        "currency": "EUR"
+      },
       "answer": [
         "pii",
         "hybrid",
@@ -565,7 +573,23 @@
         "gen",
         "cite"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Redact, retrieve wide with hybrid search, re-rank narrow, generate on an EU-hosted model with streaming, then verify every citation against the chunks. That is 1,830 ms and EUR 0.0144. The frontier model breaks residency, latency and cost at once; the self-hosted 70B fits the cost ceiling but pushes p95 to 2,530 ms; fifty un-ranked chunks make generation slower and answers worse.",
+      "teach": "When a system answers questions from documents, the work happens in stages, like an assembly line. First you clean the question, then you search for relevant text, then you narrow to the best pieces, then a model writes the answer using only those pieces, and finally you check that answer against the source. Order matters because each stage feeds the next, and skipping a step can leak private data or invent facts. Getting the order and the tools right is how a strict time, cost, and privacy budget gets met at once.",
+      "hints": [
+        "This question asks you to arrange stages so every answer stays fast, cheap, kept inside the EU, and backed by a real page number. Look at the stage list on your screen: which ones touch the raw question, which ones search, which one writes text, and which one double-checks it. Think about which order lets each stage use what the one before it produced.",
+        "Think of writing a research report: you would not draft a conclusion before gathering notes, and you would not publish without checking every citation against the source. A pipeline should protect private details before anything moves onward, search broadly before narrowing, and confirm citations only after the answer text exists. Look for a chain: clean, search wide, trim sharply, write, then verify.",
+        "Two choices sound impressive but are traps: one processes data outside the EU, breaking residency, and the other is heavy enough to blow past the time limit even when hosted properly. A huge untrimmed pile of text also slows the writing step. The right chain protects privacy first, searches broadly, narrows with a sharp comparison step, writes with a rightly sized EU model, then checks the answer against the source."
+      ],
+      "deep": "The tempting choices are the big ones, and both fail: the frontier model on residency, the 70B on latency by 30 ms, which is exactly the margin a contract is lost on. The mid-size EU model wins because re-ranking does the hard work before generation. The citation check costs 30 ms and is the control that makes the cited-page promise true rather than hoped.",
+      "xp": 80,
+      "tags": [
+        "pipeline",
+        "budgets",
+        "architecture",
+        "data-residency"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l3.q1",
@@ -573,19 +597,6 @@
       "level": 3,
       "type": "mcq",
       "prompt": "The monthly bill quadrupled in month two with the same request count. First check?",
-      "explain": "Cost is tokens times price. Same requests, higher bill means more tokens per request, and the logs show which stage added them.",
-      "hints": [
-        "Bill equals tokens times price. Which side changed?",
-        "Find the cause before choosing a fix."
-      ],
-      "deep": "Typical culprits: retrieval k was raised, a prompt gained a long example block, chat history stopped being trimmed, or the cache stopped hitting after a system-prompt edit. Cost per request by stage is a dashboard, not a spreadsheet you build during an incident. Alert on a 30 percent week-over-week rise.",
-      "xp": 40,
-      "tags": [
-        "cost",
-        "operations",
-        "observability"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Whether the vendor raised prices",
         "Per-request input token counts in the logs, to find which stage grew",
@@ -594,7 +605,22 @@
       ],
       "answer": [
         "Per-request input token counts in the logs, to find which stage grew"
-      ]
+      ],
+      "explain": "Cost is tokens times price. Same requests, higher bill means more tokens per request, and the logs show which stage added them.",
+      "teach": "Most AI systems charge by the token, a small chunk of text, and the bill is the number of tokens moved in and out multiplied by the price per token. If request count stays the same but the bill jumps, the requests themselves must be moving more text than before, for example longer prompts, more retrieved documents, or growing conversation history. Knowing that cost equals tokens times price is the first thing to check before touching anything else.",
+      "hints": [
+        "The question is really asking: since request count did not change but cost quadrupled, what changed instead? Cost depends on how much text moves per request, not just how many times the system is called. Look at your options and ask which one would actually show you where the extra text came from.",
+        "Imagine a bakery charging by the gram of flour used, and one month the flour bill quadrupled with the same number of loaves baked. You would not guess, you would weigh the flour used per loaf this month against last month. You need a measurement that breaks cost down by request and by stage, not a guess or an immediate fix.",
+        "Blaming the vendor's prices or swapping to a smaller model right away skips the diagnosis entirely, and adding a cache is a fix applied before you know what is broken. What actually finds the cause is something you can inspect, showing how much text each request used and which part of the pipeline it came from, so the exact stage that grew shows up before anything else changes."
+      ],
+      "deep": "Typical culprits: retrieval k was raised, a prompt gained a long example block, chat history stopped being trimmed, or the cache stopped hitting after a system-prompt edit. Cost per request by stage is a dashboard, not a spreadsheet you build during an incident. Alert on a 30 percent week-over-week rise.",
+      "xp": 40,
+      "tags": [
+        "cost",
+        "operations",
+        "observability"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l3.q2",
@@ -602,19 +628,6 @@
       "level": 3,
       "type": "mcq",
       "prompt": "Answer quality dropped after the client uploaded 5,000 new documents. Most likely cause?",
-      "explain": "Two ingestion runs with different chunking or a different embedding model version produce an index that is inconsistent with itself. The golden-set recall check finds it in minutes.",
-      "hints": [
-        "What changed: the model, or the data pipeline?",
-        "There is a script in the harness built for exactly this."
-      ],
-      "deep": "Pin the embedding model version and the chunking parameters in the index metadata and refuse to upsert anything that does not match. Re-run recall after every ingest as a gate. This is why the harness ships with the system: the failure is invisible without it and trivial with it.",
-      "xp": 40,
-      "tags": [
-        "retrieval",
-        "operations",
-        "evals"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "The new documents were chunked or embedded differently from the original index; the recall check will show it",
         "The vector database is full",
@@ -623,7 +636,22 @@
       ],
       "answer": [
         "The new documents were chunked or embedded differently from the original index; the recall check will show it"
-      ]
+      ],
+      "explain": "Two ingestion runs with different chunking or a different embedding model version produce an index that is inconsistent with itself. The golden-set recall check finds it in minutes.",
+      "teach": "When you search documents with AI, you first cut them into small pieces called chunks, then turn each chunk into a list of numbers called an embedding that captures its meaning, then store those in a search index. If new documents get cut or converted differently than the old ones, the index mixes two incompatible styles of numbers, and search quality suffers even though the model itself did not change. A recall check, testing whether the right chunk is found for known questions, reveals this kind of mismatch quickly.",
+      "hints": [
+        "The question asks what most likely broke after adding new documents, given nothing else changed on purpose. Think about what happens between a raw document and something the system can search: cutting it into pieces and turning those pieces into numbers. Ask whether that process is guaranteed to stay identical between two separate upload batches.",
+        "Picture a library where the first ten thousand books are catalogued one way, then a second librarian catalogues five thousand new books with a slightly different method. Searches start missing books, not because the books are worse, but because the catalogue is no longer consistent with itself. Look for the option naming this kind of mismatch and a real test for it, rather than guessing at hardware or the model.",
+        "The vector database being full, users asking harder questions, or the model getting worse are guesses that do not explain why quality dropped right when new documents arrived. The real explanation involves the new batch being processed with different settings than the original batch, confirmed by rerunning a small, known set of test questions to see whether the right chunks still come back."
+      ],
+      "deep": "Pin the embedding model version and the chunking parameters in the index metadata and refuse to upsert anything that does not match. Re-run recall after every ingest as a gate. This is why the harness ships with the system: the failure is invisible without it and trivial with it.",
+      "xp": 40,
+      "tags": [
+        "retrieval",
+        "operations",
+        "evals"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l3.q3",
@@ -631,19 +659,6 @@
       "level": 3,
       "type": "order",
       "prompt": "The assistant showed one customer another customer's document. Order the response.",
-      "explain": "Contain, understand, fix with a regression test, verify, then communicate with a written record.",
-      "hints": [
-        "Stop the bleeding before diagnosing.",
-        "A fix without a test that reproduces the bug is a guess."
-      ],
-      "deep": "A kill switch is a design requirement, not an afterthought: the ability to turn the assistant off in one action. The post-mortem is blameless and specific: what happened, when, how it was detected, what changed. Under GDPR a personal-data breach may also carry a 72-hour notification duty; the consultant flags it, the client's DPO decides.",
-      "xp": 45,
-      "tags": [
-        "incident-response",
-        "security",
-        "operations"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "verify on the golden set and the new test, then re-enable",
         "disable the feature behind the kill switch",
@@ -658,7 +673,22 @@
         "verify on the golden set and the new test, then re-enable",
         "write the post-mortem and notify the client with the timeline"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "Contain, understand, fix with a regression test, verify, then communicate with a written record.",
+      "teach": "When something goes wrong in a live system, like private data shown to the wrong person, panic makes people want to fix and explain at once, but a calm response follows a fixed order. First you stop the damage from continuing, then you find out exactly what happened, then you fix the real cause and prove the fix works, and only then do you tell people what occurred. This order matters because explaining an incident before it is stopped or understood usually means explaining it again later, and worse.",
+      "hints": [
+        "The question asks you to put an incident response in the order that stops harm first and explains it last. Look at the five actions on your screen and think about which one has to happen before anyone can even investigate safely. Ask what would go wrong if you wrote the explanation before you had stopped the leak.",
+        "Think of a burst pipe: you shut the water valve before mopping, and you do not repaint the ceiling until you know where the leak came from and have replaced the broken pipe. An incident needs the damage stopped first, then the cause found, then a real fix built, then the fix confirmed to work, and only at the end does someone write up what happened. Order the actions so each depends on the one before it.",
+        "Writing the record first leaves nothing true to write yet, and fixing the code before knowing how the leak happened risks fixing the wrong thing. Testing and turning things back on only makes sense after a fix exists, and a fix only makes sense once the cause is known, which only makes sense once the damage has already been stopped. Each step should depend on what the step before it produced."
+      ],
+      "deep": "A kill switch is a design requirement, not an afterthought: the ability to turn the assistant off in one action. The post-mortem is blameless and specific: what happened, when, how it was detected, what changed. Under GDPR a personal-data breach may also carry a 72-hour notification duty; the consultant flags it, the client's DPO decides.",
+      "xp": 45,
+      "tags": [
+        "incident-response",
+        "security",
+        "operations"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l3.q4",
@@ -666,18 +696,6 @@
       "level": 3,
       "type": "blocks",
       "prompt": "Assemble the handover package. One block does not belong.",
-      "explain": "A handover is what lets the client run the system without you. Operations, measurement, understanding, visibility, and who to call. Your chat logs are not documentation.",
-      "hints": [
-        "Ask of each block: does the client need it at 3 a.m. when something breaks?"
-      ],
-      "deep": "Handover quality is what turns a pilot into a reference customer. Everything should live in the client's repository and accounts, not yours, including API keys and the vector index. Walk the on-call engineer through the runbook live and watch them do a rollback; if they cannot, the runbook is not finished.",
-      "xp": 45,
-      "tags": [
-        "handover",
-        "operations",
-        "documentation"
-      ],
-      "reviewed": "2026-09-05",
       "tray": [
         "eval harness and golden set in the client's repo",
         "cost and latency dashboard",
@@ -693,7 +711,22 @@
         "cost and latency dashboard",
         "on-call escalation path"
       ],
-      "accept": []
+      "accept": [],
+      "explain": "A handover is what lets the client run the system without you. Operations, measurement, understanding, visibility, and who to call. Your chat logs are not documentation.",
+      "teach": "A handover is the set of documents and tools you leave behind so a client can run and fix an AI system without you in the room. It usually needs a guide for operating it day to day, a way to measure whether it still works well, a picture of how data flows through it, a way to watch its cost and speed over time, and a clear path for who to contact when something breaks. Notes that only make sense to the person who built the system are not the same as documentation someone else can act on.",
+      "hints": [
+        "This question asks which item in the handover pile is not actually usable documentation for the client's team. Look at each item and ask whether a new engineer, who was not part of building this, could pick it up and use it to operate or fix the system. One item fails that test because it was written for you, not for them.",
+        "Imagine leaving a car for someone else to drive: you leave the manual, the maintenance schedule, and the mechanic's number, but your personal diary of test drives would not help them, even if every word is true. A good handover gives the client things built for someone new, like a restart guide, a way to test it still works, and a map of where data goes. Find the one item that is really just a private record instead.",
+        "The genuine handover pieces each answer a question the team will ask later: how do we restart or undo this, how do we know it still works, where does our data actually go, is it getting slower or pricier, and who do we call when it breaks. The odd one out answers none of those, it is simply a leftover trace of the work, useful to you while building but not something a client can act on."
+      ],
+      "deep": "Handover quality is what turns a pilot into a reference customer. Everything should live in the client's repository and accounts, not yours, including API keys and the vector index. Walk the on-call engineer through the runbook live and watch them do a rollback; if they cannot, the runbook is not finished.",
+      "xp": 45,
+      "tags": [
+        "handover",
+        "operations",
+        "documentation"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l3.q5",
@@ -701,19 +734,6 @@
       "level": 3,
       "type": "mcq",
       "prompt": "How do you price the six-week engagement?",
-      "explain": "A fixed scope with measurable acceptance protects both sides: the client knows the cost, you know when you are done, and done is a number.",
-      "hints": [
-        "What makes done unambiguous?",
-        "The evals you built in week one are also the contract."
-      ],
-      "deep": "Acceptance criteria written as metrics on the golden set remove the biggest risk in AI consulting: the client who is never quite satisfied. Add a change-control clause for scope growth and a separate retainer for operations. Quote the model costs as pass-through with the token maths attached.",
-      "xp": 40,
-      "tags": [
-        "pricing",
-        "client-management",
-        "contracts"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Free, in exchange for a testimonial",
         "Fixed price for a defined pilot with acceptance criteria measured on the golden set: recall, answer quality, p95 and cost per request",
@@ -722,7 +742,22 @@
       ],
       "answer": [
         "Fixed price for a defined pilot with acceptance criteria measured on the golden set: recall, answer quality, p95 and cost per request"
-      ]
+      ],
+      "explain": "A fixed scope with measurable acceptance protects both sides: the client knows the cost, you know when you are done, and done is a number.",
+      "teach": "When you sell a project instead of your time, both sides need to agree in advance on what done means, or the work can drag on forever with the client always wanting one more tweak. A good way to do this is writing acceptance criteria as numbers you can measure, like how often the system finds the right document or how fast it replies, so finishing is a fact rather than an opinion. This protects the client, who knows what they are getting, and protects you, who knows when the job is finished.",
+      "hints": [
+        "The question asks how you should charge for a project with a clear six-week deadline. Think about what happens if you charge by the hour with no defined end, versus agreeing up front on exactly what the finished system must be able to do. Look at the options and ask which one gives both sides a clear, checkable finish line.",
+        "Imagine hiring someone to renovate a kitchen: paying by the hour with no plan lets the job stretch and the price balloon, but agreeing beforehand on which cabinets go in means everyone knows when work is complete. A consulting engagement works the same way, with the finish line written as things you can check, like accuracy, speed, and cost, on a known test set. Look for payment tied to a defined, measurable outcome.",
+        "Working for free in exchange for goodwill, taking a cut of future revenue, or billing hour by hour with no end date all leave the finish line undefined, which is what causes projects to run forever or end in disappointment. The option that works ties a fixed price to an agreed scope, with success measured by concrete numbers on a known test set, so both sides can agree the job is done."
+      ],
+      "deep": "Acceptance criteria written as metrics on the golden set remove the biggest risk in AI consulting: the client who is never quite satisfied. Add a change-control clause for scope growth and a separate retainer for operations. Quote the model costs as pass-through with the token maths attached.",
+      "xp": 40,
+      "tags": [
+        "pricing",
+        "client-management",
+        "contracts"
+      ],
+      "reviewed": "2026-09-05"
     },
     {
       "id": "t8.l3.q6",
@@ -730,19 +765,6 @@
       "level": 3,
       "type": "mcq",
       "prompt": "The client asks for a guarantee that the assistant is 100 percent accurate. Your answer?",
-      "explain": "No probabilistic system is 100 percent accurate. Honest targets plus designed fallbacks are what a professional offers instead.",
-      "hints": [
-        "What can you actually measure and promise?",
-        "The design can make wrong answers rare and visible; it cannot make them impossible."
-      ],
-      "deep": "Reframe accuracy as a system property: retrieval recall, grounded-answer rate, abstention rate, and a human loop for high-stakes queries. Show the confusion matrix from the golden set. A client who hears no with a better offer trusts you more than one who hears yes and finds out later. Pytor's last rule: never promise a number you have not measured.",
-      "xp": 40,
-      "tags": [
-        "client-management",
-        "risk",
-        "evals"
-      ],
-      "reviewed": "2026-09-05",
       "options": [
         "Offer 99 percent and hope",
         "Agree, the model is very good",
@@ -751,7 +773,22 @@
       ],
       "answer": [
         "Decline the guarantee and offer measured targets, abstention on low confidence, and a human-review path for the cases that matter"
-      ]
+      ],
+      "explain": "No probabilistic system is 100 percent accurate. Honest targets plus designed fallbacks are what a professional offers instead.",
+      "teach": "An AI assistant is probabilistic: it predicts likely answers from patterns, rather than looking up guaranteed facts, so it will sometimes be wrong just like a very good student still misses a question. You can measure how often it gets things right on a test set, but you cannot promise it will always be right. Because of that, professionals give honest numbers and build safety nets, like a way for the assistant to say it is unsure and a step where a person checks the cases that matter most.",
+      "hints": [
+        "The client wants a promise that the assistant will never be wrong. Think about whether any system that predicts answers, even a very good one, can honestly promise zero mistakes ever. Look at the options: which one treats accuracy as something you measure and manage, rather than something you can swear to as a fixed number?",
+        "Picture a weather forecaster promising it will never be wrong about rain. Weather is uncertain, so a good forecaster gives a percentage chance instead and tells you to carry an umbrella just in case. An AI assistant works the same way, with patterns and probabilities, not certainties. Look for the option offering something measurable plus a backup plan for when it is unsure.",
+        "Saying yes to 100 percent, praising the model, or promising a bigger model are wishful thinking, since none of them change the fact that predictions carry uncertainty. The trustworthy answer turns down the impossible number without leaving the client empty handed. It offers something measurable, a way to hold back when unsure, and a human for the cases that matter most."
+      ],
+      "deep": "Reframe accuracy as a system property: retrieval recall, grounded-answer rate, abstention rate, and a human loop for high-stakes queries. Show the confusion matrix from the golden set. A client who hears no with a better offer trusts you more than one who hears yes and finds out later. Pytor's last rule: never promise a number you have not measured.",
+      "xp": 40,
+      "tags": [
+        "client-management",
+        "risk",
+        "evals"
+      ],
+      "reviewed": "2026-09-05"
     }
   ]
 }

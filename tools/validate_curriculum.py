@@ -22,11 +22,16 @@ FILE_PATTERN = re.compile(r"^tier_(\d{2})\.json$")
 ID_PATTERN = re.compile(r"^t(\d+)\.l(\d+)\.q(\d+)$")
 VALID_TYPES = {"mcq", "blocks", "order", "fill", "pipeline"}
 GAP = re.compile(r"\{(\d+)}")
+WHITESPACE = re.compile(r"\s+")
 MIN_EXPLAIN_CHARS = 40
-# Pytor's material. A hint that is shorter than this is a nudge nobody can use,
-# and a deep note shorter than this is a restated explanation, not expertise.
-MIN_HINT_CHARS = 15
+# Pytor's material. Hints are a patient walk-through in three steps, not
+# one-line nudges: the first build shipped 55-character nudges and the player
+# asked for a teacher. teach is the mini-lesson shown before any hint, and a
+# deep note shorter than its floor is a restated explanation, not expertise.
+MIN_HINT_CHARS = 100
+MIN_HINTS = 3
 MAX_HINTS = 3
+MIN_TEACH_CHARS = 150
 MIN_DEEP_CHARS = 60
 
 
@@ -70,13 +75,25 @@ def check_question(question: dict, tier_number: int, seen_ids: set[str]) -> list
 
     hints = question.get("hints")
     if not isinstance(hints, list) or not hints:
-        problems.append(f"{qid}: needs at least one hint, Pytor has nothing to say otherwise")
+        problems.append(f"{qid}: needs {MIN_HINTS} hints, Pytor has nothing to say otherwise")
     else:
-        if len(hints) > MAX_HINTS:
-            problems.append(f"{qid}: {len(hints)} hints, at most {MAX_HINTS}")
+        if not MIN_HINTS <= len(hints) <= MAX_HINTS:
+            problems.append(f"{qid}: {len(hints)} hints, needs {MIN_HINTS} to {MAX_HINTS}")
         for index, hint in enumerate(hints):
             if not isinstance(hint, str) or len(hint.strip()) < MIN_HINT_CHARS:
-                problems.append(f"{qid}: hint {index} is too short to help")
+                problems.append(
+                    f"{qid}: hint {index} is under {MIN_HINT_CHARS} chars. "
+                    "A hint is a patient walk-through, not a nudge."
+                )
+            elif "—" in hint:
+                problems.append(f"{qid}: hint {index} contains an em dash")
+
+    teach = question.get("teach")
+    if not isinstance(teach, str) or len(teach.strip()) < MIN_TEACH_CHARS:
+        problems.append(
+            f"{qid}: teach missing or under {MIN_TEACH_CHARS} chars. "
+            "This is the mini-lesson before the hints."
+        )
 
     deep = question.get("deep")
     if not isinstance(deep, str) or len(deep.strip()) < MIN_DEEP_CHARS:
@@ -101,6 +118,21 @@ def check_question(question: dict, tier_number: int, seen_ids: set[str]) -> list
         options = question.get("options") or []
         if not 2 <= len(options) <= 6:
             problems.append(f"{qid}: mcq needs 2 to 6 options, found {len(options)}")
+        # Two options that differ only in spaces are a coin toss on a phone
+        # screen. They are allowed only when every option is quoted, because the
+        # app then renders quoted options in mono with each space marked.
+        squashed = [WHITESPACE.sub("", str(o)) for o in options]
+        if len(set(squashed)) < len(squashed):
+            quoted = all(
+                str(o)[:1] in "'\"" and str(o)[-1:] in "'\""
+                for o in options
+                if str(o) != "An error"
+            )
+            if not quoted:
+                problems.append(
+                    f"{qid}: options differ only by whitespace, which is invisible on a phone. "
+                    "Quote every output option so the app can mark the spaces."
+                )
         if len(answer) != 1:
             problems.append(f"{qid}: mcq answer must hold exactly one option")
         elif answer[0] not in options:

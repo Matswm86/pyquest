@@ -102,15 +102,23 @@ fun TrackScreen(
 
         items(tiers, key = { it.tier }) { tier ->
             val ids = tier.questions.map { it.id }
-            val mastery = progress.masteryOf(ids)
             TierCard(
                 tier = tier,
-                mastery = mastery,
+                mastery = progress.masteryOf(ids),
+                clearedLevels = tier.levels.count { progress.isCleared(tier.tier, it) },
                 isCurrent = tier.tier == currentTier,
                 isOpen = openTier == tier.tier,
                 onToggle = { openTier = if (openTier == tier.tier) 0 else tier.tier },
                 onStartLevel = { level -> onStartLevel(tier.tier, level) },
-                levelMastery = { level -> progress.masteryOf(tier.level(level).map { it.id }) },
+                levelState = { level ->
+                    val levelIds = tier.level(level).map { it.id }
+                    LevelState(
+                        cleared = progress.isCleared(tier.tier, level),
+                        solved = progress.solvedOf(levelIds),
+                        mastery = progress.masteryOf(levelIds),
+                        count = levelIds.size,
+                    )
+                },
             )
         }
     }
@@ -151,36 +159,46 @@ private fun TrackHeader(progress: Progress, today: String, onOpenPytor: () -> Un
     }
 }
 
+/** What one level chip needs to draw itself. */
+private data class LevelState(val cleared: Boolean, val solved: Float, val mastery: Float, val count: Int)
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TierCard(
     tier: Tier,
     mastery: Float,
+    clearedLevels: Int,
     isCurrent: Boolean,
     isOpen: Boolean,
     onToggle: () -> Unit,
     onStartLevel: (Int) -> Unit,
-    levelMastery: (Int) -> Float,
+    levelState: (Int) -> LevelState,
 ) {
-    val done = mastery >= 1f
+    val levels = tier.levels.size
+    val allCleared = levels > 0 && clearedLevels == levels
+    val mastered = mastery >= 1f
     val chipBg = when {
-        done -> Pal.LimeSoft
+        allCleared -> Pal.LimeSoft
         isCurrent -> Pal.Lime
         else -> Pal.ChipDim
     }
     val chipFg = when {
-        done -> Pal.Lime
+        allCleared -> Pal.Lime
         isCurrent -> Pal.Screen
         else -> Pal.Locked
     }
+    // Progress a player can see move: levels cleared, then mastery once every
+    // level is done. Mastery alone read as 0% right after finishing a level.
     val tag = when {
-        done -> "100%"
-        tier.capstone && mastery == 0f -> "CAPSTONE"
-        isCurrent -> "RESUME"
-        else -> "${(mastery * 100).toInt()}%"
+        mastered -> "MASTERED"
+        allCleared -> "CLEARED · ${(mastery * 100).toInt()}% mastered"
+        clearedLevels > 0 -> "$clearedLevels / $levels LEVELS"
+        tier.capstone -> "CAPSTONE"
+        isCurrent -> "START"
+        else -> "$levels LEVELS"
     }
     val tagColor = when {
-        done || isCurrent -> Pal.Lime
+        mastered || allCleared || clearedLevels > 0 || isCurrent -> Pal.Lime
         tier.capstone -> Pal.Violet
         else -> Pal.Locked
     }
@@ -199,7 +217,7 @@ private fun TierCard(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    if (done) "✓" else "${tier.tier}",
+                    if (allCleared) "✓" else "${tier.tier}",
                     style = MaterialTheme.typography.titleSmall,
                     color = chipFg,
                     fontWeight = FontWeight.Bold,
@@ -256,25 +274,35 @@ private fun TierCard(
                     verticalArrangement = Arrangement.spacedBy(7.dp),
                 ) {
                     tier.levels.forEach { level ->
-                        val levelDone = levelMastery(level)
-                        val cleared = levelDone >= 1f
-                        val count = tier.level(level).size
+                        val state = levelState(level)
+                        val bg = when {
+                            state.mastery >= 1f -> Pal.Lime
+                            state.cleared -> Pal.LimeSoft
+                            else -> Pal.Chip
+                        }
+                        val fg = if (state.mastery >= 1f) Pal.Screen else if (state.cleared) Pal.Lime else Pal.Text
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .background(if (cleared) Pal.Lime else Pal.Chip, RoundedCornerShape(9.dp))
+                                .background(bg, RoundedCornerShape(9.dp))
+                                .border(1.dp, if (state.cleared) Pal.LimeEdge else Pal.Hairline, RoundedCornerShape(9.dp))
                                 .clickable { onStartLevel(level) }
                                 .padding(horizontal = 13.dp, vertical = 8.dp),
                         ) {
                             Text(
-                                "Level $level",
+                                if (state.cleared) "Level $level ✓" else "Level $level",
                                 style = MaterialTheme.typography.labelLarge,
-                                color = if (cleared) Pal.Screen else Pal.Text,
+                                color = fg,
                             )
                             Text(
-                                if (cleared) "mastered" else "$count q · ${(levelDone * 100).toInt()}%",
+                                when {
+                                    state.mastery >= 1f -> "mastered"
+                                    state.cleared -> "${(state.mastery * 100).toInt()}% mastered"
+                                    state.solved > 0f -> "${(state.solved * 100).toInt()}% of ${state.count} solved"
+                                    else -> "${state.count} questions"
+                                },
                                 style = MaterialTheme.typography.labelSmall,
-                                color = if (cleared) Pal.Screen.copy(alpha = 0.7f) else Pal.Locked,
+                                color = if (state.mastery >= 1f) Pal.Screen.copy(alpha = 0.7f) else Pal.Locked,
                             )
                         }
                     }
