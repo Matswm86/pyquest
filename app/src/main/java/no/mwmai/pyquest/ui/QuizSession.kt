@@ -7,20 +7,27 @@ import no.mwmai.pyquest.data.Progress
 import no.mwmai.pyquest.data.ProgressStore
 import no.mwmai.pyquest.model.Question
 import no.mwmai.pyquest.model.QuestionType
-import java.time.LocalDate
+import kotlin.random.Random
 
 /**
- * One sitting through a level.
+ * One sitting through a level, or through the misses of a previous sitting.
  *
  * A wrong answer does not just move on: the question drops to Leitner box 0 and
  * is re-inserted [REQUEUE_GAP] questions later, so you meet it again before the
  * session ends. The level is finished when the queue empties, which means a
  * question you keep missing keeps the level open.
+ *
+ * The first build counted progress as `total - remaining + 1`, which jumped
+ * back to 1 after every requeued miss. Progress is now [solved] distinct
+ * questions out of [total], which only ever goes up.
  */
 class QuizSession(
     initial: List<Question>,
     private val store: ProgressStore,
-    private val today: () -> String = { LocalDate.now().toString() },
+    /** True when this sitting replays the misses of an earlier one. */
+    val isReview: Boolean = false,
+    private val today: () -> String = { Progress.today() },
+    private val random: Random = Random.Default,
 ) {
     private var queue: List<Question> by mutableStateOf(initial)
 
@@ -35,10 +42,25 @@ class QuizSession(
     var slots: List<String?> by mutableStateOf(emptyList())
         private set
 
+    /**
+     * Display order for multiple-choice options, as indices into
+     * [Question.options]. Shuffled per question so the answer is never learnt
+     * by position, including on the requeued second try.
+     */
+    var optionOrder: List<Int> by mutableStateOf(emptyList())
+        private set
+
     var checked: Boolean by mutableStateOf(false)
         private set
 
     var lastCorrect: Boolean by mutableStateOf(false)
+        private set
+
+    /** How many of the current question's hints the player has opened. */
+    var hintsShown: Int by mutableStateOf(0)
+        private set
+
+    var hintsUsed: Int by mutableStateOf(0)
         private set
 
     var answered: Int by mutableStateOf(0)
@@ -51,14 +73,20 @@ class QuizSession(
     var firstTryCorrect: Int by mutableStateOf(0)
         private set
 
+    /** Distinct questions answered correctly at least once. */
+    var solved: Int by mutableStateOf(0)
+        private set
+
     private val seen = mutableSetOf<String>()
+    private val solvedIds = mutableSetOf<String>()
+    private val missedIds = linkedMapOf<String, Question>()
 
     var xpEarned: Int by mutableStateOf(0)
         private set
 
     /**
      * The last piece of code the player assembled correctly, with the gaps filled
-     * in. The tier-cleared screen shows it back to them, because "you wrote this"
+     * in. The level-cleared screen shows it back to them, because "you wrote this"
      * lands harder than a score.
      */
     var lastBuilt: String? by mutableStateOf(null)
@@ -77,6 +105,10 @@ class QuizSession(
     val remaining: Int
         get() = queue.size
 
+    /** Every question missed at least once this sitting, in the order first missed. */
+    val misses: List<Question>
+        get() = missedIds.values.toList()
+
     init {
         resetForCurrent()
     }
@@ -84,11 +116,40 @@ class QuizSession(
     private fun resetForCurrent() {
         val question = queue.firstOrNull()
         selection = emptyList()
+        hintsShown = 0
         slots = if (question != null && question.slotCount > 0) {
             List(question.slotCount) { null }
         } else {
             emptyList()
         }
+        optionOrder = if (question != null && question.type == QuestionType.MCQ) {
+            question.options.indices.shuffled(random)
+        } else {
+            emptyList()
+        }
+    }
+
+    /** The options as the player sees them, in [optionOrder]. */
+    val displayedOptions: List<String>
+        get() = current?.let { q -> optionOrder.map { q.options[it] } }.orEmpty()
+
+    /** Index into [displayedOptions] of the picked option, or null. */
+    val selectedDisplayIndex: Int?
+        get() = selection.firstOrNull()?.let { optionOrder.indexOf(it) }?.takeIf { it >= 0 }
+
+    /** Index into [displayedOptions] of the correct option, or -1. */
+    val correctDisplayIndex: Int
+        get() {
+            val q = current ?: return -1
+            val real = q.options.indexOf(q.answer.firstOrNull() ?: return -1)
+            return optionOrder.indexOf(real)
+        }
+
+    /** Player tapped the option shown at [displayIndex]. */
+    fun selectDisplayed(displayIndex: Int) {
+        if (checked) return
+        val real = optionOrder.getOrNull(displayIndex) ?: return
+        select(real)
     }
 
     fun select(index: Int) {
@@ -105,6 +166,15 @@ class QuizSession(
     fun placeInSlots(placed: List<String?>) {
         if (checked) return
         slots = placed
+    }
+
+    /** Opens the next hint. Returns false when there are none left. */
+    fun revealHint(): Boolean {
+        val question = current ?: return false
+        if (hintsShown >= question.hints.size) return false
+        hintsShown += 1
+        hintsUsed += 1
+        return true
     }
 
     val canSubmit: Boolean
@@ -132,11 +202,14 @@ class QuizSession(
         if (lastCorrect) {
             correct += 1
             if (question.id !in seen) firstTryCorrect += 1
+            if (solvedIds.add(question.id)) solved += 1
             xpEarned += question.xp
+            rememberBuiltCode(question)
+        } else {
+            missedIds.putIfAbsent(question.id, question)
         }
         seen.add(question.id)
-        if (lastCorrect) rememberBuiltCode(question)
-        progress = store.record(question.id, lastCorrect, question.xp, today())
+        progress = store.record(question.id, lastCorrect, question.xp, today(), question.tags)
     }
 
     fun next() {

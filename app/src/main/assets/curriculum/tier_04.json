@@ -1,0 +1,964 @@
+{
+  "tier": 4,
+  "title": "Functions & modules",
+  "subtitle": "def, arguments, scope, imports and exceptions",
+  "lessons": [
+    "def & return",
+    "arguments",
+    "scope",
+    "imports",
+    "exceptions"
+  ],
+  "pytor": "A function is the unit of thought in Python. Return values, keep scope small, raise early. The mutable-default trap in level 2 has bitten every professional at least once.",
+  "questions": [
+    {
+      "id": "t4.l1.q1",
+      "tier": 4,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Which line starts a function called greet that takes no arguments?",
+      "explain": "def, the name, parentheses for the parameters, then a colon.",
+      "hints": [
+        "The keyword is three letters long.",
+        "Even with no parameters the parentheses are required."
+      ],
+      "deep": "def is an executable statement: it creates a function object at runtime and binds it to the name, which is why a function must be defined before it is called in a script. The object carries its own __name__, __doc__ and defaults; you can pass it around like any value.",
+      "xp": 10,
+      "tags": [
+        "functions"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "def greet:",
+        "greet() def:",
+        "def greet():",
+        "function greet():"
+      ],
+      "answer": [
+        "def greet():"
+      ]
+    },
+    {
+      "id": "t4.l1.q2",
+      "tier": 4,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def double(x):\n    print(x * 2)\n\nresult = double(5)\nprint(result)",
+      "explain": "The function prints 10 but returns nothing, so result is None and printing it shows None.",
+      "hints": [
+        "Printing inside a function and returning from it are different things.",
+        "What does a function hand back when it has no return statement?"
+      ],
+      "deep": "Every function returns something; with no return it returns None. print writes to stdout and returns None too. Mixing them up is the number one beginner bug: a function that prints is useless to code that needs the value. Return values, print at the edges.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "return"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "None",
+        "double",
+        "5",
+        "An error"
+      ],
+      "answer": [
+        "None"
+      ]
+    },
+    {
+      "id": "t4.l1.q3",
+      "tier": 4,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def greet():\n    return \"hello\"\n\nprint(greet)",
+      "explain": "Without parentheses the name refers to the function object itself, and printing it shows its repr, not its output.",
+      "hints": [
+        "The parentheses are what actually run a function."
+      ],
+      "deep": "Functions are first-class objects. greet is the object, greet() is a call. That distinction powers callbacks, sorted(key=len), decorators and dispatch tables. The repr shows the name and memory address because that is all a function has to say about itself.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "objects"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "greet",
+        "hello",
+        "<function greet at 0x...>",
+        "An error"
+      ],
+      "answer": [
+        "<function greet at 0x...>"
+      ]
+    },
+    {
+      "id": "t4.l1.q4",
+      "tier": 4,
+      "level": 1,
+      "type": "fill",
+      "prompt": "Fill the gaps so area(3, 4) returns 12.",
+      "explain": "The body multiplies w and h, so the first parameter must be named w, and return sends the product back.",
+      "hints": [
+        "Match the parameter name to the name used in the body.",
+        "The caller wants the value back, not shown on screen."
+      ],
+      "deep": "Parameter names are local to the function, so w and h exist only during the call. Using an undefined name in the body raises NameError at call time, not at definition time, because the body is compiled but not executed until called.",
+      "xp": 20,
+      "tags": [
+        "functions",
+        "return",
+        "parameters"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "def area({0}, h):\n    {1} w * h\n\nprint(area(3, 4))",
+      "blocks": [
+        {
+          "id": "x",
+          "code": "x",
+          "kind": "var"
+        },
+        {
+          "id": "w",
+          "code": "w",
+          "kind": "var"
+        },
+        {
+          "id": "print",
+          "code": "print",
+          "kind": "call"
+        },
+        {
+          "id": "ret",
+          "code": "return",
+          "kind": "expr"
+        },
+        {
+          "id": "yield",
+          "code": "yield",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "w",
+        "ret"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l1.q5",
+      "tier": 4,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def hi(name=\"world\"):\n    print(f\"Hi, {name}\")\n\nhi(\"Pytor\")\nhi()",
+      "explain": "A default value is used when the caller leaves that argument out.",
+      "hints": [
+        "Look at what the parameter is set equal to in the def line."
+      ],
+      "deep": "Defaults are evaluated once, at definition time, and stored on the function object. That is why a mutable default like items=[] is shared across every call, the most famous Python trap. Use None as the default and create the list inside the body.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "defaults"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "An error",
+        "Hi, Pytor / An error",
+        "Hi, Pytor / Hi, world",
+        "Hi, world / Hi, world"
+      ],
+      "answer": [
+        "Hi, Pytor / Hi, world"
+      ]
+    },
+    {
+      "id": "t4.l1.q6",
+      "tier": 4,
+      "level": 1,
+      "type": "order",
+      "prompt": "Order the lines so the program prints 9.",
+      "explain": "Define the function first, with its body indented, then call it.",
+      "hints": [
+        "A function has to be defined above the line that calls it.",
+        "return belongs inside the function, so it is indented."
+      ],
+      "deep": "Definition before use is a consequence of top-to-bottom execution: the call looks square up in the module namespace, and the name is only bound once the def statement has run. Inside function bodies the rule relaxes, because the lookup happens when the body runs, not when it is defined.",
+      "xp": 15,
+      "tags": [
+        "functions"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "print(square(3))",
+        "def square(n):",
+        "    return n * n"
+      ],
+      "answer": [
+        "def square(n):",
+        "    return n * n",
+        "print(square(3))"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l2.q1",
+      "tier": 4,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def show(a, b):\n    print(a, b)\n\nshow(b=4, a=3)",
+      "explain": "Keyword arguments are matched by name, so a=3 and b=4 regardless of order.",
+      "hints": [
+        "Names beat positions when you write them out."
+      ],
+      "deep": "Positional arguments fill parameters left to right; keyword arguments fill by name and may come in any order, but must follow all positionals. A parameter after * in the def is keyword-only, and one before / is positional-only (PEP 570), both useful for stable APIs.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "arguments"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "3 4",
+        "b a",
+        "An error",
+        "4 3"
+      ],
+      "answer": [
+        "3 4"
+      ]
+    },
+    {
+      "id": "t4.l2.q2",
+      "tier": 4,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def add(item, items=[]):\n    items.append(item)\n    return items\n\nadd(1)\nprint(add(2))",
+      "explain": "The default list is created once and shared, so the second call sees the item the first call added.",
+      "hints": [
+        "When is the default value created: every call, or once?",
+        "Both calls use the same list object."
+      ],
+      "deep": "Mutable default arguments persist between calls because the default lives on the function object. The fix is the sentinel idiom: def add(item, items=None): if items is None: items = []. Linters (ruff B006) flag the trap because it has bitten everyone at least once.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "defaults",
+        "mutability"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[2]",
+        "[1] [2]",
+        "[1, 2]",
+        "An error"
+      ],
+      "answer": [
+        "[1, 2]"
+      ]
+    },
+    {
+      "id": "t4.l2.q3",
+      "tier": 4,
+      "level": 2,
+      "type": "fill",
+      "prompt": "Fill the gap so total() accepts any number of arguments.",
+      "explain": "A single star collects extra positional arguments into a tuple called nums.",
+      "hints": [
+        "One star packs positionals into a tuple; two stars pack keywords into a dict."
+      ],
+      "deep": "*args collects positionals into a tuple, **kwargs collects keywords into a dict; the names args and kwargs are convention only. The same star unpacks on the way in: total(*[1, 2, 3]). Use them for wrappers and decorators; in ordinary APIs, explicit parameters are clearer.",
+      "xp": 20,
+      "tags": [
+        "functions",
+        "arguments",
+        "varargs"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "def total({0}):\n    return sum(nums)\n\nprint(total(1, 2, 3))",
+      "blocks": [
+        {
+          "id": "list",
+          "code": "nums=[]",
+          "kind": "var"
+        },
+        {
+          "id": "star",
+          "code": "*nums",
+          "kind": "var"
+        },
+        {
+          "id": "plain",
+          "code": "nums",
+          "kind": "var"
+        },
+        {
+          "id": "dstar",
+          "code": "**nums",
+          "kind": "var"
+        }
+      ],
+      "answer": [
+        "star"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l2.q4",
+      "tier": 4,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def info(**kw):\n    print(kw)\n\ninfo(city=\"Bergen\", age=3)",
+      "explain": "Two stars collect keyword arguments into a dict keyed by name.",
+      "hints": [
+        "The parameter with two stars receives every name=value pair."
+      ],
+      "deep": "**kwargs preserves the keyword order since 3.7. It is how libraries forward options to lower layers without knowing them, and how you build wrappers: def wrapper(*args, **kwargs): return f(*args, **kwargs). Type it as **kwargs: Any or with Unpack[TypedDict] (PEP 692) when the keys are known.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "arguments",
+        "varargs"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "An error",
+        "{'city': 'Bergen', 'age': 3}",
+        "Bergen 3",
+        "('city', 'Bergen')"
+      ],
+      "answer": [
+        "{'city': 'Bergen', 'age': 3}"
+      ]
+    },
+    {
+      "id": "t4.l2.q5",
+      "tier": 4,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def show(a, b, c):\n    print(a, b, c)\n\nnums = [1, 2, 3]\nshow(*nums)",
+      "explain": "The star unpacks the list into three separate positional arguments.",
+      "hints": [
+        "The star on the call side spreads a list out into individual arguments."
+      ],
+      "deep": "Call-side unpacking works with any iterable, and ** unpacks a mapping into keyword arguments: connect(**config). Both were extended in PEP 448 so you can unpack several at once: f(*a, *b). It is also how print(*items, sep=\", \") prints a list nicely.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "arguments",
+        "unpacking"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "An error",
+        "1 [2, 3]",
+        "1 2 3",
+        "[1, 2, 3]"
+      ],
+      "answer": [
+        "1 2 3"
+      ]
+    },
+    {
+      "id": "t4.l2.q6",
+      "tier": 4,
+      "level": 2,
+      "type": "blocks",
+      "prompt": "Build the call that passes 3 by position and verbose by keyword.",
+      "explain": "Positional first, then the keyword argument written as name=value.",
+      "hints": [
+        "A keyword argument is one block: the name, the equals sign and the value together.",
+        "Positionals must come before keywords."
+      ],
+      "deep": "Passing booleans by keyword is a readability rule many style guides enforce: run(3, True) tells the reader nothing, run(3, verbose=True) tells them everything. Making such parameters keyword-only with a bare * in the def turns the rule into a guarantee.",
+      "xp": 15,
+      "tags": [
+        "functions",
+        "arguments"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        ",",
+        "3",
+        "verbose=True",
+        "(",
+        ")",
+        "run",
+        "True",
+        "verbose"
+      ],
+      "answer": [
+        "run",
+        "(",
+        "3",
+        ",",
+        "verbose=True",
+        ")"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l3.q1",
+      "tier": 4,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "count = 1\n\ndef bump():\n    count = 2\n\nbump()\nprint(count)",
+      "explain": "Assigning count inside the function makes a new local variable; the global count is untouched.",
+      "hints": [
+        "Assignment inside a function creates a local name unless told otherwise."
+      ],
+      "deep": "Python decides at compile time that count is local to bump because it is assigned there. Reading the global would need the global keyword, which is almost always a design smell: return the new value instead and let the caller assign it.",
+      "xp": 10,
+      "tags": [
+        "scope"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "None",
+        "An error",
+        "1",
+        "2"
+      ],
+      "answer": [
+        "1"
+      ]
+    },
+    {
+      "id": "t4.l3.q2",
+      "tier": 4,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "Why does this raise UnboundLocalError?",
+      "code": "count = 0\n\ndef bump():\n    count += 1\n\nbump()",
+      "explain": "count += 1 assigns to count, which makes count local everywhere in the function, so the read on the same line finds an unassigned local.",
+      "hints": [
+        "Scope is decided per function, not per line.",
+        "+= both reads and writes the name."
+      ],
+      "deep": "The compiler scans the whole function body for assignments to decide which names are local (the LEGB rule: Local, Enclosing, Global, Built-in). A local read before its first assignment raises UnboundLocalError. Fix: global count (discouraged) or pass and return the value.",
+      "xp": 10,
+      "tags": [
+        "scope",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "count is assigned in the function, so it is local for the whole body, including the read before the assignment",
+        "Global variables are read-only",
+        "You cannot use += inside a function",
+        "count is not defined anywhere"
+      ],
+      "answer": [
+        "count is assigned in the function, so it is local for the whole body, including the read before the assignment"
+      ]
+    },
+    {
+      "id": "t4.l3.q3",
+      "tier": 4,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "def outer():\n    x = 10\n    def inner():\n        print(x)\n    inner()\n\nouter()",
+      "explain": "The inner function can read x from the enclosing function's scope.",
+      "hints": [
+        "Inner functions see the variables of the function around them."
+      ],
+      "deep": "This is a closure: inner captures x from outer's scope, and that binding survives after outer returns. Closures are how decorators, callbacks and functools.partial remember state. To rebind an enclosing variable you need nonlocal, introduced in Python 3.",
+      "xp": 10,
+      "tags": [
+        "scope",
+        "closures"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "None",
+        "An error",
+        "10",
+        "x"
+      ],
+      "answer": [
+        "10"
+      ]
+    },
+    {
+      "id": "t4.l3.q4",
+      "tier": 4,
+      "level": 3,
+      "type": "fill",
+      "prompt": "Fill the gap so the counter can update the enclosing variable.",
+      "explain": "nonlocal tells Python that n refers to the variable in the enclosing function, not a new local one.",
+      "hints": [
+        "The variable belongs to the surrounding function, not the module.",
+        "global would look for a module-level n that does not exist."
+      ],
+      "deep": "nonlocal (PEP 3104) rebinds a name in the nearest enclosing function scope. Each call to make_counter creates a fresh n, so two counters are independent. This is state without a class; when the state grows beyond one or two variables, a class is clearer.",
+      "xp": 20,
+      "tags": [
+        "scope",
+        "closures"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "def make_counter():\n    n = 0\n    def step():\n        {0} n\n        n += 1\n        return n\n    return step",
+      "blocks": [
+        {
+          "id": "local",
+          "code": "local",
+          "kind": "expr"
+        },
+        {
+          "id": "nonlocal",
+          "code": "nonlocal",
+          "kind": "expr"
+        },
+        {
+          "id": "global",
+          "code": "global",
+          "kind": "expr"
+        },
+        {
+          "id": "static",
+          "code": "static",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "nonlocal"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l3.q5",
+      "tier": 4,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "pairs = [(2, \"b\"), (1, \"c\"), (3, \"a\")]\nprint([n for n, _ in sorted(pairs, key=lambda p: p[0])])",
+      "explain": "The lambda tells sorted to compare by the number in each pair, and the comprehension pulls the numbers out in that order.",
+      "hints": [
+        "key= says what to compare; it does not change what is returned."
+      ],
+      "deep": "lambda builds an anonymous single-expression function. key functions transform each item once for comparison, which is faster than a comparison function. For attribute or index keys, operator.itemgetter(1) and attrgetter are faster and clearer than a lambda.",
+      "xp": 10,
+      "tags": [
+        "functions",
+        "lambda",
+        "sorting"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "An error",
+        "[(1, 'b'), ...]",
+        "[1, 2, 3]",
+        "[3, 2, 1]"
+      ],
+      "answer": [
+        "[1, 2, 3]"
+      ]
+    },
+    {
+      "id": "t4.l3.q6",
+      "tier": 4,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "Which name does Python look up last when resolving print?",
+      "explain": "Lookup order is Local, Enclosing, Global, then Built-in, so built-ins are found last.",
+      "hints": [
+        "The acronym for the order is LEGB."
+      ],
+      "deep": "Because built-ins come last, defining a global called list or id shadows the built-in for the whole module, a bug that only surfaces when something later calls list(). Linters flag it (ruff A001). The lookup order is fixed at compile time per name, not searched at runtime.",
+      "xp": 10,
+      "tags": [
+        "scope"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Enclosing",
+        "Built-in",
+        "Local",
+        "Global"
+      ],
+      "answer": [
+        "Built-in"
+      ]
+    },
+    {
+      "id": "t4.l4.q1",
+      "tier": 4,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "Which line gives access to sqrt as math.sqrt?",
+      "explain": "import math binds the module object, and you reach its functions through the dot.",
+      "hints": [
+        "You want the module name itself in scope, not just one function."
+      ],
+      "deep": "import math executes math's code once, caches the module in sys.modules, and binds the name. from math import sqrt binds only that name; import math as m renames. Star imports (from x import *) pollute the namespace and hide where names come from, so they are banned in most codebases.",
+      "xp": 10,
+      "tags": [
+        "modules",
+        "imports"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "include math",
+        "import sqrt from math",
+        "import math",
+        "from math import sqrt"
+      ],
+      "answer": [
+        "import math"
+      ]
+    },
+    {
+      "id": "t4.l4.q2",
+      "tier": 4,
+      "level": 4,
+      "type": "fill",
+      "prompt": "Fill the gap so choice comes straight into the namespace.",
+      "explain": "from module import name pulls one name out of the module.",
+      "hints": [
+        "The line reads as: from where, import what."
+      ],
+      "deep": "The from form is convenient but hides the origin of a name in large files. Import modules for clarity, import names for the few you use constantly. Circular imports happen when two modules import each other at top level; moving one import inside a function or restructuring fixes it.",
+      "xp": 20,
+      "tags": [
+        "modules",
+        "imports"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "{0} random import choice\n\nprint(choice([\"a\", \"b\"]))",
+      "blocks": [
+        {
+          "id": "import",
+          "code": "import",
+          "kind": "expr"
+        },
+        {
+          "id": "from",
+          "code": "from",
+          "kind": "expr"
+        },
+        {
+          "id": "with",
+          "code": "with",
+          "kind": "expr"
+        },
+        {
+          "id": "use",
+          "code": "use",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "from"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l4.q3",
+      "tier": 4,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What is the purpose of this line?",
+      "code": "if __name__ == \"__main__\":\n    main()",
+      "explain": "Python sets __name__ to \"__main__\" for the file it runs directly and to the module name when imported.",
+      "hints": [
+        "Think about the difference between running a file and importing it."
+      ],
+      "deep": "Every module has __name__. Guarding the script's entry point behind this check lets the same file be both a runnable script and an importable library, which is what tests need. The convention is def main(): with the guard calling it, so nothing runs at import time.",
+      "xp": 10,
+      "tags": [
+        "modules"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Run the code below only when the file is executed directly, not when imported",
+        "Check that the file has a name",
+        "Declare the program's main function",
+        "Make the file importable"
+      ],
+      "answer": [
+        "Run the code below only when the file is executed directly, not when imported"
+      ]
+    },
+    {
+      "id": "t4.l4.q4",
+      "tier": 4,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "Which module gives today's date?",
+      "explain": "datetime.date.today() returns today's date; the time module is for timestamps and sleeping.",
+      "hints": [
+        "The module name contains both words you care about."
+      ],
+      "deep": "datetime.datetime.now() gives a naive local time; for anything stored or compared use timezone-aware values: datetime.now(tz=ZoneInfo(\"Europe/Oslo\")) with the zoneinfo module (PEP 615, Python 3.9). Store UTC, render local. Naive datetimes are a bug waiting to be discovered.",
+      "xp": 10,
+      "tags": [
+        "modules",
+        "stdlib"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "datetime",
+        "date",
+        "time",
+        "calendar"
+      ],
+      "answer": [
+        "datetime"
+      ]
+    },
+    {
+      "id": "t4.l4.q5",
+      "tier": 4,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "You need a third-party package. Where does it come from?",
+      "explain": "Third-party code is installed from the Python Package Index into an environment; import only finds what is installed.",
+      "hints": [
+        "The standard library ships with Python; everything else is installed."
+      ],
+      "deep": "A virtual environment isolates a project's packages: python -m venv .venv, or the faster uv. Pin dependencies in pyproject.toml plus a lockfile so a build is reproducible. Installing into the system Python is how two projects end up needing different versions of the same package.",
+      "xp": 10,
+      "tags": [
+        "modules",
+        "packaging"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "pip install from PyPI, ideally inside a virtual environment",
+        "It is downloaded automatically at import time",
+        "The standard library already has everything",
+        "Copy the source into your project"
+      ],
+      "answer": [
+        "pip install from PyPI, ideally inside a virtual environment"
+      ]
+    },
+    {
+      "id": "t4.l4.q6",
+      "tier": 4,
+      "level": 4,
+      "type": "order",
+      "prompt": "Order the lines so the program prints a random number from 1 to 6.",
+      "explain": "Import first, use the module, then print the result.",
+      "hints": [
+        "Nothing from a module can be used before the import line runs."
+      ],
+      "deep": "randint is inclusive on both ends, unlike range. For anything security-related use the secrets module, not random, which is a Mersenne Twister and predictable. For reproducible tests call random.seed(0) once, or better, inject a random.Random instance.",
+      "xp": 15,
+      "tags": [
+        "modules",
+        "imports"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "print(roll)",
+        "roll = random.randint(1, 6)",
+        "import random"
+      ],
+      "answer": [
+        "import random",
+        "roll = random.randint(1, 6)",
+        "print(roll)"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l5.q1",
+      "tier": 4,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "try:\n    n = int(\"abc\")\nexcept ValueError:\n    print(\"not a number\")",
+      "explain": "int(\"abc\") raises ValueError, the except catches it and prints the message.",
+      "hints": [
+        "What does int() do with text that is not digits?"
+      ],
+      "deep": "Exceptions unwind the stack until a matching except is found. ValueError means the type was right but the value was not; TypeError means the type was wrong. Catch the most specific exception that you can actually handle, as close to the source as makes sense.",
+      "xp": 10,
+      "tags": [
+        "exceptions"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "0",
+        "abc",
+        "not a number",
+        "An unhandled ValueError"
+      ],
+      "answer": [
+        "not a number"
+      ]
+    },
+    {
+      "id": "t4.l5.q2",
+      "tier": 4,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "Why is this except clause a bad idea?",
+      "code": "try:\n    risky()\nexcept:\n    pass",
+      "explain": "A bare except catches everything, including KeyboardInterrupt and SystemExit, and hides real bugs.",
+      "hints": [
+        "Ask which errors this would catch. All of them?"
+      ],
+      "deep": "Bare except and except Exception with pass are the origin of most silent failures. If you must catch broadly, log with logger.exception and re-raise or fail visibly. The hierarchy matters: KeyboardInterrupt and SystemExit derive from BaseException, not Exception, precisely so that except Exception leaves them alone.",
+      "xp": 10,
+      "tags": [
+        "exceptions",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "It is a syntax error",
+        "It only catches ValueError",
+        "It makes the code slower",
+        "It swallows every error, including bugs and Ctrl-C, so failures go unnoticed"
+      ],
+      "answer": [
+        "It swallows every error, including bugs and Ctrl-C, so failures go unnoticed"
+      ]
+    },
+    {
+      "id": "t4.l5.q3",
+      "tier": 4,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gap so the function refuses negative amounts.",
+      "explain": "raise creates and throws the exception; the caller decides whether to catch it.",
+      "hints": [
+        "Python's keyword for throwing an error is not throw."
+      ],
+      "deep": "Raise early, with a specific type and a message that says what was wrong and what was expected. Validating at the boundary means the rest of the function can assume clean input. For your own error families, subclass Exception: class InsufficientFunds(ValueError): pass.",
+      "xp": 20,
+      "tags": [
+        "exceptions"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "def withdraw(amount):\n    if amount < 0:\n        {0} ValueError(\"amount must be positive\")\n    return amount",
+      "blocks": [
+        {
+          "id": "raise",
+          "code": "raise",
+          "kind": "expr"
+        },
+        {
+          "id": "except",
+          "code": "except",
+          "kind": "expr"
+        },
+        {
+          "id": "ret",
+          "code": "return",
+          "kind": "expr"
+        },
+        {
+          "id": "throw",
+          "code": "throw",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "raise"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t4.l5.q4",
+      "tier": 4,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "When does the finally block run?",
+      "explain": "finally runs on every path out of the try, which makes it the place for cleanup.",
+      "hints": [
+        "It is the block for cleanup that must happen no matter what."
+      ],
+      "deep": "finally runs even when the try returns or raises. That is what closing files and releasing locks need, and the with statement packages the same guarantee: with open(p) as f: is try/finally with the close built in. Prefer with; use finally for cleanup that has no context manager.",
+      "xp": 10,
+      "tags": [
+        "exceptions",
+        "context-managers"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Only if except ran",
+        "Always, whether or not an exception happened",
+        "Only when no exception happened",
+        "Only when an exception happened"
+      ],
+      "answer": [
+        "Always, whether or not an exception happened"
+      ]
+    },
+    {
+      "id": "t4.l5.q5",
+      "tier": 4,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "d = {}\ntry:\n    d[\"x\"]\nexcept KeyError:\n    print(\"missing\")\nexcept TypeError:\n    print(\"type\")",
+      "explain": "The lookup raises KeyError, the first matching except is KeyError, so missing is printed.",
+      "hints": [
+        "except clauses are tested in order, and only the first match runs."
+      ],
+      "deep": "Order except clauses from specific to general, because a general one first (except Exception) would shadow the rest. Multiple types in one clause use a tuple: except (KeyError, IndexError) as e. Python 3.11 added except* for ExceptionGroup, used by TaskGroup.",
+      "xp": 10,
+      "tags": [
+        "exceptions"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "type",
+        "missing",
+        "An unhandled error",
+        "KeyError"
+      ],
+      "answer": [
+        "missing"
+      ]
+    },
+    {
+      "id": "t4.l5.q6",
+      "tier": 4,
+      "level": 5,
+      "type": "order",
+      "prompt": "Order the lines so the file is read and always closed, even on error.",
+      "explain": "Open first, read inside try, close inside finally so it happens on every path.",
+      "hints": [
+        "The file has to be opened before try, or the finally would close nothing.",
+        "Only the read can fail, so only it belongs inside try."
+      ],
+      "deep": "This is exactly what with open(\"data.txt\") as f: text = f.read() compiles down to, minus the boilerplate. Context managers (PEP 343) implement __enter__ and __exit__; contextlib.contextmanager lets you write one from a generator with a single yield.",
+      "xp": 15,
+      "tags": [
+        "exceptions",
+        "context-managers",
+        "files"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "f = open(\"data.txt\")",
+        "finally:",
+        "    f.close()",
+        "try:",
+        "    text = f.read()"
+      ],
+      "answer": [
+        "f = open(\"data.txt\")",
+        "try:",
+        "    text = f.read()",
+        "finally:",
+        "    f.close()"
+      ],
+      "accept": []
+    }
+  ]
+}

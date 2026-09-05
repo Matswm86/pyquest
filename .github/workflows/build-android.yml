@@ -33,6 +33,9 @@ jobs:
       - name: Validate curriculum JSON
         run: python3 tools/validate_curriculum.py
 
+      - name: Validate Pytor's Codex
+        run: python3 tools/validate_codex.py
+
   build:
     needs: curriculum
     runs-on: ubuntu-latest

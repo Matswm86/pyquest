@@ -10,6 +10,10 @@ import kotlinx.serialization.Serializable
  * strings equals [answer], or equals any entry in [accept]. That covers the
  * cases where two orderings are genuinely both right, such as two independent
  * assignments that can appear in either order.
+ *
+ * Every question also carries Pytor's material: [hints] are progressive and
+ * never give the answer away, [deep] is the expert note shown after the check,
+ * the part of the explanation that a working engineer would want to know.
  */
 @Serializable
 data class Question(
@@ -37,6 +41,10 @@ data class Question(
     val answer: List<String> = emptyList(),
     val accept: List<List<String>> = emptyList(),
     val explain: String,
+    /** Pytor's progressive hints, mildest first. Never contain the answer. */
+    val hints: List<String> = emptyList(),
+    /** Pytor's expert note after the check: the mechanism, the idiom, the trap. */
+    val deep: String? = null,
     val xp: Int = 10,
     val tags: List<String> = emptyList(),
     /** ISO date the content was last checked. Tiers 7 and 8 age fastest. */
@@ -167,6 +175,8 @@ data class Tier(
     /** Short lesson names shown when the tier card is expanded. */
     val lessons: List<String> = emptyList(),
     val capstone: Boolean = false,
+    /** One line from Pytor when the player opens this tier. */
+    val pytor: String = "",
     val questions: List<Question>,
 ) {
     fun level(level: Int): List<Question> = questions.filter { it.level == level }

@@ -1,0 +1,950 @@
+{
+  "tier": 6,
+  "title": "APIs, async & tests",
+  "subtitle": "HTTP, FastAPI, asyncio, pytest, type hints and logging",
+  "lessons": [
+    "HTTP & REST",
+    "FastAPI",
+    "async / await",
+    "pytest",
+    "typing & logging"
+  ],
+  "pytor": "This tier is the difference between a script and a service. Timeouts, status checks, tests that never touch the network, and logs the operator can read at 3 a.m.",
+  "questions": [
+    {
+      "id": "t6.l1.q1",
+      "tier": 6,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Which HTTP method should fetch a resource without changing anything?",
+      "explain": "GET reads. It must be safe, which means the server state is the same before and after.",
+      "hints": [
+        "The method for reading is the one browsers use for every page load."
+      ],
+      "deep": "GET is safe and idempotent, PUT and DELETE are idempotent but not safe, POST is neither. Idempotent means repeating the request has the same effect as sending it once, which is what lets clients and proxies retry safely. A GET that changes state breaks caches and crawlers.",
+      "xp": 10,
+      "tags": [
+        "http",
+        "rest"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "DELETE",
+        "PUT",
+        "GET",
+        "POST"
+      ],
+      "answer": [
+        "GET"
+      ]
+    },
+    {
+      "id": "t6.l1.q2",
+      "tier": 6,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "The API returns 404. What does that mean?",
+      "explain": "4xx codes are client-side problems; 404 specifically says the path or id does not exist.",
+      "hints": [
+        "Codes starting with 4 blame the request; codes starting with 5 blame the server."
+      ],
+      "deep": "Learn the handful that matter: 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthenticated, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Validation error, 429 Too Many Requests, 500 Server error, 503 Unavailable. Retry 429 and 503 with backoff; never retry 400 or 422.",
+      "xp": 10,
+      "tags": [
+        "http",
+        "status-codes"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "You are not logged in",
+        "Too many requests",
+        "The server crashed",
+        "The resource was not found"
+      ],
+      "answer": [
+        "The resource was not found"
+      ]
+    },
+    {
+      "id": "t6.l1.q3",
+      "tier": 6,
+      "level": 1,
+      "type": "fill",
+      "prompt": "Fill the gap so a failed request raises instead of returning bad data.",
+      "explain": "raise_for_status raises HTTPStatusError for any 4xx or 5xx, so the code below only runs on success.",
+      "hints": [
+        "You want a call that turns an error status into an exception."
+      ],
+      "deep": "Without the check, r.json() on a 500 page returns an error body or raises a confusing JSON error later. Always set a timeout: httpx has a 5 s default, requests has none and will hang forever. Wrap network calls in a retry with exponential backoff and jitter for 429 and 5xx only.",
+      "xp": 20,
+      "tags": [
+        "http",
+        "httpx",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "r = httpx.get(url, timeout=10)\nr.{0}()\ndata = r.json()",
+      "blocks": [
+        {
+          "id": "ok",
+          "code": "ok",
+          "kind": "call"
+        },
+        {
+          "id": "status",
+          "code": "status_code",
+          "kind": "call"
+        },
+        {
+          "id": "check",
+          "code": "check",
+          "kind": "call"
+        },
+        {
+          "id": "rfs",
+          "code": "raise_for_status",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "rfs"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l1.q4",
+      "tier": 6,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "How do you send an API key with a request?",
+      "explain": "Bearer tokens go in the Authorization header, which stays out of logs and URLs.",
+      "hints": [
+        "There is a standard header for credentials."
+      ],
+      "deep": "Keys in URLs end up in server logs, browser history and referrer headers. Read secrets from environment variables or a secrets manager, never from source: os.environ[\"API_KEY\"]. Rotate them, scope them, and let a pre-commit secret scanner catch the one that slips into a commit.",
+      "xp": 10,
+      "tags": [
+        "http",
+        "security",
+        "auth"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Append it to the JSON body",
+        "Put it in the URL path",
+        "headers={\"Authorization\": \"Bearer <token>\"}",
+        "Send it in the User-Agent"
+      ],
+      "answer": [
+        "headers={\"Authorization\": \"Bearer <token>\"}"
+      ]
+    },
+    {
+      "id": "t6.l1.q5",
+      "tier": 6,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does params do?",
+      "code": "httpx.get(url, params={\"q\": \"python\", \"limit\": 5})",
+      "explain": "params becomes the URL query string, properly encoded, which is how GET requests carry filters.",
+      "hints": [
+        "Query parameters are the part of the URL after the question mark."
+      ],
+      "deep": "Let the library encode: spaces become %20 and & inside a value is escaped. For POST use json= to send a JSON body with the right Content-Type, or data= for form encoding. Pagination is usually a page or cursor param; cursor-based pagination is stable under inserts, offset-based is not.",
+      "xp": 10,
+      "tags": [
+        "http",
+        "httpx"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Nothing on a GET",
+        "Encodes the dict as the query string ?q=python&limit=5",
+        "Sends the dict as a JSON body",
+        "Sets request headers"
+      ],
+      "answer": [
+        "Encodes the dict as the query string ?q=python&limit=5"
+      ]
+    },
+    {
+      "id": "t6.l1.q6",
+      "tier": 6,
+      "level": 1,
+      "type": "order",
+      "prompt": "Order the steps of a well-behaved API call.",
+      "explain": "Request, then check, then parse, then validate. Skipping any step moves the failure somewhere confusing.",
+      "hints": [
+        "You cannot parse before sending, and checking status comes before trusting the body."
+      ],
+      "deep": "The last step is the one people skip: an API can change a field name and your code will fail three functions later with a KeyError. Parse the response into a pydantic model or a TypedDict at the boundary, so every downstream function sees a known shape.",
+      "xp": 15,
+      "tags": [
+        "http",
+        "pipelines"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "send with a timeout",
+        "validate the shape before using it",
+        "build the URL and params",
+        "parse the JSON",
+        "check the status"
+      ],
+      "answer": [
+        "build the URL and params",
+        "send with a timeout",
+        "check the status",
+        "parse the JSON",
+        "validate the shape before using it"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l2.q1",
+      "tier": 6,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does the decorator do here?",
+      "code": "@app.get(\"/items/{id}\")\ndef read_item(id: int):\n    return {\"id\": id}",
+      "explain": "The decorator tells the app which method and path route to this function, and FastAPI parses the path parameter into the typed argument.",
+      "hints": [
+        "The path in the decorator has a placeholder that matches the function's parameter."
+      ],
+      "deep": "FastAPI uses the type hint (id: int) to convert and validate: /items/abc returns a 422 automatically. Path parameters come from the URL, query parameters from function arguments not in the path, and request bodies from pydantic model parameters. The docs at /docs are generated from the same hints.",
+      "xp": 10,
+      "tags": [
+        "fastapi",
+        "api"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Makes the function asynchronous",
+        "Registers the function to handle GET requests to /items/{id}, passing the path value as id",
+        "Creates a database table",
+        "Runs the function immediately"
+      ],
+      "answer": [
+        "Registers the function to handle GET requests to /items/{id}, passing the path value as id"
+      ]
+    },
+    {
+      "id": "t6.l2.q2",
+      "tier": 6,
+      "level": 2,
+      "type": "fill",
+      "prompt": "Fill the gap so the request body is validated as an Item.",
+      "explain": "Typing the parameter as the pydantic model makes FastAPI parse and validate the JSON body into it.",
+      "hints": [
+        "The model class you just defined is the type."
+      ],
+      "deep": "pydantic validates types, coerces where safe (\"3.5\" to 3.5 in lax mode), and returns a 422 with a field-by-field error list otherwise. The same model serialises the response and documents the schema in OpenAPI. One definition, three jobs: this is why pydantic won.",
+      "xp": 20,
+      "tags": [
+        "fastapi",
+        "pydantic",
+        "validation"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "class Item(BaseModel):\n    name: str\n    price: float\n\n@app.post(\"/items\")\ndef create(item: {0}):\n    return item",
+      "blocks": [
+        {
+          "id": "str",
+          "code": "str",
+          "kind": "var"
+        },
+        {
+          "id": "body",
+          "code": "Body",
+          "kind": "var"
+        },
+        {
+          "id": "item",
+          "code": "Item",
+          "kind": "var"
+        },
+        {
+          "id": "dict",
+          "code": "dict",
+          "kind": "var"
+        }
+      ],
+      "answer": [
+        "item"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l2.q3",
+      "tier": 6,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "A client sends {\"name\": \"pen\"} without a price. What happens?",
+      "explain": "Required fields missing from the body fail validation before the handler runs, and the client gets a structured 422.",
+      "hints": [
+        "Validation happens before your code ever sees the request."
+      ],
+      "deep": "422 Unprocessable Entity is the validation status FastAPI chose; the body lists each failing field with a type and message. Make a field optional with price: float | None = None, or give it a default. Never catch validation errors and return 200; clients rely on the code.",
+      "xp": 10,
+      "tags": [
+        "fastapi",
+        "validation",
+        "status-codes"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "The function runs with price as None",
+        "price defaults to 0",
+        "FastAPI returns 422 with a message saying price is required",
+        "The server returns 500"
+      ],
+      "answer": [
+        "FastAPI returns 422 with a message saying price is required"
+      ]
+    },
+    {
+      "id": "t6.l2.q4",
+      "tier": 6,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Which command runs the app locally with auto-reload?",
+      "explain": "uvicorn is the ASGI server; main:app means the app object in main.py.",
+      "hints": [
+        "The server program is not Python itself."
+      ],
+      "deep": "ASGI is the async successor to WSGI. uvicorn runs one process; in production put it behind gunicorn with uvicorn workers or a container orchestrator, and never use --reload there. The newer fastapi dev command wraps uvicorn with the same behaviour.",
+      "xp": 10,
+      "tags": [
+        "fastapi",
+        "deployment"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "flask run",
+        "uvicorn main:app --reload",
+        "python main.py --serve",
+        "fastapi start"
+      ],
+      "answer": [
+        "uvicorn main:app --reload"
+      ]
+    },
+    {
+      "id": "t6.l2.q5",
+      "tier": 6,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Why return a response_model?",
+      "explain": "The response model defines the public shape: anything not in it is stripped before the JSON leaves the server.",
+      "hints": [
+        "Think about a User object that has more fields than the client should see."
+      ],
+      "deep": "Separate models for input, storage and output (UserCreate, UserInDB, UserPublic) are the standard pattern. Returning the ORM object directly is how a hashed password ends up in an API response. response_model also generates accurate docs and catches accidental type changes.",
+      "xp": 10,
+      "tags": [
+        "fastapi",
+        "security",
+        "api-design"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "It caches the response",
+        "It makes the endpoint faster",
+        "It is required by FastAPI",
+        "It filters and validates the output so internal fields such as password hashes never leak"
+      ],
+      "answer": [
+        "It filters and validates the output so internal fields such as password hashes never leak"
+      ]
+    },
+    {
+      "id": "t6.l2.q6",
+      "tier": 6,
+      "level": 2,
+      "type": "order",
+      "prompt": "Order the lines to build the smallest working FastAPI app.",
+      "explain": "Import, create the app, decorate the handler, define it, return JSON.",
+      "hints": [
+        "The decorator sits directly above the def it decorates.",
+        "app has to exist before its decorator is used."
+      ],
+      "deep": "A health endpoint like this is the first thing every service needs: load balancers poll it, deploy scripts wait for it, and it is the fastest way to prove the container started. Return a dict; FastAPI serialises it and sets Content-Type.",
+      "xp": 15,
+      "tags": [
+        "fastapi",
+        "api"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "def root():",
+        "    return {\"status\": \"ok\"}",
+        "from fastapi import FastAPI",
+        "@app.get(\"/\")",
+        "app = FastAPI()"
+      ],
+      "answer": [
+        "from fastapi import FastAPI",
+        "app = FastAPI()",
+        "@app.get(\"/\")",
+        "def root():",
+        "    return {\"status\": \"ok\"}"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l3.q1",
+      "tier": 6,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "When does async actually help?",
+      "explain": "async lets one thread make progress on other tasks while a request is in flight. It does nothing for CPU-bound work.",
+      "hints": [
+        "Ask what the program is waiting for."
+      ],
+      "deep": "asyncio runs coroutines cooperatively on one thread; a coroutine yields at each await, and the event loop switches to another. CPU-bound code never yields, so use multiprocessing or a native extension for that. The GIL is why threads do not help CPU-bound Python either; the free-threaded build (PEP 703) is changing that.",
+      "xp": 10,
+      "tags": [
+        "async",
+        "concurrency"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Only on multi-core machines",
+        "When the program is doing heavy maths",
+        "Always, it makes any code faster",
+        "When the program spends most of its time waiting on network or disk"
+      ],
+      "answer": [
+        "When the program spends most of its time waiting on network or disk"
+      ]
+    },
+    {
+      "id": "t6.l3.q2",
+      "tier": 6,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What is wrong here?",
+      "code": "async def fetch():\n    time.sleep(1)\n    return 42",
+      "explain": "A blocking call inside a coroutine freezes every other task until it returns. The async version yields to the loop.",
+      "hints": [
+        "Which of the two sleep functions knows about the event loop?"
+      ],
+      "deep": "Any blocking call (time.sleep, requests.get, a synchronous database driver, heavy CPU work) stalls the loop. Use async libraries (httpx.AsyncClient, asyncpg), or push blocking work to a thread with await asyncio.to_thread(func). Slow endpoints with idle CPU are usually this bug.",
+      "xp": 10,
+      "tags": [
+        "async",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "sleep needs to be imported from asyncio and called without await",
+        "time.sleep blocks the whole event loop; use await asyncio.sleep(1)",
+        "Nothing, it works",
+        "You cannot sleep inside async def"
+      ],
+      "answer": [
+        "time.sleep blocks the whole event loop; use await asyncio.sleep(1)"
+      ]
+    },
+    {
+      "id": "t6.l3.q3",
+      "tier": 6,
+      "level": 3,
+      "type": "fill",
+      "prompt": "Fill the gap so the three fetches run concurrently.",
+      "explain": "gather schedules all the coroutines at once and waits for all of them, returning results in order.",
+      "hints": [
+        "You want to start several coroutines and collect all their results."
+      ],
+      "deep": "gather returns results in argument order regardless of finish order. In Python 3.11+ prefer asyncio.TaskGroup, which cancels the siblings when one fails and raises an ExceptionGroup, structured concurrency. Awaiting them one by one in a loop would run them sequentially.",
+      "xp": 20,
+      "tags": [
+        "async",
+        "concurrency"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "async def main():\n    results = await asyncio.{0}(fetch(a), fetch(b), fetch(c))",
+      "blocks": [
+        {
+          "id": "gather",
+          "code": "gather",
+          "kind": "call"
+        },
+        {
+          "id": "sleep",
+          "code": "sleep",
+          "kind": "call"
+        },
+        {
+          "id": "wait_for",
+          "code": "wait_for",
+          "kind": "call"
+        },
+        {
+          "id": "run",
+          "code": "run",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "gather"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l3.q4",
+      "tier": 6,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does calling fetch() without await do?",
+      "code": "async def fetch():\n    return 42\n\nfetch()",
+      "explain": "Calling an async function only builds a coroutine. It runs when awaited or scheduled as a task.",
+      "hints": [
+        "A coroutine is a plan for work, not the work."
+      ],
+      "deep": "The RuntimeWarning coroutine was never awaited is the tell-tale. To run it in the background use asyncio.create_task(fetch()) and keep a reference to the task, or the garbage collector can cancel it mid-flight. Fire-and-forget without a reference is a documented footgun.",
+      "xp": 10,
+      "tags": [
+        "async",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Creates a coroutine object that never runs, and Python warns it was never awaited",
+        "Raises an error immediately",
+        "Runs it in the background",
+        "Runs it synchronously"
+      ],
+      "answer": [
+        "Creates a coroutine object that never runs, and Python warns it was never awaited"
+      ]
+    },
+    {
+      "id": "t6.l3.q5",
+      "tier": 6,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "How do you start an async program from normal code?",
+      "explain": "asyncio.run creates the event loop, runs the coroutine to completion and closes the loop.",
+      "hints": [
+        "Top-level code is synchronous, so it needs a function that creates a loop."
+      ],
+      "deep": "asyncio.run is the single entry point since 3.7. Calling it inside a running loop (Jupyter, a web framework) raises; there you await directly or use nest_asyncio. Web servers like uvicorn own the loop, so handlers just use await.",
+      "xp": 10,
+      "tags": [
+        "async"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "asyncio.run(main())",
+        "await main()",
+        "main().run()",
+        "async main()"
+      ],
+      "answer": [
+        "asyncio.run(main())"
+      ]
+    },
+    {
+      "id": "t6.l3.q6",
+      "tier": 6,
+      "level": 3,
+      "type": "order",
+      "prompt": "Order the lines to fetch a page with an async client.",
+      "explain": "Open the client, await the request, check status, parse.",
+      "hints": [
+        "async with is the async form of with; the client must be open when the request is made."
+      ],
+      "deep": "One AsyncClient per application, not per request: it pools connections and reuses TLS sessions. Creating a client inside a hot loop is a common performance bug. Limit concurrency with an asyncio.Semaphore so a gather of a thousand requests does not get you rate-limited.",
+      "xp": 15,
+      "tags": [
+        "async",
+        "httpx"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "    r.raise_for_status()",
+        "async with httpx.AsyncClient() as client:",
+        "    return r.json()",
+        "    r = await client.get(url)"
+      ],
+      "answer": [
+        "async with httpx.AsyncClient() as client:",
+        "    r = await client.get(url)",
+        "    r.raise_for_status()",
+        "    return r.json()"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l4.q1",
+      "tier": 6,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "How does pytest find this test?",
+      "code": "# tests/test_math.py\ndef test_add():\n    assert add(2, 2) == 4",
+      "explain": "Discovery is by naming: test_*.py files, test_* functions, Test* classes.",
+      "hints": [
+        "pytest never asks you to register tests. Look at the names."
+      ],
+      "deep": "Plain assert is enough because pytest rewrites assertions to show both sides on failure. No self.assertEqual boilerplate. Put tests in a tests/ folder mirroring the package, and configure the rest in pyproject.toml under [tool.pytest.ini_options].",
+      "xp": 10,
+      "tags": [
+        "testing",
+        "pytest"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Because of the assert statement",
+        "The file name starts with test_ and the function name starts with test_",
+        "pytest runs every function in every file",
+        "It is registered in a config file"
+      ],
+      "answer": [
+        "The file name starts with test_ and the function name starts with test_"
+      ]
+    },
+    {
+      "id": "t6.l4.q2",
+      "tier": 6,
+      "level": 4,
+      "type": "fill",
+      "prompt": "Fill the gap so the test passes only if a ValueError is raised.",
+      "explain": "pytest.raises is a context manager that passes when the block raises the given exception and fails otherwise.",
+      "hints": [
+        "The block is expected to raise."
+      ],
+      "deep": "Add match=\"positive\" to check the message with a regex, and the as exc_info handle to inspect the exception. Testing error paths is where most bugs hide; a suite with only happy paths is a demo. Keep exactly one behaviour per test so the name says what broke.",
+      "xp": 20,
+      "tags": [
+        "testing",
+        "pytest",
+        "exceptions"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "def test_rejects_negative():\n    with pytest.{0}(ValueError):\n        withdraw(-5)",
+      "blocks": [
+        {
+          "id": "raises",
+          "code": "raises",
+          "kind": "call"
+        },
+        {
+          "id": "catch",
+          "code": "catch",
+          "kind": "call"
+        },
+        {
+          "id": "fail",
+          "code": "fail",
+          "kind": "call"
+        },
+        {
+          "id": "expect",
+          "code": "expect",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "raises"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l4.q3",
+      "tier": 6,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this fixture do?",
+      "code": "@pytest.fixture\ndef client():\n    return TestClient(app)",
+      "explain": "A fixture is a named setup function; any test that takes client as an argument gets its return value.",
+      "hints": [
+        "Look at how a test would receive the client: by parameter name."
+      ],
+      "deep": "Fixtures replace setUp methods with dependency injection. scope=\"session\" makes one shared instance for expensive resources, yield turns the fixture into setup plus teardown, and conftest.py shares fixtures across files without imports. Fixtures can depend on other fixtures.",
+      "xp": 10,
+      "tags": [
+        "testing",
+        "pytest",
+        "fixtures"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Runs before all tests once",
+        "Marks the test as slow",
+        "Builds a fresh client for each test that names it as a parameter",
+        "Mocks the network"
+      ],
+      "answer": [
+        "Builds a fresh client for each test that names it as a parameter"
+      ]
+    },
+    {
+      "id": "t6.l4.q4",
+      "tier": 6,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "How many tests does this create?",
+      "code": "@pytest.mark.parametrize(\"n, expected\", [(2, 4), (3, 9), (0, 0)])\ndef test_square(n, expected):\n    assert square(n) == expected",
+      "explain": "parametrize runs the same test body once per tuple, each reported separately.",
+      "hints": [
+        "Count the tuples in the list."
+      ],
+      "deep": "Parametrised tests turn a table of cases into individual test ids like test_square[3-9], so one failing case does not hide the others. Add ids= for readable names. Stack two parametrize decorators to get the cross product. hypothesis generates the cases for you when the property is what matters.",
+      "xp": 10,
+      "tags": [
+        "testing",
+        "pytest"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "6",
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": [
+        "3"
+      ]
+    },
+    {
+      "id": "t6.l4.q5",
+      "tier": 6,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "The test calls a function that hits a real payment API. What should you do?",
+      "explain": "Unit tests must not touch the network or real services. Inject a fake client or patch the call.",
+      "hints": [
+        "A test that charges a card is not a test."
+      ],
+      "deep": "Prefer dependency injection (pass the client in) over monkeypatching, and pytest's monkeypatch fixture over unittest.mock when you must patch. Record real responses once with a library like respx or vcrpy and replay them. Keep a separate, clearly marked integration suite for the real thing.",
+      "xp": 10,
+      "tags": [
+        "testing",
+        "mocking",
+        "design"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Replace the API call with a fake or mock so the test is fast, offline and side-effect free",
+        "Skip testing that function",
+        "Run the test only at night",
+        "Use a smaller amount"
+      ],
+      "answer": [
+        "Replace the API call with a fake or mock so the test is fast, offline and side-effect free"
+      ]
+    },
+    {
+      "id": "t6.l4.q6",
+      "tier": 6,
+      "level": 4,
+      "type": "order",
+      "prompt": "Order the parts of a well-structured test.",
+      "explain": "Set up, do the one thing, check. A test with several acts is several tests.",
+      "hints": [
+        "The pattern's initials spell AAA."
+      ],
+      "deep": "Arrange-act-assert (or given-when-then) keeps tests readable as specifications. If arranging takes twenty lines, that is a signal to extract a fixture or a builder. If asserting needs a loop, the function probably returns too much. Tests are the first client of your API design.",
+      "xp": 15,
+      "tags": [
+        "testing",
+        "design"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "act: call the function under test once",
+        "arrange: build the input and any fixtures",
+        "assert: check the result and side effects"
+      ],
+      "answer": [
+        "arrange: build the input and any fixtures",
+        "act: call the function under test once",
+        "assert: check the result and side effects"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l5.q1",
+      "tier": 6,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this hint promise?",
+      "code": "def count_long(names: list[str]) -> int:\n    ...",
+      "explain": "Type hints are annotations for readers and type checkers; the interpreter does not enforce them.",
+      "hints": [
+        "Hints describe intent. Who checks them?"
+      ],
+      "deep": "PEP 484 hints are checked by mypy or pyright, and used by editors and by pydantic and FastAPI at runtime through introspection. Since 3.9 use built-in generics (list[str], dict[str, int]); since 3.10, X | None instead of Optional[X]. Hints on public functions are the cheapest documentation you can write.",
+      "xp": 10,
+      "tags": [
+        "typing"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "The list is converted to strings",
+        "That names is a list of strings and the function returns an int, checked by tools, not at runtime",
+        "Python will raise TypeError if a non-list is passed",
+        "The function runs faster"
+      ],
+      "answer": [
+        "That names is a list of strings and the function returns an int, checked by tools, not at runtime"
+      ]
+    },
+    {
+      "id": "t6.l5.q2",
+      "tier": 6,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gap so the hint says the function may return no user.",
+      "explain": "X | None is the modern spelling of Optional[X], a value that is either an X or None.",
+      "hints": [
+        "The union operator in type hints is a single character."
+      ],
+      "deep": "PEP 604 unions read as English and need no import. Making None explicit forces callers to handle it, and a checker will flag user.name when user might be None. The alternative design, raising when not found, is sometimes better; either way, say which in the signature.",
+      "xp": 20,
+      "tags": [
+        "typing"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "def find_user(id: int) -> User {0} None:\n    ...",
+      "blocks": [
+        {
+          "id": "or",
+          "code": "or",
+          "kind": "expr"
+        },
+        {
+          "id": "comma",
+          "code": ",",
+          "kind": "expr"
+        },
+        {
+          "id": "amp",
+          "code": "&",
+          "kind": "expr"
+        },
+        {
+          "id": "pipe",
+          "code": "|",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "pipe"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t6.l5.q3",
+      "tier": 6,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "Why does the type checker complain about this call?",
+      "code": "def square(n: int) -> int:\n    return n * n\n\nsquare(\"3\")",
+      "explain": "Static checking catches a type mismatch at the call site, which at runtime would be a TypeError deep inside.",
+      "hints": [
+        "Compare the parameter's hint with what the caller passes."
+      ],
+      "deep": "mypy and pyright run in CI next to the tests and catch a class of bug tests rarely cover: the wrong type flowing through three layers. Start with hints on function signatures, run the checker in non-strict mode, and tighten gradually. TypedDict, Protocol and Literal handle the shapes plain classes cannot.",
+      "xp": 10,
+      "tags": [
+        "typing",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Type checkers reject all literals",
+        "Strings cannot be squared",
+        "The function is missing a return",
+        "The function expects an int but receives a str, a bug the checker catches before runtime"
+      ],
+      "answer": [
+        "The function expects an int but receives a str, a bug the checker catches before runtime"
+      ]
+    },
+    {
+      "id": "t6.l5.q4",
+      "tier": 6,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "Why use logging instead of print in a library?",
+      "explain": "print is hard-wired to stdout at one level. logging separates emitting a message from deciding what to do with it.",
+      "hints": [
+        "Who should decide whether a message is shown: the library or the application?"
+      ],
+      "deep": "Libraries call logging.getLogger(__name__) and never configure handlers; applications configure once at startup with logging.basicConfig or dictConfig. Levels: DEBUG for developers, INFO for operators, WARNING for things to look at, ERROR for failures, CRITICAL for the pager. Structured JSON logs are what production wants.",
+      "xp": 10,
+      "tags": [
+        "logging",
+        "design"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "logging writes to a file automatically",
+        "The caller controls level, format and destination, and can silence or route it without editing your code",
+        "print does not work in libraries",
+        "logging is faster"
+      ],
+      "answer": [
+        "The caller controls level, format and destination, and can silence or route it without editing your code"
+      ]
+    },
+    {
+      "id": "t6.l5.q5",
+      "tier": 6,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "Which call is right?",
+      "explain": "Passing the arguments separately lets logging skip the formatting when the level is disabled, and keeps the message template constant for aggregation.",
+      "hints": [
+        "Think about what happens to the f-string when the log level is WARNING."
+      ],
+      "deep": "Lazy %-formatting is the documented idiom and what ruff G004 enforces. A constant template also lets log tools group identical events. For exceptions use logger.exception(\"failed\") inside an except block: it attaches the traceback automatically. Never log secrets or full request bodies.",
+      "xp": 10,
+      "tags": [
+        "logging"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "logger.info(\"user \" + user_id + \" logged in\")",
+        "logger.info(f\"user {user_id} logged in\")",
+        "logger.info(user_id)",
+        "logger.info(\"user %s logged in\", user_id)"
+      ],
+      "answer": [
+        "logger.info(\"user %s logged in\", user_id)"
+      ]
+    },
+    {
+      "id": "t6.l5.q6",
+      "tier": 6,
+      "level": 5,
+      "type": "order",
+      "prompt": "Order the setup of a script's logging.",
+      "explain": "Import, configure once, get a named logger, use it.",
+      "hints": [
+        "Configuration comes before any message is emitted, and the logger comes from the module's name."
+      ],
+      "deep": "basicConfig only acts the first time it is called, which is why it belongs in the entry point and not in modules. __name__ gives hierarchical loggers (app.db.pool), so you can set app.db to DEBUG alone. Add a formatter with timestamps; the default format has none.",
+      "xp": 15,
+      "tags": [
+        "logging"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "logger = logging.getLogger(__name__)",
+        "logger.info(\"starting\")",
+        "logging.basicConfig(level=logging.INFO)",
+        "import logging"
+      ],
+      "answer": [
+        "import logging",
+        "logging.basicConfig(level=logging.INFO)",
+        "logger = logging.getLogger(__name__)",
+        "logger.info(\"starting\")"
+      ],
+      "accept": []
+    }
+  ]
+}

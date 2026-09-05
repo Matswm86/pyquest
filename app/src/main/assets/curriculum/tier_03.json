@@ -1,0 +1,1019 @@
+{
+  "tier": 3,
+  "title": "Control flow",
+  "subtitle": "Conditions, loops, break and continue, comprehensions",
+  "lessons": [
+    "if / elif / else",
+    "for & range",
+    "while & break",
+    "accumulators",
+    "comprehensions"
+  ],
+  "pytor": "Control flow is where a script becomes a program. Master the three shapes here: branch, loop, accumulate. Comprehensions are the same shapes compressed.",
+  "questions": [
+    {
+      "id": "t3.l1.q1",
+      "tier": 3,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Which line checks whether x equals 5?",
+      "explain": "A single = assigns, a double == compares. The if line ends with a colon.",
+      "hints": [
+        "One equals sign gives a value a name; comparing needs a different spelling.",
+        "There is no triple-equals in Python."
+      ],
+      "deep": "= is a statement, == is an expression that returns a bool. Because assignment is not an expression in Python, if x = 5: is a SyntaxError rather than the silent bug it is in C. The walrus operator := (PEP 572) is the deliberate exception for assignment inside expressions.",
+      "xp": 10,
+      "tags": [
+        "conditions",
+        "comparison"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "if x equals 5:",
+        "if x === 5:",
+        "if x = 5:",
+        "if x == 5:"
+      ],
+      "answer": [
+        "if x == 5:"
+      ]
+    },
+    {
+      "id": "t3.l1.q2",
+      "tier": 3,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "x = 10\nif x > 5:\n    print(\"big\")\nelse:\n    print(\"small\")",
+      "explain": "10 > 5 is True, so the first branch runs and the else is skipped.",
+      "hints": [
+        "Evaluate the comparison first, then follow the branch that matches."
+      ],
+      "deep": "if evaluates its condition once, calls bool() on the result, and runs exactly one branch. The comparison operators return real bool objects, True and False, which are the integers 1 and 0 underneath: True + True is 2, which is occasionally useful and usually a smell.",
+      "xp": 10,
+      "tags": [
+        "conditions"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "small",
+        "big",
+        "Nothing",
+        "An error"
+      ],
+      "answer": [
+        "big"
+      ]
+    },
+    {
+      "id": "t3.l1.q3",
+      "tier": 3,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Why is this a SyntaxError?",
+      "code": "if x > 5:\nprint(\"big\")",
+      "explain": "Python uses indentation to know which lines belong to the if. A block with nothing indented under it is a syntax error.",
+      "hints": [
+        "Look at what comes after the colon on the next line."
+      ],
+      "deep": "Indentation is syntax, not style. The tokenizer emits INDENT and DEDENT tokens, and the grammar requires a block after the colon. PEP 8 says four spaces, never tabs mixed with spaces; Python 3 refuses inconsistent mixing outright with TabError.",
+      "xp": 10,
+      "tags": [
+        "conditions",
+        "indentation",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "print cannot be used inside if",
+        "if needs parentheses around the condition",
+        "A colon is not allowed after a condition",
+        "The line after if must be indented"
+      ],
+      "answer": [
+        "The line after if must be indented"
+      ]
+    },
+    {
+      "id": "t3.l1.q4",
+      "tier": 3,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "items = []\nif not items:\n    print(\"empty\")\nelse:\n    print(\"full\")",
+      "explain": "An empty list is falsy, so not items is True.",
+      "hints": [
+        "Python treats empty containers as False in a condition."
+      ],
+      "deep": "Truthiness: None, False, 0, 0.0, \"\", [], {}, set() and any object whose __bool__ or __len__ says so are falsy; everything else is truthy. So write if not items:, never if len(items) == 0:. Be careful with 0 as a legitimate value: if count: skips zero.",
+      "xp": 10,
+      "tags": [
+        "conditions",
+        "truthiness"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "empty",
+        "An error",
+        "[]",
+        "full"
+      ],
+      "answer": [
+        "empty"
+      ]
+    },
+    {
+      "id": "t3.l1.q5",
+      "tier": 3,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "age = 15\nif age < 13:\n    print(\"child\")\nelif age < 18:\n    print(\"teen\")\nelse:\n    print(\"adult\")",
+      "explain": "Branches are tested top to bottom and the first true one wins. 15 is not under 13, but it is under 18.",
+      "hints": [
+        "Only the first matching branch runs; the rest are never tested."
+      ],
+      "deep": "elif chains are checked in order and stop at the first true condition, so order the tests from most specific to least. Python has no switch; for many fixed cases use a dict of functions, or match/case (PEP 634, Python 3.10) when you need structural patterns.",
+      "xp": 10,
+      "tags": [
+        "conditions"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "teen",
+        "child",
+        "Nothing",
+        "adult"
+      ],
+      "answer": [
+        "teen"
+      ]
+    },
+    {
+      "id": "t3.l1.q6",
+      "tier": 3,
+      "level": 1,
+      "type": "fill",
+      "prompt": "Fill the gap so the message prints only when both are true.",
+      "explain": "and requires both sides to be true. or would let either one through.",
+      "hints": [
+        "Both conditions must hold at once.",
+        "& is for bits and sets, not for this."
+      ],
+      "deep": "and and or short-circuit: a and b never evaluates b when a is falsy, and they return the deciding operand, not a bool. That gives idioms like name = given or \"anon\". The bitwise & does not short-circuit and has different precedence, a classic bug in pandas conditions.",
+      "xp": 20,
+      "tags": [
+        "conditions",
+        "boolean"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "logged_in = True\nis_admin = True\nif logged_in {0} is_admin:\n    print(\"welcome, admin\")",
+      "blocks": [
+        {
+          "id": "and",
+          "code": "and",
+          "kind": "expr"
+        },
+        {
+          "id": "not",
+          "code": "not",
+          "kind": "expr"
+        },
+        {
+          "id": "or",
+          "code": "or",
+          "kind": "expr"
+        },
+        {
+          "id": "amp",
+          "code": "&",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "and"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l2.q1",
+      "tier": 3,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "for i in range(3):\n    print(i, end=\" \")",
+      "explain": "range(3) produces 0, 1, 2: it starts at 0 and stops before 3.",
+      "hints": [
+        "range starts at zero and never reaches its stop value."
+      ],
+      "deep": "range(stop) is a lazy sequence, not a list, so range(10**9) costs nothing until iterated. It supports len, indexing and membership in O(1). range(start, stop, step) mirrors slicing, and negative steps count down: range(3, 0, -1) is 3, 2, 1.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "range"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "0 1 2",
+        "3",
+        "0 1 2 3",
+        "1 2 3"
+      ],
+      "answer": [
+        "0 1 2"
+      ]
+    },
+    {
+      "id": "t3.l2.q2",
+      "tier": 3,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "for i in range(1, 7, 2):\n    print(i, end=\" \")",
+      "explain": "range(1, 7, 2) starts at 1, steps by 2, and stops before 7.",
+      "hints": [
+        "Three arguments: start, stop, step."
+      ],
+      "deep": "The step argument makes range the tool for every-nth patterns without an if inside the loop. When you need both the index and the item, do not write range(len(items)); write for i, item in enumerate(items), which is clearer and cannot go out of bounds.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "range"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "0 2 4",
+        "1 3 5 7",
+        "1 3 5",
+        "1 2 3 4 5"
+      ],
+      "answer": [
+        "1 3 5"
+      ]
+    },
+    {
+      "id": "t3.l2.q3",
+      "tier": 3,
+      "level": 2,
+      "type": "fill",
+      "prompt": "Fill the gap so every fruit is printed on its own line.",
+      "explain": "The loop variable is the name used inside the body, so it must be fruit.",
+      "hints": [
+        "Look at the name used inside the loop body.",
+        "Loop over the list directly; no range needed."
+      ],
+      "deep": "for x in iterable calls iter() once and next() until StopIteration. Iterating over the collection itself is the Pythonic form; indexes are only for when you need the position. The loop variable keeps its last value after the loop, a scoping quirk worth knowing.",
+      "xp": 20,
+      "tags": [
+        "loops"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "fruits = [\"apple\", \"pear\"]\nfor {0} in fruits:\n    print(fruit)",
+      "blocks": [
+        {
+          "id": "range",
+          "code": "range(fruits)",
+          "kind": "call"
+        },
+        {
+          "id": "i",
+          "code": "i",
+          "kind": "var"
+        },
+        {
+          "id": "fruits",
+          "code": "fruits",
+          "kind": "var"
+        },
+        {
+          "id": "fruit",
+          "code": "fruit",
+          "kind": "var"
+        }
+      ],
+      "answer": [
+        "fruit"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l2.q4",
+      "tier": 3,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "for i, ch in enumerate(\"ab\"):\n    print(i, ch)",
+      "explain": "enumerate yields (index, item) pairs starting from 0, and the loop unpacks them.",
+      "hints": [
+        "enumerate hands back two things per item, and the index comes first."
+      ],
+      "deep": "enumerate(iterable, start=0) is the idiom that replaces manual counters and range(len(x)). start=1 gives human-friendly numbering. It is lazy and works on any iterable, including files and generators, where len() would not even exist.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "enumerate"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "a 0 / b 1",
+        "a / b",
+        "1 a / 2 b",
+        "0 a / 1 b"
+      ],
+      "answer": [
+        "0 a / 1 b"
+      ]
+    },
+    {
+      "id": "t3.l2.q5",
+      "tier": 3,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "d = {\"a\": 1, \"b\": 2}\nfor k, v in d.items():\n    print(f\"{k}={v}\", end=\" \")",
+      "explain": "items() gives each key and value as a pair, unpacked into k and v.",
+      "hints": [
+        "items() yields pairs; the loop header takes them apart."
+      ],
+      "deep": "Looping over a dict directly gives keys; .items() gives (key, value) tuples, unpacked in the header. Never modify the dict's size while iterating it, that raises RuntimeError; iterate over list(d) or build a new dict instead.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "dicts"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "('a', 1) ('b', 2)",
+        "1 2",
+        "a b",
+        "a=1 b=2"
+      ],
+      "answer": [
+        "a=1 b=2"
+      ]
+    },
+    {
+      "id": "t3.l2.q6",
+      "tier": 3,
+      "level": 2,
+      "type": "order",
+      "prompt": "Order the lines so the program prints each name with its position, starting from 1.",
+      "explain": "Define the list, then loop with enumerate, then print inside the loop.",
+      "hints": [
+        "The indented line belongs inside the loop."
+      ],
+      "deep": "enumerate's start argument shifts only the numbering, not the iteration. It is the cleanest way to print 1-based lists to humans while keeping 0-based indexing in the code. Mixing the two conventions inside logic is a reliable source of off-by-one bugs.",
+      "xp": 15,
+      "tags": [
+        "loops",
+        "enumerate"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "for i, name in enumerate(names, start=1):",
+        "    print(i, name)",
+        "names = [\"Ada\", \"Linus\"]"
+      ],
+      "answer": [
+        "names = [\"Ada\", \"Linus\"]",
+        "for i, name in enumerate(names, start=1):",
+        "    print(i, name)"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l3.q1",
+      "tier": 3,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "n = 0\nwhile n < 3:\n    print(n, end=\" \")\n    n += 1",
+      "explain": "The loop runs while n is under 3 and n grows by one each time, so it prints 0, 1, 2 and stops.",
+      "hints": [
+        "Trace n: what is its value each time the condition is checked?"
+      ],
+      "deep": "while re-tests the condition before every iteration. The body must change something the condition reads or the loop never ends. Prefer for when the number of iterations is known; while is for wait-until conditions like polling and retry loops.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "while"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "1 2 3",
+        "0 1 2",
+        "It never stops",
+        "0 1 2 3"
+      ],
+      "answer": [
+        "0 1 2"
+      ]
+    },
+    {
+      "id": "t3.l3.q2",
+      "tier": 3,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What is wrong with this loop?",
+      "code": "n = 0\nwhile n < 3:\n    print(n)",
+      "explain": "Nothing in the body changes n, so n < 3 stays true and the loop never ends.",
+      "hints": [
+        "Look for the line that would move n toward 3."
+      ],
+      "deep": "An infinite loop is not always a bug (servers run while True:), but an accidental one hangs the program. In a REPL Ctrl-C raises KeyboardInterrupt. Every while loop deserves a one-line answer to: what makes the condition false?",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "while",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "while needs parentheses",
+        "Nothing, it prints 0 once",
+        "n should start at 1",
+        "n never changes, so the loop runs forever"
+      ],
+      "answer": [
+        "n never changes, so the loop runs forever"
+      ]
+    },
+    {
+      "id": "t3.l3.q3",
+      "tier": 3,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "for n in [1, 2, 3, 4, 5]:\n    if n == 3:\n        break\n    print(n, end=\" \")",
+      "explain": "break leaves the loop the moment n reaches 3, so only 1 and 2 were printed.",
+      "hints": [
+        "break exits immediately; nothing after it in that pass or later passes runs."
+      ],
+      "deep": "break exits the innermost loop only. To leave nested loops, put them in a function and return, or use a flag. A loop's else: clause runs only when no break happened, which is the tidy way to write search-and-not-found.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "break"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "1 2 3 4 5",
+        "3 4 5",
+        "1 2 3",
+        "1 2"
+      ],
+      "answer": [
+        "1 2"
+      ]
+    },
+    {
+      "id": "t3.l3.q4",
+      "tier": 3,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "for n in [1, 2, 3, 4, 5]:\n    if n % 2 == 0:\n        continue\n    print(n, end=\" \")",
+      "explain": "continue skips the rest of the body for even numbers, so only the odd ones reach print.",
+      "hints": [
+        "continue jumps straight to the next iteration."
+      ],
+      "deep": "continue is a readability tool: an early continue for the cases you skip keeps the main body flat instead of nested under an if. Many linters flag deeply nested loops; guard clauses with continue are the fix.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "continue"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "1 2 3 4 5",
+        "2 4",
+        "1 3 5",
+        "Nothing"
+      ],
+      "answer": [
+        "1 3 5"
+      ]
+    },
+    {
+      "id": "t3.l3.q5",
+      "tier": 3,
+      "level": 3,
+      "type": "fill",
+      "prompt": "Fill the gap so the loop stops when the user types quit.",
+      "explain": "break is the only way out of a while True loop from inside it.",
+      "hints": [
+        "You want to leave the loop, not skip to the next round.",
+        "return only works inside a function."
+      ],
+      "deep": "while True with a break is the standard event loop shape in Python. Python 3.8's walrus makes some of these one line: while (cmd := input(\"> \")) != \"quit\": print(cmd). Both are fine; the walrus form removes one level of nesting.",
+      "xp": 20,
+      "tags": [
+        "loops",
+        "while",
+        "break"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "while True:\n    cmd = input(\"> \")\n    if cmd == \"quit\":\n        {0}\n    print(cmd)",
+      "blocks": [
+        {
+          "id": "stop",
+          "code": "stop",
+          "kind": "expr"
+        },
+        {
+          "id": "continue",
+          "code": "continue",
+          "kind": "expr"
+        },
+        {
+          "id": "ret",
+          "code": "return",
+          "kind": "expr"
+        },
+        {
+          "id": "break",
+          "code": "break",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "break"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l3.q6",
+      "tier": 3,
+      "level": 3,
+      "type": "order",
+      "prompt": "Order the lines so the loop adds the numbers and prints 6.",
+      "explain": "Start the accumulator at 0 before the loop, add inside it, print after it.",
+      "hints": [
+        "The accumulator has to exist before the loop touches it.",
+        "The final print is not indented, so it runs once, after the loop."
+      ],
+      "deep": "This is the accumulator pattern, and sum(nums) does it in one built-in. Knowing the long form still matters: it becomes max tracking, running averages and groupby. The print outside the loop at the same indentation as for is the single most common indentation mistake.",
+      "xp": 15,
+      "tags": [
+        "loops",
+        "accumulator"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "for n in [1, 2, 3]:",
+        "    total += n",
+        "total = 0",
+        "print(total)"
+      ],
+      "answer": [
+        "total = 0",
+        "for n in [1, 2, 3]:",
+        "    total += n",
+        "print(total)"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l4.q1",
+      "tier": 3,
+      "level": 4,
+      "type": "fill",
+      "prompt": "Fill the gaps so the loop finds the largest number.",
+      "explain": "When the current number beats the best so far, it becomes the new best.",
+      "hints": [
+        "The comparison decides when to replace best.",
+        "What should best become when a bigger number shows up?"
+      ],
+      "deep": "Track-the-best is the shape behind max(), argmax and every leaderboard. Seed it with the first element, never with 0, or negative lists break. max(nums, key=len) generalises it; when you need the position as well, use enumerate and keep the index.",
+      "xp": 20,
+      "tags": [
+        "loops",
+        "accumulator"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "nums = [4, 9, 2]\nbest = nums[0]\nfor n in nums:\n    if n {0} best:\n        best = {1}\nprint(best)",
+      "blocks": [
+        {
+          "id": "best",
+          "code": "best",
+          "kind": "var"
+        },
+        {
+          "id": "lt",
+          "code": "<",
+          "kind": "expr"
+        },
+        {
+          "id": "n",
+          "code": "n",
+          "kind": "var"
+        },
+        {
+          "id": "gt",
+          "code": ">",
+          "kind": "expr"
+        },
+        {
+          "id": "nums",
+          "code": "nums",
+          "kind": "var"
+        }
+      ],
+      "answer": [
+        "gt",
+        "n"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l4.q2",
+      "tier": 3,
+      "level": 4,
+      "type": "fill",
+      "prompt": "Fill the gaps so evens holds only the even numbers.",
+      "explain": "An even number leaves no remainder when divided by 2, and append adds it to the list.",
+      "hints": [
+        "A remainder of what means even?",
+        "Lists grow with append; add belongs to sets, push to other languages."
+      ],
+      "deep": "The filter loop is what a list comprehension compresses: [n for n in nums if n % 2 == 0]. Learn the long form first because the comprehension is the same three parts rearranged: the expression, the loop, the condition.",
+      "xp": 20,
+      "tags": [
+        "loops",
+        "lists"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "nums = [1, 2, 3, 4]\nevens = []\nfor n in nums:\n    if n % 2 == {0}:\n        evens.{1}(n)\nprint(evens)",
+      "blocks": [
+        {
+          "id": "one",
+          "code": "1",
+          "kind": "expr"
+        },
+        {
+          "id": "append",
+          "code": "append",
+          "kind": "call"
+        },
+        {
+          "id": "zero",
+          "code": "0",
+          "kind": "expr"
+        },
+        {
+          "id": "add",
+          "code": "add",
+          "kind": "call"
+        },
+        {
+          "id": "push",
+          "code": "push",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "zero",
+        "append"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l4.q3",
+      "tier": 3,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "for ch, n in zip(\"ab\", [1, 2]):\n    print(f\"{ch}{n}\", end=\" \")",
+      "explain": "zip pairs items from both lists position by position: a with 1, b with 2.",
+      "hints": [
+        "zip walks two sequences side by side."
+      ],
+      "deep": "zip stops at the shortest input silently; Python 3.10 added zip(strict=True) to raise instead. Unzipping is zip(*pairs). itertools.zip_longest pads the shorter one. zip is lazy, so it is fine on huge inputs.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "zip"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "a b 1 2",
+        "An error",
+        "a1 b2",
+        "ab 12"
+      ],
+      "answer": [
+        "a1 b2"
+      ]
+    },
+    {
+      "id": "t3.l4.q4",
+      "tier": 3,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "How many times does print run?",
+      "code": "for x in range(2):\n    for y in range(3):\n        print(x, y)",
+      "explain": "The inner loop runs fully for each pass of the outer loop: 2 times 3.",
+      "hints": [
+        "Multiply the two loop lengths."
+      ],
+      "deep": "Nested loops multiply: two loops of n are O(n^2), which is fine at 100 and fatal at 100,000. Before nesting, ask if a dict or set lookup turns the inner loop into O(1). itertools.product(a, b) writes the nested pair as one loop.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "nested"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "5",
+        "6",
+        "3",
+        "2"
+      ],
+      "answer": [
+        "6"
+      ]
+    },
+    {
+      "id": "t3.l4.q5",
+      "tier": 3,
+      "level": 4,
+      "type": "order",
+      "prompt": "Order the lines to count how many words are longer than 3 letters.",
+      "explain": "Initialise the counter, loop, test each word, increment inside the test, print once at the end.",
+      "hints": [
+        "Each indentation level nests inside the line above it.",
+        "count += 1 is two levels deep: inside the if inside the for."
+      ],
+      "deep": "Counting with a condition compresses to sum(1 for w in words if len(w) > 3), or sum(len(w) > 3 for w in words) because True counts as 1. Both are generator expressions, so nothing is built in memory. Prefer the version your reader parses fastest.",
+      "xp": 15,
+      "tags": [
+        "loops",
+        "accumulator"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "print(count)",
+        "for w in [\"hi\", \"there\", \"you\", \"Pytor\"]:",
+        "    if len(w) > 3:",
+        "        count += 1",
+        "count = 0"
+      ],
+      "answer": [
+        "count = 0",
+        "for w in [\"hi\", \"there\", \"you\", \"Pytor\"]:",
+        "    if len(w) > 3:",
+        "        count += 1",
+        "print(count)"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l4.q6",
+      "tier": 3,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "nums = [1, 2]\nout = []\nfor n in nums:\n    out.append(n * 2)\nprint(out)",
+      "explain": "Each item is doubled and appended, so [1, 2] becomes [2, 4].",
+      "hints": [
+        "Follow one item through the loop body."
+      ],
+      "deep": "The map loop, transforming every item into a new list, is the other half of comprehensions: [n * 2 for n in nums]. When both a transform and a filter are needed, the comprehension still reads as one line where the loop needs four.",
+      "xp": 10,
+      "tags": [
+        "loops",
+        "lists"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[1, 2]",
+        "[2, 4]",
+        "[3, 6]",
+        "[1, 4]"
+      ],
+      "answer": [
+        "[2, 4]"
+      ]
+    },
+    {
+      "id": "t3.l5.q1",
+      "tier": 3,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "nums = [1, 2, 3]\nprint([n ** 2 for n in nums])",
+      "explain": "The comprehension squares each number and builds a new list.",
+      "hints": [
+        "Read it as: for each n, compute n ** 2, collect the results."
+      ],
+      "deep": "A list comprehension is a for loop turned inside out: expression first, loop second, optional condition third. It runs in its own scope, so the loop variable does not leak (unlike Python 2). CPython compiles it inline since 3.12 (PEP 709), making it slightly faster than the loop.",
+      "xp": 10,
+      "tags": [
+        "comprehensions"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[1, 4, 9]",
+        "[1, 2, 3]",
+        "[2, 4, 6]",
+        "9"
+      ],
+      "answer": [
+        "[1, 4, 9]"
+      ]
+    },
+    {
+      "id": "t3.l5.q2",
+      "tier": 3,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gaps so squares() returns each number squared.",
+      "explain": "Loop over the input, append the square of each item, return the list you built.",
+      "hints": [
+        "The loop walks the parameter, not the result.",
+        "Squared means to the power of two, and ** is the power operator.",
+        "Return the list you filled, not the last number."
+      ],
+      "deep": "This is the design canvas question, and the comprehension version is return [n ** 2 for n in nums]. Both allocate one list; the comprehension avoids the repeated method lookup of out.append, which is why it benchmarks faster. Returning out, not n, is the mistake this question catches.",
+      "xp": 25,
+      "tags": [
+        "comprehensions",
+        "functions",
+        "loops"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "def squares(nums):\n    out = []\n    for n in {0}:\n        out.append({1})\n    return {2}",
+      "blocks": [
+        {
+          "id": "sq",
+          "code": "n ** 2",
+          "kind": "expr",
+          "plain": "n squared"
+        },
+        {
+          "id": "len",
+          "code": "len(out)",
+          "kind": "call"
+        },
+        {
+          "id": "dbl",
+          "code": "n * 2",
+          "kind": "expr",
+          "plain": "n doubled"
+        },
+        {
+          "id": "out",
+          "code": "out",
+          "kind": "var"
+        },
+        {
+          "id": "n",
+          "code": "n",
+          "kind": "var"
+        },
+        {
+          "id": "nums",
+          "code": "nums",
+          "kind": "var"
+        }
+      ],
+      "answer": [
+        "nums",
+        "sq",
+        "out"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t3.l5.q3",
+      "tier": 3,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "nums = [1, 2, 3, 4]\nprint([n for n in nums if n % 2 == 0])",
+      "explain": "The if at the end keeps only items where the condition holds.",
+      "hints": [
+        "The trailing if filters; the expression at the front maps."
+      ],
+      "deep": "The filter clause runs per item and skips the expression when it is false. Do not confuse it with a conditional expression at the front: [a if c else b for x in xs] chooses between two values for every item, while [x for x in xs if c] drops items.",
+      "xp": 10,
+      "tags": [
+        "comprehensions"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[True, False, True, False]",
+        "[1, 3]",
+        "[2, 4]",
+        "[1, 2, 3, 4]"
+      ],
+      "answer": [
+        "[2, 4]"
+      ]
+    },
+    {
+      "id": "t3.l5.q4",
+      "tier": 3,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "pairs = [(\"a\", 1), (\"b\", 2)]\nprint({k: v for k, v in pairs})",
+      "explain": "Braces with key: value inside the comprehension build a dict.",
+      "hints": [
+        "Curly braces and a colon between key and value."
+      ],
+      "deep": "Dict comprehensions build lookups in one line: {user.id: user for user in users}. The set comprehension {x for x in xs} is the same syntax without the colon. Both keep the last value for a repeated key, silently.",
+      "xp": 10,
+      "tags": [
+        "comprehensions",
+        "dicts"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "An error",
+        "{'a', 'b'}",
+        "[('a', 1), ('b', 2)]",
+        "{'a': 1, 'b': 2}"
+      ],
+      "answer": [
+        "{'a': 1, 'b': 2}"
+      ]
+    },
+    {
+      "id": "t3.l5.q5",
+      "tier": 3,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What is the difference between the two lines?",
+      "code": "a = sum([n * n for n in range(10**6)])\nb = sum(n * n for n in range(10**6))",
+      "explain": "Square brackets build a full list. Plain parentheses make a generator that yields one value at a time, which sum consumes without storing them all.",
+      "hints": [
+        "Brackets allocate; parentheses stream."
+      ],
+      "deep": "Generator expressions (PEP 289) are the memory-safe default when the result is consumed once: sum, max, any, all, join. They cannot be indexed or reused. In CPython the list version is sometimes marginally faster for small inputs, and irrelevant for large ones that would not fit anyway.",
+      "xp": 10,
+      "tags": [
+        "comprehensions",
+        "generators"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "They are identical in every way",
+        "The first builds a list in memory; the second computes lazily as sum consumes it",
+        "The first is lazy, the second is not",
+        "The second is a syntax error"
+      ],
+      "answer": [
+        "The first builds a list in memory; the second computes lazily as sum consumes it"
+      ]
+    },
+    {
+      "id": "t3.l5.q6",
+      "tier": 3,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gap so the check passes only when every score is 50 or more.",
+      "explain": "all() is True only when every item is true. any() would pass if just one score qualified.",
+      "hints": [
+        "Every score must qualify, not just one.",
+        "The function takes an iterable of booleans."
+      ],
+      "deep": "all() and any() short-circuit, so pass them a generator, never a list, and they stop at the first decisive item. all([]) is True (vacuous truth) and any([]) is False, which trips people up on empty inputs. They are the readable form of a flag-and-loop.",
+      "xp": 20,
+      "tags": [
+        "comprehensions",
+        "generators",
+        "boolean"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "scores = [70, 55, 90]\nif {0}(s >= 50 for s in scores):\n    print(\"all passed\")",
+      "blocks": [
+        {
+          "id": "all",
+          "code": "all",
+          "kind": "call"
+        },
+        {
+          "id": "sum",
+          "code": "sum",
+          "kind": "call"
+        },
+        {
+          "id": "any",
+          "code": "any",
+          "kind": "call"
+        },
+        {
+          "id": "max",
+          "code": "max",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "all"
+      ],
+      "accept": []
+    }
+  ]
+}

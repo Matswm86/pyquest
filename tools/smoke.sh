@@ -33,9 +33,17 @@ adb pull /sdcard/launch2.png "$OUT/launch2.png" >/dev/null 2>&1 || true
 
 # The view hierarchy is the assertion that does not depend on the GPU. Compose
 # publishes its text through accessibility semantics, so real rendered content
-# shows up here as real strings.
+# shows up here as real strings. The track is a lazy list, so the lower tiers
+# only exist once scrolled into view: dump, swipe up, dump again, and check
+# both. Compose needs a moment after the swipe before the semantics settle.
 adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1 || true
 adb pull /sdcard/ui.xml "$OUT/ui.xml" >/dev/null 2>&1 || true
+adb shell input swipe 540 1900 540 500 300 >/dev/null 2>&1 || true
+sleep 3
+adb shell uiautomator dump /sdcard/ui2.xml >/dev/null 2>&1 || true
+adb pull /sdcard/ui2.xml "$OUT/ui2.xml" >/dev/null 2>&1 || true
+adb exec-out screencap -p > "$OUT/scrolled.png" 2>/dev/null || true
+cat "$OUT/ui.xml" "$OUT/ui2.xml" > "$OUT/ui_all.xml" 2>/dev/null || true
 
 if grep -qE "FATAL EXCEPTION|AndroidRuntime: .*(Exception|Error)" "$OUT/logcat.txt"; then
     echo "::error::App crashed at launch"
@@ -57,15 +65,15 @@ fi
 # Strings the track screen must be showing. If Compose composed but painted
 # nothing, or the curriculum failed to load, these are missing.
 MISSING=0
-for TEXT in "PyQuest" "THE TRACK" "Hello, world" "AI consultancy sims"; do
-    if ! grep -qF "$TEXT" "$OUT/ui.xml"; then
+for TEXT in "PyQuest" "THE TRACK" "Hello, world" "Types & collections" "LLM engineering" "AI consultancy sims" "Pytor"; do
+    if ! grep -qF "$TEXT" "$OUT/ui_all.xml"; then
         echo "::error::The track screen is missing the text: $TEXT"
         MISSING=1
     fi
 done
 if [ "$MISSING" -ne 0 ]; then
     echo "--- view hierarchy ---"
-    head -c 4000 "$OUT/ui.xml"
+    head -c 4000 "$OUT/ui_all.xml"
     exit 1
 fi
 

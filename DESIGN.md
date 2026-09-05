@@ -1,14 +1,15 @@
 # PyQuest: Android Python quiz game
 
-**Status**: 2026-09-04. Scaffold built, CI green, APK published.
-Tier 1 is complete at 30 questions; tier 10 ships a 6-question preview so the top
-of the ladder is playable rather than only described. Tiers 2 to 9 are unwritten.
+**Status**: 2026-09-05. All eight tiers written (231 questions), Pytor active in
+the app, CI green with an emulator smoke test, APK on the rolling release.
 **One line**: a native Android game that walks a player from `print("hello")` to
 scoping and pricing an AI-engineering consultancy job, using multiple-choice cards
-and Scratch-style drag blocks the whole way up.
+and Scratch-style drag blocks the whole way up, with Pytor the snake as an
+expert tutor at every step.
 
-Working name is PyQuest, and it shares the Pytor snake mascot with the PyLearn web
-app so the two read as siblings rather than competitors.
+Pytor is the mascot and tutor shared with the PyLearn web app, so the two read as
+siblings rather than competitors. Inside PyQuest he is deliberately the expert
+version: see section 8.
 
 ## 1. How this differs from PyLearn
 
@@ -20,7 +21,7 @@ teaches you to recognise correct code and correct architecture fast.
 
 The two share a mascot and a difficulty vocabulary, nothing else. No shared code.
 
-## 2. The central design idea: one block system, ten tiers
+## 2. The central design idea: one block system, eight tiers
 
 The drag-block metaphor is not just for beginners. The same interaction scales:
 
@@ -28,8 +29,8 @@ The drag-block metaphor is not just for beginners. The same interaction scales:
 |------|----------|---------|
 | 1-2  | tokens   | `print` `(` `"hello"` `)` |
 | 3-5  | statements | `if x > 5:` / `return total` / `except ValueError:` |
-| 6-8  | code units | a `@dataclass` field, a pandas method chain step |
-| 9-10 | pipeline components | `chunk` -> `embed` -> `upsert` -> `retrieve` -> `rerank` -> `generate` |
+| 5-6  | code units | a `@dataclass` field, a pandas method chain step |
+| 7-8  | pipeline components | `chunk` -> `embed` -> `upsert` -> `retrieve` -> `rerank` -> `generate` |
 
 That is the whole reason the game holds together from hello-world to consultancy:
 at every tier the player is doing the same physical action (order these pieces
@@ -180,3 +181,54 @@ Boss round with a timer, Stats with per-tier mastery bars, Settings.
 
 Tiers 7 and 8 are where this app earns its existence, and they are also the part
 that will date fastest, so their JSON needs a `reviewed` date field per question.
+
+All seven steps are done as of 2026-09-05; the Room step was replaced by the
+SharedPreferences blob described above.
+
+## 8. Pytor inside the game
+
+Pytor is not decoration. He is the reason a player who is stuck does not quit,
+and the reason the game can claim to teach rather than test. Four surfaces, in
+the order a player meets them:
+
+1. **Track screen.** One coaching line chosen from the player's state, in strict
+   priority: a streak that lapses at midnight, then the tag they keep missing
+   (seen 3+ times, missed over 25%), then the daily goal, then the next
+   unmastered level. Tapping the line opens the tier it points at.
+2. **Every question.** An "Ask Pytor" chip opens a bottom sheet with the
+   question's `hints`, one at a time, mildest first, never the answer. After the
+   check the same sheet shows the `deep` note: the mechanism, the idiom, the
+   trap. Hints used are counted and shown on the level-cleared screen, not
+   penalised; a penalty would teach players not to ask.
+3. **The Codex.** 95 entries across Python, software engineering and AI/LLM
+   engineering, bundled in the APK and searched offline with a small weighted
+   scorer (title 8, tag 5, prefix 3/2, body up to 3, all-terms bonus 6). Every
+   entry is reachable by its own title; the unit test pins that.
+4. **Chat.** The tutor service behind PyLearn, called in its `quest` mode with
+   the game's context (tier, level, the current question, weak tags). The
+   persona prompt makes Pytor a world-class expert who leads with the answer,
+   cites the mechanism, and never invents a name or a number. On any failure,
+   network, 429, timeout, the chat falls back to the Codex and says so.
+
+**Why both offline and online.** The app has to work on a bus. The Codex and the
+hints are what Pytor knows without a signal; the chat is what he knows with one.
+Neither replaces the other, and the settings toggle lets a player keep him
+offline entirely.
+
+**Why hints are authored, not generated.** A generated hint can leak the answer
+or be wrong; an authored one is reviewed with the question. The validator
+refuses a hint that quotes the correct multiple-choice option verbatim.
+
+**Shuffling.** The first draft of the corpus had the correct option at position
+A in 151 of 152 multiple-choice questions and every `order` tray already in
+answer order. The authoring step now shuffles options, trays and block lists
+with a seed per question, and the session shuffles multiple-choice options again
+at display time so a requeued miss cannot be answered by position.
+
+**Bugs fixed in the same pass.** The header counter jumped back to 1 after a
+requeued miss (it now counts distinct solved questions); the system back button
+quit the app from a question (BackHandler); the daily ring and streak read
+stored fields with no date attached and showed stale values on a new day (both
+are now functions of today's date, with unit tests); and the level-done screen
+said "Tier cleared" after every level.
+

@@ -1,12 +1,12 @@
 # PyQuest
 
 An Android game that walks you from `print("hello")` to scoping and pricing an
-AI-engineering consultancy job, using multiple-choice cards and Scratch-style
-drag blocks the whole way up.
+AI-engineering consultancy job, with Pytor the snake as your expert tutor the
+whole way up. Multiple-choice cards and Scratch-style drag blocks; the same
+placement move carries you from syntax tokens at tier 1 to pipeline components
+at tier 8.
 
-The design lives in [DESIGN.md](DESIGN.md). The short version: the same physical
-action, dragging pieces into the right order, carries the player from syntax
-tokens at tier 1 to pipeline components at tier 10.
+The design lives in [DESIGN.md](DESIGN.md).
 
 ## 📲 Download
 
@@ -22,28 +22,48 @@ releases page.
 Debug-signed. Reinstalling over a build with a different signature means
 uninstalling the old one first.
 
+## Pytor
+
+Pytor is the tutor from [PyLearn](https://pytor.mwmai.no/), and inside PyQuest he
+is an expert rather than a beginner's guide: core-developer-level Python, senior
+software engineering, and production-level AI and LLM engineering. He shows up
+in four places:
+
+| Where | What he does | Needs network |
+|-------|--------------|---------------|
+| Track screen | One line on what to do next: a streak about to lapse, the tag you keep missing, the next level | no |
+| Every question | Progressive hints that never give the answer, then the expert note after you check | no |
+| Pytor tab, Codex | 95 dense reference notes across Python, software engineering and AI/LLMs, searchable offline | no |
+| Pytor tab, Chat | A conversation with the expert, with the game's context attached | yes |
+
+Chat talks to the tutor service behind PyLearn in its `quest` mode; the model
+key stays on the server. When there is no connection, or the service is down or
+busy, Pytor answers from the Codex instead and says so. You can turn the online
+half off in the You tab.
+
 ## State
 
 | Piece | Status |
 |-------|--------|
-| Gradle + Compose app, CI build, rolling APK release | shipped |
+| Gradle + Compose app, CI build, emulator smoke test, rolling APK release | shipped |
 | `mcq`, `blocks`, `order`, `fill`, `pipeline` question types | shipped |
-| Accordion track screen, daily goal ring, rank, streak | shipped |
-| Leitner spaced repetition, first-try accuracy, XP | shipped |
-| Tier 1 "Hello, world" | 32 questions, 5 levels |
-| Tier 8 "AI consultancy sims" | 7-question capstone preview, level 1 |
-| Tiers 2 to 7 | not written yet |
+| Track, Pytor and You tabs; hint sheet; expert notes; review misses | shipped |
+| Leitner spaced repetition, first-try accuracy, weak-tag tracking, XP, streak | shipped |
+| Tiers 1 to 7 | 30 to 32 questions each, 5 levels each |
+| Tier 8 "AI consultancy sims" | 19 questions, 3 levels, two pipeline sims |
+| Pytor's Codex | 95 entries: 32 Python, 30 engineering, 33 AI/LLM |
 
-Tier 8 is deliberately in the build already so the top of the ladder is playable
-on day one, not just described in a document. Its pipeline question is the one
-place the game stops testing recall: you wire four stages of a ticket-routing
-system while the latency and cost readouts move against the client's budget.
+231 questions in total. Every one carries hints and an expert note, and every
+multiple-choice option order and block tray is shuffled at authoring time so
+nothing can be learnt by position.
 
 ## Building
 
 Every APK is built in GitHub Actions, which also publishes it to the rolling
 `latest` pre-release and rewrites the download link above to match. Pushing to
-`main` is the whole release process.
+`main` is the whole release process. CI validates the curriculum and the Codex,
+runs the unit tests, builds the APK, then boots it on an emulator and checks
+that the track actually rendered.
 
 ```bash
 gh workflow run build-android.yml            # trigger a build by hand
@@ -60,29 +80,34 @@ Questions are data, never Kotlin. Edit
 
 ```bash
 python3 tools/validate_curriculum.py
+python3 tools/validate_codex.py
 ```
 
 The validator refuses an answer that uses a block the tray does not supply, an
 `order` question that leaves tray blocks unused, a multiple-choice answer that is
-not among the options, a duplicate id, a level gap, and an explanation shorter
-than 40 characters. CI runs it before the APK job starts.
+not among the options, a duplicate id, a level gap, an explanation shorter than
+40 characters, a question without hints, a hint that quotes the correct option,
+and a question without a `deep` note of at least 60 characters. CI runs both
+validators before the APK job starts.
 
 ### Question shape
 
 ```json
 {
-  "id": "t10.l1.q4",
-  "tier": 10,
-  "level": 1,
-  "type": "blocks",
-  "prompt": "Order the ingestion pipeline. One block belongs to query time.",
-  "tray": ["embed chunks", "split into chunks", "re-rank results", "load the PDF", "upsert to the vector store"],
-  "answer": ["load the PDF", "split into chunks", "embed chunks", "upsert to the vector store"],
+  "id": "t7.l3.q2",
+  "tier": 7,
+  "level": 3,
+  "type": "order",
+  "prompt": "Order the query-time RAG pipeline.",
+  "tray": ["re-rank the candidates", "retrieve the top candidates", "rewrite the question", "generate with citations", "check every citation"],
+  "answer": ["rewrite the question", "retrieve the top candidates", "re-rank the candidates", "generate with citations", "check every citation"],
   "accept": [],
-  "explain": "Re-ranking scores candidates that came back from a search, so it needs a query.",
-  "xp": 45,
-  "tags": ["rag", "pipeline"],
-  "reviewed": "2026-09-04"
+  "explain": "Rewrite, retrieve wide, re-rank narrow, generate, verify.",
+  "hints": ["Re-ranking needs candidates to rank, so it follows retrieval."],
+  "deep": "Retrieve 20 to 50 candidates cheaply, then re-rank to the best 5 to 8 with a cross-encoder...",
+  "xp": 25,
+  "tags": ["rag", "pipelines"],
+  "reviewed": "2026-09-05"
 }
 ```
 
@@ -90,12 +115,15 @@ than 40 characters. CI runs it before the APK job starts.
 order, distractors allowed), `order` (every tray block must be used), `fill`
 (blocks go into `{0}`-style gaps in `template`) or `pipeline` (blocks are stages
 with `ms` and `cost`, wired against the budget in `brief`). `accept` holds
-alternative orderings that are also correct.
+alternative orderings that are also correct. `hints` are progressive, mildest
+first, at most three. `deep` is Pytor's note: the mechanism, the idiom, the trap.
 
-The validator refuses a `fill` whose gaps are not numbered 0..N, a typed question
-with no distractor in the tray, and a `pipeline` whose own answer breaches the
-budget its brief states, because a capstone that fails its own brief teaches the
-opposite of the lesson.
+### Codex shape
+
+`app/src/main/assets/codex/codex.json` holds `entries`, each with `id`, `domain`
+(`python`, `engineering` or `ai`), `title`, `tags`, a one-sentence `summary`, a
+`body` of at least 200 characters, optional `code`, and `related` ids that must
+exist. Search is offline and weights title and tags over body text.
 
 ## Why there is no Python interpreter in the app
 

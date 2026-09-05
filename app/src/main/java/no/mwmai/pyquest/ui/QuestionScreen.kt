@@ -3,35 +3,34 @@ package no.mwmai.pyquest.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import no.mwmai.pyquest.model.Question
 import no.mwmai.pyquest.model.QuestionType
 import no.mwmai.pyquest.model.Tier
 import no.mwmai.pyquest.ui.theme.CodeStyle
@@ -45,20 +44,36 @@ import no.mwmai.pyquest.ui.theme.Pal
  * single button. That is what keeps the game inside a 412 x 892 phone, because
  * the button a player needs is never below the fold no matter how long the code
  * or the explanation runs.
+ *
+ * Pytor sits in the header. Before the check he hands out hints; after it he
+ * has the expert note. Both live in a bottom sheet so the footer stays the
+ * same height whatever he has to say.
  */
 @Composable
 fun QuestionScreen(
     tier: Tier,
+    level: Int,
     session: QuizSession,
     plainLabels: Boolean,
     onBack: () -> Unit,
+    onReview: () -> Unit,
+    onAskPytor: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val question = session.current
     if (question == null) {
-        TierClearedScreen(tier = tier, session = session, onBack = onBack, modifier = modifier)
+        LevelClearedScreen(
+            tier = tier,
+            level = level,
+            session = session,
+            onClaim = onBack,
+            onReview = onReview,
+            modifier = modifier,
+        )
         return
     }
+
+    var sheetOpen by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -67,10 +82,17 @@ fun QuestionScreen(
             .windowInsetsPadding(WindowInsets.systemBars),
     ) {
         QuestionHeader(
-            tierLabel = "TIER ${tier.tier} · ${tier.title.uppercase()}",
-            done = session.total - session.remaining + 1,
+            tierLabel = if (session.isReview) {
+                "REVIEW · TIER ${tier.tier}"
+            } else {
+                "TIER ${tier.tier} · LEVEL $level · ${tier.title.uppercase()}"
+            },
+            solved = session.solved,
             total = session.total,
+            hintsAvailable = question.hints.size - session.hintsShown,
+            checked = session.checked,
             onClose = onBack,
+            onPytor = { sheetOpen = true },
         )
 
         Column(
@@ -88,26 +110,18 @@ fun QuestionScreen(
 
             question.code?.let { snippet ->
                 Spacer(Modifier.height(14.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Pal.Ground, RoundedCornerShape(12.dp))
-                        .horizontalScroll(rememberScrollState())
-                        .padding(14.dp),
-                ) {
-                    Text(text = snippet, style = CodeStyle, color = Pal.Text, softWrap = false)
-                }
+                CodeBlock(snippet)
             }
 
             Spacer(Modifier.height(18.dp))
 
             when (question.type) {
                 QuestionType.MCQ -> McqAnswer(
-                    options = question.options,
-                    selected = session.selection.firstOrNull(),
-                    correctIndex = question.options.indexOf(question.answer.firstOrNull() ?: ""),
+                    options = session.displayedOptions,
+                    selected = session.selectedDisplayIndex,
+                    correctIndex = session.correctDisplayIndex,
                     checked = session.checked,
-                    onSelect = session::select,
+                    onSelect = session::selectDisplayed,
                 )
 
                 QuestionType.BLOCKS, QuestionType.ORDER -> BlocksAnswer(
@@ -142,8 +156,22 @@ fun QuestionScreen(
             checked = session.checked,
             correct = session.lastCorrect,
             explain = question.explain,
+            hasNote = !question.deep.isNullOrBlank(),
             enabled = session.checked || session.canSubmit,
             onClick = { if (session.checked) session.next() else session.submit() },
+            onNote = { sheetOpen = true },
+        )
+    }
+
+    if (sheetOpen) {
+        PytorSheet(
+            question = question,
+            session = session,
+            onDismiss = { sheetOpen = false },
+            onOpenChat = {
+                sheetOpen = false
+                onAskPytor()
+            },
         )
     }
 }
@@ -151,9 +179,12 @@ fun QuestionScreen(
 @Composable
 private fun QuestionHeader(
     tierLabel: String,
-    done: Int,
+    solved: Int,
     total: Int,
+    hintsAvailable: Int,
+    checked: Boolean,
     onClose: () -> Unit,
+    onPytor: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp)) {
         Spacer(Modifier.height(10.dp))
@@ -168,10 +199,9 @@ private fun QuestionHeader(
                 Text("×", style = MaterialTheme.typography.titleLarge, color = Pal.Faint)
             }
             Spacer(Modifier.width(12.dp))
-            // A plain "4 / 5" beats a progress bar here: it says how much is left
-            // in a form a player can hold in their head.
+            // Distinct questions solved. Never goes backwards, even after a miss.
             Text(
-                text = "$done / $total",
+                text = "$solved / $total",
                 style = CodeStyle,
                 color = Pal.Lime,
                 modifier = Modifier
@@ -179,6 +209,26 @@ private fun QuestionHeader(
                     .padding(horizontal = 10.dp, vertical = 4.dp),
             )
             Spacer(Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .background(Pal.Card, RoundedCornerShape(20.dp))
+                    .border(1.dp, Pal.LimeEdge, RoundedCornerShape(20.dp))
+                    .clickable(onClick = onPytor)
+                    .padding(start = 4.dp, end = 12.dp, top = 4.dp, bottom = 4.dp),
+            ) {
+                PytorAvatar(size = 26.dp)
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    when {
+                        checked -> "Pytor's note"
+                        hintsAvailable > 0 -> "Ask Pytor"
+                        else -> "Pytor"
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Pal.Lime,
+                )
+            }
         }
         Spacer(Modifier.height(12.dp))
         Text(tierLabel, style = MaterialTheme.typography.labelMedium, color = Pal.Faint)
@@ -191,8 +241,10 @@ private fun QuestionFooter(
     checked: Boolean,
     correct: Boolean,
     explain: String,
+    hasNote: Boolean,
     enabled: Boolean,
     onClick: () -> Unit,
+    onNote: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -216,27 +268,34 @@ private fun QuestionFooter(
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(Modifier.height(5.dp))
-                Text(explain, style = MaterialTheme.typography.bodyMedium, color = Pal.Muted)
+                Text(
+                    inlineCode(explain),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Pal.Muted,
+                    maxLines = 4,
+                )
+                if (hasNote) {
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable(onClick = onNote),
+                    ) {
+                        PytorAvatar(size = 20.dp)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Read Pytor's note",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Pal.Lime,
+                        )
+                    }
+                }
             }
             Spacer(Modifier.height(12.dp))
         }
-        Button(
+        PrimaryButton(
+            text = if (checked) "Continue" else "Check",
             onClick = onClick,
             enabled = enabled,
-            shape = RoundedCornerShape(13.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Pal.Lime,
-                contentColor = Pal.Screen,
-                disabledContainerColor = Pal.Chip,
-                disabledContentColor = Pal.Locked,
-            ),
-            modifier = Modifier.fillMaxWidth().height(52.dp),
-        ) {
-            Text(
-                if (checked) "Continue" else "Check",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-        }
+        )
     }
 }

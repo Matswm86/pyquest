@@ -2,6 +2,14 @@
   "tier": 1,
   "title": "Hello, world",
   "subtitle": "print, strings, comments and your first variable",
+  "lessons": [
+    "print()",
+    "strings",
+    "comments",
+    "variables",
+    "f-strings"
+  ],
+  "pytor": "Every Python program is print(\"hello\") with more steps. Learn to read the shape of a call here and tier 8 will feel familiar.",
   "questions": [
     {
       "id": "t1.l1.q1",
@@ -10,10 +18,10 @@
       "type": "mcq",
       "prompt": "Which line prints the word hello?",
       "options": [
+        "printf(\"hello\")",
         "print(\"hello\")",
         "print hello",
-        "echo(\"hello\")",
-        "printf(\"hello\")"
+        "echo(\"hello\")"
       ],
       "answer": [
         "print(\"hello\")"
@@ -23,7 +31,12 @@
       "tags": [
         "print"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Python calls a function by writing its name and then parentheses.",
+        "Two of these names come from other languages entirely."
+      ],
+      "deep": "print is a built-in function, not a statement. In Python 2 it was a statement, which is why you still see print \"x\" in old tutorials; Python 3 made it a function so it could take keyword arguments like sep and end and be passed around like any other object."
     },
     {
       "id": "t1.l1.q2",
@@ -33,9 +46,9 @@
       "prompt": "Build the line that prints hello.",
       "tray": [
         "print",
-        "(",
+        ")",
         "\"hello\"",
-        ")"
+        "("
       ],
       "answer": [
         "print",
@@ -50,7 +63,12 @@
         "print",
         "syntax"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Say it out loud: name, open, value, close.",
+        "The quotes are part of the value block, not separate pieces."
+      ],
+      "deep": "A call is name + ( + arguments + ). The parser reads print, sees the opening paren, collects everything up to the matching close as arguments, and only then runs the function. Unbalanced parens are the most common first error in any Python file."
     },
     {
       "id": "t1.l1.q3",
@@ -59,10 +77,10 @@
       "type": "mcq",
       "prompt": "What appears on screen when this runs?",
       "options": [
+        "nothing",
         "Pytor",
         "\"Pytor\"",
-        "print(\"Pytor\")",
-        "nothing"
+        "print(\"Pytor\")"
       ],
       "answer": [
         "Pytor"
@@ -73,8 +91,12 @@
         "print",
         "strings"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(\"Pytor\")"
+      "reviewed": "2026-09-05",
+      "code": "print(\"Pytor\")",
+      "hints": [
+        "Ask yourself what the quotes are for: are they part of the message or part of the code?"
+      ],
+      "deep": "Quotes are delimiters for the parser, they tell it where a string literal starts and ends. The str object that gets created holds only the characters between them. repr() shows the quotes back to you, print() shows the object's str() form, which does not."
     },
     {
       "id": "t1.l1.q4",
@@ -83,10 +105,10 @@
       "type": "mcq",
       "prompt": "Python cares about capital letters. Which one runs?",
       "options": [
-        "print(\"hi\")",
         "Print(\"hi\")",
-        "PRINT(\"hi\")",
-        "Prnt(\"hi\")"
+        "Prnt(\"hi\")",
+        "print(\"hi\")",
+        "PRINT(\"hi\")"
       ],
       "answer": [
         "print(\"hi\")"
@@ -97,7 +119,11 @@
         "print",
         "case-sensitivity"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Python matches names exactly, letter for letter."
+      ],
+      "deep": "Identifiers are case-sensitive because names are looked up as exact keys in a dictionary (the namespace). Print and print are two different keys; the second exists as a built-in and the first does not, so Python raises NameError. PEP 8 reserves CapWords for class names."
     },
     {
       "id": "t1.l1.q5",
@@ -106,10 +132,10 @@
       "type": "blocks",
       "prompt": "Build the line that prints Good morning.",
       "tray": [
-        "print",
         "(",
         "\"Good morning\"",
-        ")"
+        ")",
+        "print"
       ],
       "answer": [
         "print",
@@ -123,7 +149,11 @@
       "tags": [
         "print"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Same shape as the hello line; only the text inside the quotes changes."
+      ],
+      "deep": "A string literal can hold any characters, spaces included, and the space inside the quotes is data, not syntax. Whitespace only matters to Python outside quotes, where indentation and line breaks carry meaning."
     },
     {
       "id": "t1.l1.q6",
@@ -132,10 +162,10 @@
       "type": "order",
       "prompt": "Put the steps of running your first program in order.",
       "tray": [
-        "write the code",
         "save the file",
         "run the file",
-        "read the output"
+        "read the output",
+        "write the code"
       ],
       "answer": [
         "write the code",
@@ -149,7 +179,11 @@
       "tags": [
         "workflow"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Nothing can run before it exists on disk, and nothing can be read before it runs."
+      ],
+      "deep": "This edit-save-run-read loop is the whole job in miniature. Professionals shrink the loop: an editor that runs on save, tests that run on every change, a REPL for one-liners. The faster the loop, the faster you learn what the code actually does."
     },
     {
       "id": "t1.l2.q1",
@@ -159,9 +193,9 @@
       "prompt": "Which of these is NOT a valid Python string?",
       "options": [
         "'hello'",
-        "\"hello\"",
+        "\"hello'",
         "\"\"\"hello\"\"\"",
-        "\"hello'"
+        "\"hello\""
       ],
       "answer": [
         "\"hello'"
@@ -172,7 +206,12 @@
         "strings",
         "quotes"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "A string has to close with the same kind of quote it opened with.",
+        "Look at the first and last character of each option."
+      ],
+      "deep": "Python accepts single, double and triple quotes, but the closing delimiter must match the opening one. Triple quotes let a string span lines. A mismatched pair leaves the string unterminated and the parser reports a SyntaxError at end of line."
     },
     {
       "id": "t1.l2.q2",
@@ -181,11 +220,11 @@
       "type": "blocks",
       "prompt": "Build a line that prints:  it's fine",
       "tray": [
-        "print",
+        ")",
         "(",
+        "print",
         "\"it's fine\"",
-        "'it's fine'",
-        ")"
+        "'it's fine'"
       ],
       "answer": [
         "print",
@@ -200,7 +239,12 @@
         "strings",
         "quotes"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "The text contains an apostrophe. Which quote style leaves it alone?",
+        "One tray block would end the string early at the apostrophe."
+      ],
+      "deep": "Pick the delimiter the text does not contain and you never need a backslash. That is the idiomatic choice over escaping: \"it's\" beats 'it\\'s'. When the text has both kinds, triple quotes or a backslash escape are the fallbacks."
     },
     {
       "id": "t1.l2.q3",
@@ -222,7 +266,11 @@
       "tags": [
         "comments"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Python skips it entirely. Who is the comment for, then?"
+      ],
+      "deep": "The tokenizer drops everything from # to the end of the line, so a comment has zero runtime cost. Good comments explain why, not what: the code already says what it does. A comment that restates the line is noise that goes stale."
     },
     {
       "id": "t1.l2.q4",
@@ -231,10 +279,10 @@
       "type": "mcq",
       "prompt": "How many lines does this program print?",
       "options": [
-        "1",
         "2",
+        "0",
         "3",
-        "0"
+        "1"
       ],
       "answer": [
         "1"
@@ -244,8 +292,12 @@
       "tags": [
         "comments"
       ],
-      "reviewed": "2026-09-04",
-      "code": "# print(\"first\")\nprint(\"second\")"
+      "reviewed": "2026-09-05",
+      "code": "# print(\"first\")\nprint(\"second\")",
+      "hints": [
+        "Count the lines that are not comments."
+      ],
+      "deep": "Only executable lines produce output. Comments and blank lines are stripped before the bytecode compiler sees them, so a file full of comments compiles to nothing. Docstrings are different: a bare string is an expression statement and does survive to runtime."
     },
     {
       "id": "t1.l2.q5",
@@ -254,8 +306,8 @@
       "type": "order",
       "prompt": "Put a comment above the code it explains.",
       "tray": [
-        "# greet the user",
-        "print(\"hello\")"
+        "print(\"hello\")",
+        "# greet the user"
       ],
       "answer": [
         "# greet the user",
@@ -268,7 +320,11 @@
         "comments",
         "style"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "A comment describes the line that follows it."
+      ],
+      "deep": "Convention, not syntax: Python does not care where a comment sits. Humans do. PEP 8 puts block comments above the code they describe, indented to match, and keeps inline comments two spaces after the code and rare."
     },
     {
       "id": "t1.l2.q6",
@@ -277,10 +333,10 @@
       "type": "mcq",
       "prompt": "This line has a mistake. What is it?",
       "options": [
-        "The closing quote is missing",
-        "print should be capitalised",
         "It needs a semicolon",
-        "Nothing is wrong"
+        "Nothing is wrong",
+        "print should be capitalised",
+        "The closing quote is missing"
       ],
       "answer": [
         "The closing quote is missing"
@@ -291,8 +347,12 @@
         "errors",
         "quotes"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(\"hello)"
+      "reviewed": "2026-09-05",
+      "code": "print(\"hello)",
+      "hints": [
+        "Count the quote marks on the line."
+      ],
+      "deep": "An unterminated string is caught by the tokenizer before any code runs, so the whole file fails, even the lines that were fine. Python 3.10 and later say exactly that: unterminated string literal, with the line number."
     },
     {
       "id": "t1.l3.q1",
@@ -302,9 +362,9 @@
       "prompt": "Which word appears first on screen?",
       "options": [
         "one",
+        "They appear at the same time",
         "two",
-        "three",
-        "They appear at the same time"
+        "three"
       ],
       "answer": [
         "one"
@@ -314,8 +374,12 @@
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(\"one\")\nprint(\"two\")\nprint(\"three\")"
+      "reviewed": "2026-09-05",
+      "code": "print(\"one\")\nprint(\"two\")\nprint(\"three\")",
+      "hints": [
+        "Python reads a file the way you read a page."
+      ],
+      "deep": "Execution is sequential: the interpreter compiles the file to bytecode and then runs it top to bottom, one statement at a time. Only control flow (loops, conditions, function calls) changes that order, and none of it appears here."
     },
     {
       "id": "t1.l3.q2",
@@ -324,8 +388,8 @@
       "type": "order",
       "prompt": "Order the lines so the output reads: ready / steady / go",
       "tray": [
-        "print(\"go\")",
         "print(\"ready\")",
+        "print(\"go\")",
         "print(\"steady\")"
       ],
       "answer": [
@@ -339,7 +403,11 @@
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "The output order is the line order."
+      ],
+      "deep": "Statements run in the order they appear, so output order is source order. This sounds trivial until asynchronous code, where the order lines start in is not the order they finish in. For plain scripts, source order is the whole story."
     },
     {
       "id": "t1.l3.q3",
@@ -349,9 +417,9 @@
       "prompt": "What does an empty print() do?",
       "options": [
         "Prints a blank line",
-        "Prints the word None",
         "Does nothing at all",
-        "Raises an error"
+        "Raises an error",
+        "Prints the word None"
       ],
       "answer": [
         "Prints a blank line"
@@ -361,8 +429,12 @@
       "tags": [
         "print"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(\"a\")\nprint()\nprint(\"b\")"
+      "reviewed": "2026-09-05",
+      "code": "print(\"a\")\nprint()\nprint(\"b\")",
+      "hints": [
+        "print always ends its output with something, even with nothing to print."
+      ],
+      "deep": "print() writes its arguments joined by sep, then writes end, which defaults to a newline. With no arguments it writes only the newline, which is a blank line. That end parameter is why print(\"a\", end=\"\") keeps the cursor on the same line."
     },
     {
       "id": "t1.l3.q4",
@@ -371,13 +443,13 @@
       "type": "blocks",
       "prompt": "Build two lines that print hi and then bye.",
       "tray": [
-        "print",
-        "(",
-        "\"hi\"",
-        ")",
-        "print",
-        "(",
         "\"bye\"",
+        "\"hi\"",
+        "print",
+        ")",
+        "(",
+        "(",
+        "print",
         ")"
       ],
       "answer": [
@@ -397,7 +469,12 @@
         "print",
         "syntax"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Two complete calls, one after the other.",
+        "Finish the first call's closing paren before starting the second."
+      ],
+      "deep": "Each print is a separate statement, and a statement normally ends at the line break. Python lets you put two on one line with a semicolon, but PEP 8 asks you not to: one statement per line is the readable form."
     },
     {
       "id": "t1.l3.q5",
@@ -406,10 +483,10 @@
       "type": "mcq",
       "prompt": "Does Python ever run the last line of a file first?",
       "options": [
-        "No, it always starts at the top",
-        "Yes, if the last line is a print",
         "Yes, files run bottom to top",
-        "Only when the file has comments"
+        "Yes, if the last line is a print",
+        "Only when the file has comments",
+        "No, it always starts at the top"
       ],
       "answer": [
         "No, it always starts at the top"
@@ -419,7 +496,11 @@
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Think of the file as a list of instructions to follow in order."
+      ],
+      "deep": "There is no hoisting in Python. A name has to be bound before the line that uses it runs, which is why a function must be defined above its first call in a script. The interpreter never looks ahead."
     },
     {
       "id": "t1.l3.q6",
@@ -430,8 +511,8 @@
       "tray": [
         "print(\"liftoff\")",
         "print(\"2\")",
-        "print(\"3\")",
-        "print(\"1\")"
+        "print(\"1\")",
+        "print(\"3\")"
       ],
       "answer": [
         "print(\"3\")",
@@ -445,7 +526,11 @@
       "tags": [
         "execution-order"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Read the required output from top to bottom and match lines to it."
+      ],
+      "deep": "Ordering four independent statements is a warm-up for the ordering questions later in the game, where the pieces are pipeline stages and the wrong order is a data leak or a broken retrieval index rather than a scrambled countdown."
     },
     {
       "id": "t1.l4.q1",
@@ -454,10 +539,10 @@
       "type": "mcq",
       "prompt": "What exactly does this print?",
       "options": [
-        "a b",
-        "ab",
         "a,b",
-        "a b "
+        "a b ",
+        "a b",
+        "ab"
       ],
       "answer": [
         "a b"
@@ -468,8 +553,12 @@
         "print",
         "sep"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(\"a\", \"b\")"
+      "reviewed": "2026-09-05",
+      "code": "print(\"a\", \"b\")",
+      "hints": [
+        "print puts something between two arguments. What is it by default?"
+      ],
+      "deep": "print joins multiple arguments with sep, which defaults to a single space, and adds end afterwards. That separator is why print(\"a\", \"b\") gives a b and not ab; to glue strings with nothing between them, concatenate them or set sep=\"\"."
     },
     {
       "id": "t1.l4.q2",
@@ -479,9 +568,9 @@
       "prompt": "What does this print?",
       "options": [
         "2026-09-04",
-        "2026 09 04",
+        "An error",
         "2026,09,04",
-        "An error"
+        "2026 09 04"
       ],
       "answer": [
         "2026-09-04"
@@ -492,8 +581,12 @@
         "print",
         "sep"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(\"2026\", \"09\", \"04\", sep=\"-\")"
+      "reviewed": "2026-09-05",
+      "code": "print(\"2026\", \"09\", \"04\", sep=\"-\")",
+      "hints": [
+        "The sep argument replaces the default space with something else."
+      ],
+      "deep": "sep is a keyword-only argument: you must write sep=\"-\", never pass it by position. print(*args, sep=' ', end='\\n', file=None, flush=False) is the full signature, and file=sys.stderr is how you send errors to the right stream."
     },
     {
       "id": "t1.l4.q3",
@@ -502,14 +595,14 @@
       "type": "blocks",
       "prompt": "Build a line that prints:  a-b",
       "tray": [
-        "print",
-        "(",
         "\"a\"",
-        ",",
+        "(",
         "\"b\"",
+        ")",
         ",",
-        "sep=\"-\"",
-        ")"
+        "print",
+        ",",
+        "sep=\"-\""
       ],
       "answer": [
         "print",
@@ -528,7 +621,12 @@
         "print",
         "sep"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Keyword arguments like sep go after the values.",
+        "Commas separate every argument, including the last value from sep."
+      ],
+      "deep": "Positional arguments come first, keyword arguments after; Python raises SyntaxError if you put a positional after a keyword. Every argument, including the keyword ones, is separated by a comma."
     },
     {
       "id": "t1.l4.q4",
@@ -537,10 +635,10 @@
       "type": "mcq",
       "prompt": "What does end=\"\" change?",
       "options": [
-        "print stops adding a newline at the end",
-        "print stops adding spaces between values",
         "print writes to a file instead of the screen",
-        "print runs faster"
+        "print runs faster",
+        "print stops adding a newline at the end",
+        "print stops adding spaces between values"
       ],
       "answer": [
         "print stops adding a newline at the end"
@@ -551,8 +649,12 @@
         "print",
         "end"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(\"a\", end=\"\")\nprint(\"b\")"
+      "reviewed": "2026-09-05",
+      "code": "print(\"a\", end=\"\")\nprint(\"b\")",
+      "hints": [
+        "Look at what end normally is: a newline character."
+      ],
+      "deep": "end=\"\" suppresses the trailing newline, so the next print continues on the same line. Progress bars and spinners use exactly this, usually together with flush=True so the text appears immediately instead of waiting in the output buffer."
     },
     {
       "id": "t1.l4.q5",
@@ -561,10 +663,10 @@
       "type": "mcq",
       "prompt": "What appears on screen?",
       "options": [
-        "7",
         "3 + 4",
+        "34",
         "\"3 + 4\"",
-        "34"
+        "7"
       ],
       "answer": [
         "7"
@@ -575,8 +677,12 @@
         "print",
         "arithmetic"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(3 + 4)"
+      "reviewed": "2026-09-05",
+      "code": "print(3 + 4)",
+      "hints": [
+        "There are no quotes around 3 + 4, so Python treats it as arithmetic."
+      ],
+      "deep": "Arguments are evaluated before the call happens. 3 + 4 is an expression, Python computes 7, and print receives the integer 7. Wrap it in quotes and it becomes a five-character string that is printed as written."
     },
     {
       "id": "t1.l4.q6",
@@ -586,10 +692,10 @@
       "prompt": "Build a line that prints:  2 + 2 = 4",
       "tray": [
         "print",
-        "(",
         "\"2 + 2 =\"",
-        ",",
         "2 + 2",
+        "(",
+        ",",
         ")"
       ],
       "answer": [
@@ -607,7 +713,11 @@
         "print",
         "arithmetic"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "One string argument, then one arithmetic argument."
+      ],
+      "deep": "Mixing a string and a computed number in one print is fine because print converts every argument with str() before writing. Trying to add them with + would fail: \"2 + 2 =\" + 4 raises TypeError, which is why f-strings exist."
     },
     {
       "id": "t1.l5.q1",
@@ -629,7 +739,11 @@
       "tags": [
         "variables"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "A name has to be given a value before it can be printed."
+      ],
+      "deep": "Assignment binds a name to an object in the current namespace. Reading a name that has not been bound yet raises NameError. This order dependency is the reason variables are defined near the top of a function and used below."
     },
     {
       "id": "t1.l5.q2",
@@ -638,10 +752,10 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "options": [
-        "name",
-        "Pytor",
         "\"name\"",
-        "An error"
+        "Pytor",
+        "An error",
+        "name"
       ],
       "answer": [
         "name"
@@ -652,8 +766,12 @@
         "variables",
         "strings"
       ],
-      "reviewed": "2026-09-04",
-      "code": "name = \"Pytor\"\nprint(\"name\")"
+      "reviewed": "2026-09-05",
+      "code": "name = \"Pytor\"\nprint(\"name\")",
+      "hints": [
+        "Look for quotes around the word inside print."
+      ],
+      "deep": "With quotes, name is a string literal and the variable is never consulted. Without them it is a name lookup. The two look similar in an editor and behave completely differently, which is why syntax highlighting colours strings."
     },
     {
       "id": "t1.l5.q3",
@@ -662,11 +780,11 @@
       "type": "blocks",
       "prompt": "Build a line that greets by name using an f-string.",
       "tray": [
-        "print",
-        "(",
         "f\"Hi {name}\"",
+        "(",
+        ")",
         "\"Hi {name}\"",
-        ")"
+        "print"
       ],
       "answer": [
         "print",
@@ -681,7 +799,12 @@
         "variables",
         "f-string"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "An f-string needs its f prefix before the opening quote.",
+        "Without the prefix the braces are printed as written."
+      ],
+      "deep": "PEP 498 f-strings evaluate the expression inside the braces at runtime and format the result in place. They are faster than .format() and % because the compiler turns them into direct bytecode, and they accept any expression: f\"{price * 1.25:.2f}\"."
     },
     {
       "id": "t1.l5.q4",
@@ -690,10 +813,10 @@
       "type": "mcq",
       "prompt": "What happens when this runs?",
       "options": [
-        "NameError, because age was never given a value",
+        "It prints 0",
         "It prints a blank line",
         "It prints the word age",
-        "It prints 0"
+        "NameError, because age was never given a value"
       ],
       "answer": [
         "NameError, because age was never given a value"
@@ -704,8 +827,12 @@
         "variables",
         "errors"
       ],
-      "reviewed": "2026-09-04",
-      "code": "print(age)"
+      "reviewed": "2026-09-05",
+      "code": "print(age)",
+      "hints": [
+        "Which names on the right have been assigned above?"
+      ],
+      "deep": "NameError is Python's way of saying a name was never bound in any enclosing scope. Reading the traceback's last line tells you which name; reading upward tells you which line. Both halves are worth learning to read early."
     },
     {
       "id": "t1.l5.q5",
@@ -714,8 +841,8 @@
       "type": "order",
       "prompt": "Order the lines so the program prints 12.",
       "tray": [
-        "print(score)",
         "score = 10",
+        "print(score)",
         "score = 12"
       ],
       "answer": [
@@ -729,7 +856,11 @@
       "tags": [
         "variables"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "A name can be reassigned; the last assignment before the print wins."
+      ],
+      "deep": "Rebinding a name replaces which object it points to. The old integer 10 is not modified, it is simply no longer referenced and CPython frees it when its reference count hits zero. Names are labels, objects are the things."
     },
     {
       "id": "t1.l5.q6",
@@ -738,9 +869,9 @@
       "type": "mcq",
       "prompt": "What does this print?",
       "options": [
-        "Hi Pytor",
-        "Hi {name}",
         "f\"Hi {name}\"",
+        "Hi {name}",
+        "Hi Pytor",
         "An error"
       ],
       "answer": [
@@ -752,8 +883,12 @@
         "variables",
         "f-string"
       ],
-      "reviewed": "2026-09-04",
-      "code": "name = \"Pytor\"\nprint(f\"Hi {name}\")"
+      "reviewed": "2026-09-05",
+      "code": "name = \"Pytor\"\nprint(f\"Hi {name}\")",
+      "hints": [
+        "The f prefix is there, so the braces do their job."
+      ],
+      "deep": "Inside an f-string, braces switch from text to expression. {name} looks the variable up in the current scope and inserts its str() form. Double braces {{ }} are how you print a literal brace."
     },
     {
       "id": "t1.l5.q7",
@@ -763,12 +898,6 @@
       "prompt": "Fill the gap so the program prints Pytor.",
       "template": "name = {0}\nprint(name)",
       "blocks": [
-        {
-          "id": "quoted",
-          "code": "\"Pytor\"",
-          "plain": "the text Pytor",
-          "kind": "expr"
-        },
         {
           "id": "bare",
           "code": "Pytor",
@@ -780,6 +909,12 @@
           "code": "name",
           "plain": "the variable name",
           "kind": "var"
+        },
+        {
+          "id": "quoted",
+          "code": "\"Pytor\"",
+          "plain": "the text Pytor",
+          "kind": "expr"
         },
         {
           "id": "num",
@@ -798,7 +933,12 @@
         "variables",
         "strings"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "The value assigned has to be text, so it needs quotes.",
+        "A bare word without quotes would be a name lookup, and that name does not exist yet."
+      ],
+      "deep": "Assigning \"Pytor\" creates a str object and binds name to it. Assigning bare Pytor would try to read a variable called Pytor first, which raises NameError. Kind colours help: an amber expression block belongs where a value is computed or written."
     },
     {
       "id": "t1.l5.q8",
@@ -809,10 +949,10 @@
       "template": "name = \"Pytor\"\ncount = 3\nprint(f\"Hi {0}, you have {1} messages\")",
       "blocks": [
         {
-          "id": "bname",
-          "code": "{name}",
-          "plain": "the value of name",
-          "kind": "var"
+          "id": "lit3",
+          "code": "{3}",
+          "plain": "the number three",
+          "kind": "expr"
         },
         {
           "id": "bcount",
@@ -821,16 +961,16 @@
           "kind": "var"
         },
         {
+          "id": "bname",
+          "code": "{name}",
+          "plain": "the value of name",
+          "kind": "var"
+        },
+        {
           "id": "pname",
           "code": "name",
           "plain": "the letters n-a-m-e",
           "kind": "var"
-        },
-        {
-          "id": "lit3",
-          "code": "{3}",
-          "plain": "the number three",
-          "kind": "expr"
         }
       ],
       "answer": [
@@ -844,14 +984,12 @@
         "f-string",
         "variables"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "hints": [
+        "Each gap wants a name wrapped in braces so the f-string substitutes it.",
+        "One tray block has braces but holds a number, not a name."
+      ],
+      "deep": "Inside f-string braces you can put any expression, and a bare variable name is the simplest one. {3} would insert the literal 3 rather than the count, which is why the count gap needs the variable. In Python 3.12+ you can even nest quotes inside the braces."
     }
-  ],
-  "lessons": [
-    "print()",
-    "strings",
-    "comments",
-    "variables",
-    "f-strings"
   ]
 }

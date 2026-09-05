@@ -18,12 +18,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,15 +34,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import no.mwmai.pyquest.data.Progress
 import no.mwmai.pyquest.model.Tier
-import no.mwmai.pyquest.ui.theme.CodeStyle
+import no.mwmai.pyquest.pytor.PytorCoach
 import no.mwmai.pyquest.ui.theme.Pal
 
 /**
- * The track: eight tiers from hello world to client work, one card each.
+ * The track: eight tiers from hello world to client work, one card each, with
+ * Pytor at the top saying the one thing worth saying right now.
  *
  * Cards are collapsed by default and expand on tap. On a 412 dp wide phone that
  * is the difference between seeing the whole ladder at a glance and scrolling
@@ -54,14 +55,14 @@ import no.mwmai.pyquest.ui.theme.Pal
 fun TrackScreen(
     tiers: List<Tier>,
     progress: Progress,
-    plainLabels: Boolean,
-    onTogglePlainLabels: () -> Unit,
+    today: String,
     onStartLevel: (tier: Int, level: Int) -> Unit,
+    onOpenPytor: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val coach = remember(progress, tiers, today) { PytorCoach.greeting(progress, tiers, today) }
     val currentTier = remember(tiers, progress) {
-        tiers.firstOrNull { progress.masteryOf(it.questions.map(::questionId)) < 1f }?.tier
-            ?: tiers.lastOrNull()?.tier ?: 1
+        PytorCoach.nextLevel(progress, tiers)?.first?.tier ?: tiers.lastOrNull()?.tier ?: 1
     }
     var openTier by remember { mutableIntStateOf(currentTier) }
 
@@ -69,32 +70,38 @@ fun TrackScreen(
         modifier = modifier
             .fillMaxSize()
             .background(Pal.Screen)
-            .windowInsetsPadding(WindowInsets.systemBars),
+            .windowInsetsPadding(WindowInsets.statusBars),
         contentPadding = PaddingValues(start = 18.dp, end = 18.dp, top = 8.dp, bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        item { TrackHeader(progress) }
+        item { TrackHeader(progress, today, onOpenPytor) }
+        item {
+            PytorSays(
+                text = coach.text,
+                onClick = {
+                    val tier = coach.tier
+                    if (tier != null) openTier = tier else onOpenPytor()
+                },
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(top = 6.dp, bottom = 2.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 2.dp),
             ) {
-                Text("THE TRACK", style = MaterialTheme.typography.labelMedium, color = Pal.Faint)
+                SectionLabel("THE TRACK")
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = if (plainLabels) "blocks: english" else "blocks: code",
+                    "${tiers.sumOf { it.questions.size }} questions",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Pal.Lime,
-                    modifier = Modifier
-                        .background(Pal.LimeSoft, RoundedCornerShape(7.dp))
-                        .clickable(onClick = onTogglePlainLabels)
-                        .padding(horizontal = 9.dp, vertical = 5.dp),
+                    color = Pal.Locked,
                 )
             }
         }
 
         items(tiers, key = { it.tier }) { tier ->
-            val ids = tier.questions.map(::questionId)
+            val ids = tier.questions.map { it.id }
             val mastery = progress.masteryOf(ids)
             TierCard(
                 tier = tier,
@@ -103,45 +110,40 @@ fun TrackScreen(
                 isOpen = openTier == tier.tier,
                 onToggle = { openTier = if (openTier == tier.tier) 0 else tier.tier },
                 onStartLevel = { level -> onStartLevel(tier.tier, level) },
-                levelMastery = { level -> progress.masteryOf(tier.level(level).map(::questionId)) },
+                levelMastery = { level -> progress.masteryOf(tier.level(level).map { it.id }) },
             )
         }
     }
 }
 
-private fun questionId(question: no.mwmai.pyquest.model.Question): String = question.id
-
 @Composable
-private fun TrackHeader(progress: Progress) {
+private fun TrackHeader(progress: Progress, today: String, onOpenPytor: () -> Unit) {
+    val streak = progress.streakOn(today)
+    val atRisk = progress.streakAtRisk(today)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
     ) {
-        Box(
-            modifier = Modifier.size(38.dp).background(Pal.Chip, RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(">_", style = CodeStyle, color = Pal.Lime)
-        }
+        PytorAvatar(size = 44.dp, modifier = Modifier.clickable(onClick = onOpenPytor))
         Spacer(Modifier.width(11.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text("PyQuest", style = MaterialTheme.typography.titleLarge, color = Pal.Text)
             Text(
-                "${progress.xp} XP · rank ${progress.rank} · ${progress.streakDays}d streak",
+                "${progress.xp} XP · ${progress.rank} · ${streak}d streak" + if (atRisk) " (at risk)" else "",
                 style = MaterialTheme.typography.bodySmall,
-                color = Pal.Faint,
+                color = if (atRisk) Pal.Coral else Pal.Faint,
             )
         }
         Box(contentAlignment = Alignment.Center) {
             CircularProgressIndicator(
-                progress = { progress.dailyProgress },
+                progress = { progress.dailyProgressOn(today) },
                 color = Pal.Lime,
                 trackColor = Pal.Chip,
                 strokeWidth = 4.dp,
                 modifier = Modifier.size(44.dp),
             )
             Text(
-                "${progress.xpToday}",
+                "${progress.xpOn(today)}",
                 style = MaterialTheme.typography.labelSmall,
                 color = Pal.Lime,
             )
@@ -172,22 +174,22 @@ private fun TierCard(
         else -> Pal.Locked
     }
     val tag = when {
-        tier.capstone -> "CAPSTONE"
         done -> "100%"
+        tier.capstone && mastery == 0f -> "CAPSTONE"
         isCurrent -> "RESUME"
         else -> "${(mastery * 100).toInt()}%"
     }
-    val tagColor = if (tier.capstone) Pal.Violet else if (done || isCurrent) Pal.Lime else Pal.Locked
+    val tagColor = when {
+        done || isCurrent -> Pal.Lime
+        tier.capstone -> Pal.Violet
+        else -> Pal.Locked
+    }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(if (isOpen) Pal.CardOpen else Pal.Card, RoundedCornerShape(15.dp))
-            .border(
-                1.dp,
-                if (isOpen) Pal.LimeEdge else Pal.Hairline,
-                RoundedCornerShape(15.dp),
-            )
+            .border(1.dp, if (isOpen) Pal.LimeEdge else Pal.Hairline, RoundedCornerShape(15.dp))
             .clickable(onClick = onToggle)
             .padding(14.dp),
     ) {
@@ -205,11 +207,7 @@ private fun TierCard(
             }
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    tier.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Pal.Text,
-                )
+                Text(tier.title, style = MaterialTheme.typography.titleMedium, color = Pal.Text)
                 Text(
                     tier.subtitle.ifBlank { "${tier.questions.size} questions" },
                     style = MaterialTheme.typography.bodySmall,
@@ -221,6 +219,19 @@ private fun TierCard(
 
         AnimatedVisibility(visible = isOpen) {
             Column {
+                if (tier.pytor.isNotBlank()) {
+                    Spacer(Modifier.height(12.dp))
+                    Row(verticalAlignment = Alignment.Top) {
+                        PytorAvatar(size = 22.dp)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            tier.pytor,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Pal.Muted,
+                            fontStyle = FontStyle.Italic,
+                        )
+                    }
+                }
                 if (tier.lessons.isNotEmpty()) {
                     Spacer(Modifier.height(12.dp))
                     FlowRow(
@@ -245,23 +256,30 @@ private fun TierCard(
                     verticalArrangement = Arrangement.spacedBy(7.dp),
                 ) {
                     tier.levels.forEach { level ->
-                        val cleared = levelMastery(level) >= 1f
-                        Text(
-                            "Level $level",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = if (cleared) Pal.Screen else Pal.Text,
+                        val levelDone = levelMastery(level)
+                        val cleared = levelDone >= 1f
+                        val count = tier.level(level).size
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .background(
-                                    if (cleared) Pal.Lime else Pal.Chip,
-                                    RoundedCornerShape(9.dp),
-                                )
+                                .background(if (cleared) Pal.Lime else Pal.Chip, RoundedCornerShape(9.dp))
                                 .clickable { onStartLevel(level) }
-                                .padding(horizontal = 14.dp, vertical = 9.dp),
-                        )
+                                .padding(horizontal = 13.dp, vertical = 8.dp),
+                        ) {
+                            Text(
+                                "Level $level",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = if (cleared) Pal.Screen else Pal.Text,
+                            )
+                            Text(
+                                if (cleared) "mastered" else "$count q · ${(levelDone * 100).toInt()}%",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (cleared) Pal.Screen.copy(alpha = 0.7f) else Pal.Locked,
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
-

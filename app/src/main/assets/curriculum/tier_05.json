@@ -1,0 +1,941 @@
+{
+  "tier": 5,
+  "title": "Data wrangling",
+  "subtitle": "pathlib, JSON and CSV, pandas from load to join",
+  "lessons": [
+    "pathlib",
+    "JSON & CSV",
+    "DataFrames",
+    "groupby",
+    "joins"
+  ],
+  "pytor": "Real data is files, and files are messy. Learn the two checks around every join here and you will never ship doubled revenue.",
+  "questions": [
+    {
+      "id": "t5.l1.q1",
+      "tier": 5,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does the slash do here?",
+      "code": "from pathlib import Path\n\ndata = Path(\"data\") / \"sales.csv\"",
+      "explain": "pathlib overloads / to join path components, so the same code works on Linux, macOS and Windows.",
+      "hints": [
+        "pathlib gives / a new meaning when one side is a Path."
+      ],
+      "deep": "Path objects (PEP 428) replace os.path string juggling. Path / \"sub\" / \"file.csv\" builds a PurePath lazily; nothing touches the disk until you call exists(), read_text() or similar. Path.home() and Path.cwd() are the two anchors you will use most.",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Divides the path by a string",
+        "Creates the folder",
+        "Joins path parts with the right separator for the operating system",
+        "It is a syntax error"
+      ],
+      "answer": [
+        "Joins path parts with the right separator for the operating system"
+      ]
+    },
+    {
+      "id": "t5.l1.q2",
+      "tier": 5,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Which call reads the whole file as one string?",
+      "explain": "read_text() opens, reads and closes in one call and returns a str.",
+      "hints": [
+        "The method name says what it reads and what type comes back."
+      ],
+      "deep": "read_text(encoding=\"utf-8\") and read_bytes() are the one-shot readers; write_text() is their mirror and truncates first. For large files iterate lines with path.open() in a with block instead of loading everything. Always pass encoding explicitly: the platform default is not UTF-8 on every Windows machine.",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "path.text",
+        "path.open()",
+        "path.read()",
+        "path.read_text()"
+      ],
+      "answer": [
+        "path.read_text()"
+      ]
+    },
+    {
+      "id": "t5.l1.q3",
+      "tier": 5,
+      "level": 1,
+      "type": "fill",
+      "prompt": "Fill the gap so the file is closed automatically after reading.",
+      "explain": "with runs the file's cleanup when the block ends, even if reading raises.",
+      "hints": [
+        "You want the block that guarantees cleanup."
+      ],
+      "deep": "open() returns a file object whose __exit__ closes it. Without with, a file stays open until the object is garbage-collected, which on CPython is usually immediate and on other runtimes is not; either way ruff flags it (SIM115). Never rely on the GC for resources.",
+      "xp": 20,
+      "tags": [
+        "files",
+        "context-managers"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "{0} open(\"notes.txt\") as f:\n    text = f.read()",
+      "blocks": [
+        {
+          "id": "try",
+          "code": "try",
+          "kind": "expr"
+        },
+        {
+          "id": "using",
+          "code": "using",
+          "kind": "expr"
+        },
+        {
+          "id": "for",
+          "code": "for",
+          "kind": "expr"
+        },
+        {
+          "id": "with",
+          "code": "with",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "with"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l1.q4",
+      "tier": 5,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print for the path reports/q3_summary.csv?",
+      "code": "p = Path(\"reports/q3_summary.csv\")\nprint(p.suffix, p.stem)",
+      "explain": "suffix is the extension with its dot, stem is the filename without the extension.",
+      "hints": [
+        "Two properties: one is the extension, one is the name without it."
+      ],
+      "deep": "Path parts: name is the full filename, stem drops the last suffix, suffix is the last extension, suffixes is the list for names like archive.tar.gz, parent is the directory. with_suffix(\".json\") swaps extensions, which is how you derive output paths from input paths.",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "csv q3_summary.csv",
+        ".csv reports",
+        "q3_summary .csv",
+        ".csv q3_summary"
+      ],
+      "answer": [
+        ".csv q3_summary"
+      ]
+    },
+    {
+      "id": "t5.l1.q5",
+      "tier": 5,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Which expression lists every CSV in a folder, including subfolders?",
+      "explain": "rglob searches recursively; glob only looks in the folder itself.",
+      "hints": [
+        "The r prefix stands for recursive."
+      ],
+      "deep": "glob and rglob return generators of Path objects, so wrap in sorted() when order matters, because directory order is filesystem-dependent and will differ between your laptop and CI. glob(\"**/*.csv\") is equivalent to rglob(\"*.csv\").",
+      "xp": 10,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "folder.rglob(\"*.csv\")",
+        "folder.list(\"*.csv\")",
+        "folder.glob(\"*.csv\")",
+        "folder.files(csv)"
+      ],
+      "answer": [
+        "folder.rglob(\"*.csv\")"
+      ]
+    },
+    {
+      "id": "t5.l1.q6",
+      "tier": 5,
+      "level": 1,
+      "type": "order",
+      "prompt": "Order the lines so the report is written only if the folder exists.",
+      "explain": "Build the path, check it, then write inside the condition.",
+      "hints": [
+        "The check needs the path object first, and the write happens only when the check passes."
+      ],
+      "deep": "Check-then-act has a race: the folder can vanish between exists() and write. The robust version is out.mkdir(parents=True, exist_ok=True) followed by an unconditional write, or catching FileNotFoundError. EAFP, easier to ask forgiveness than permission, is the Python idiom.",
+      "xp": 15,
+      "tags": [
+        "files",
+        "pathlib"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "if out.exists():",
+        "    (out / \"summary.txt\").write_text(\"done\")",
+        "out = Path(\"reports\")"
+      ],
+      "answer": [
+        "out = Path(\"reports\")",
+        "if out.exists():",
+        "    (out / \"summary.txt\").write_text(\"done\")"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l2.q1",
+      "tier": 5,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Which function turns this text into a Python dict?",
+      "code": "text = '{\"name\": \"Pytor\", \"tier\": 5}'",
+      "explain": "loads reads from a string; load reads from an open file. dumps and dump go the other way.",
+      "hints": [
+        "The s at the end stands for string."
+      ],
+      "deep": "The four functions pair up: load/dump work on file objects, loads/dumps on strings. json.loads maps objects to dict, arrays to list, null to None, true/false to True/False, and numbers to int or float. Keys are always strings, so {1: \"a\"} round-trips as {\"1\": \"a\"}.",
+      "xp": 10,
+      "tags": [
+        "json"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "json.load",
+        "json.loads",
+        "json.parse",
+        "json.dumps"
+      ],
+      "answer": [
+        "json.loads"
+      ]
+    },
+    {
+      "id": "t5.l2.q2",
+      "tier": 5,
+      "level": 2,
+      "type": "fill",
+      "prompt": "Fill the gap so the dict is written as readable, indented JSON.",
+      "explain": "dump writes straight to the file object; dumps would return a string you would still have to write.",
+      "hints": [
+        "You are passing a file, not asking for a string back."
+      ],
+      "deep": "indent=2 makes diffs readable in git. sort_keys=True makes output deterministic. ensure_ascii=False keeps æøå as themselves instead of \\u00e6 escapes. For datetimes and Decimals pass default=str or a custom encoder; json raises TypeError on anything it does not know.",
+      "xp": 20,
+      "tags": [
+        "json",
+        "files"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "with open(\"out.json\", \"w\") as f:\n    json.{0}(data, f, indent=2)",
+      "blocks": [
+        {
+          "id": "load",
+          "code": "load",
+          "kind": "call"
+        },
+        {
+          "id": "dump",
+          "code": "dump",
+          "kind": "call"
+        },
+        {
+          "id": "dumps",
+          "code": "dumps",
+          "kind": "call"
+        },
+        {
+          "id": "write",
+          "code": "write",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "dump"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l2.q3",
+      "tier": 5,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does json.loads(\"null\") return?",
+      "explain": "JSON null maps to Python None, the same way true and false map to True and False.",
+      "hints": [
+        "Every JSON value has a Python twin."
+      ],
+      "deep": "The mapping is exact but lossy in places: JSON has no tuples, sets, bytes or datetimes, and no distinction between 1.0 and 1 beyond what the parser infers. Large floats can lose precision; parse money as Decimal via parse_float=Decimal when it matters.",
+      "xp": 10,
+      "tags": [
+        "json"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "None",
+        "An error",
+        "null",
+        "0"
+      ],
+      "answer": [
+        "None"
+      ]
+    },
+    {
+      "id": "t5.l2.q4",
+      "tier": 5,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Why use csv.DictReader instead of splitting each line on commas?",
+      "explain": "Real CSV has quoted fields containing commas and newlines. The csv module parses them correctly and DictReader names the columns.",
+      "hints": [
+        "Think of a field like \"Bergen, Norway\"."
+      ],
+      "deep": "DictReader yields one dict per row with header names as keys, all values as strings. Convert types yourself at the boundary. Open the file with newline=\"\" as the docs say, or embedded newlines break. For anything analytical, pandas.read_csv does the same with type inference.",
+      "xp": 10,
+      "tags": [
+        "csv",
+        "files"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "It converts numbers automatically",
+        "It works without a header row",
+        "It handles quoted fields with commas inside and gives each row as a dict keyed by header",
+        "It is faster"
+      ],
+      "answer": [
+        "It handles quoted fields with commas inside and gives each row as a dict keyed by header"
+      ]
+    },
+    {
+      "id": "t5.l2.q5",
+      "tier": 5,
+      "level": 2,
+      "type": "order",
+      "prompt": "Order the lines so every row's city is printed.",
+      "explain": "Open the file, wrap it in a DictReader, loop over rows, index by column name.",
+      "hints": [
+        "The reader needs an open file, and the loop needs the reader.",
+        "Everything stays inside the with block so the file is open while reading."
+      ],
+      "deep": "The reader is lazy: it reads lines as the loop asks for them, so the file must stay open for the whole loop, which is why the loop is indented under with. Materialise with list(reader) if you need to close early or iterate twice.",
+      "xp": 15,
+      "tags": [
+        "csv",
+        "files"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "    for row in reader:",
+        "with open(\"people.csv\", newline=\"\") as f:",
+        "    reader = csv.DictReader(f)",
+        "        print(row[\"city\"])"
+      ],
+      "answer": [
+        "with open(\"people.csv\", newline=\"\") as f:",
+        "    reader = csv.DictReader(f)",
+        "    for row in reader:",
+        "        print(row[\"city\"])"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l2.q6",
+      "tier": 5,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What goes wrong here?",
+      "code": "json.dumps({\"when\": datetime.now()})",
+      "explain": "JSON has no date type, so json.dumps raises TypeError unless you tell it how to convert.",
+      "hints": [
+        "Check the list of types JSON can represent."
+      ],
+      "deep": "Serialise datetimes as ISO 8601 strings (dt.isoformat()), ideally in UTC with the offset. pydantic and dataclasses-json do this for you. The same applies to Decimal, set, bytes and Path: json.dumps(obj, default=str) is the quick fix, an explicit encoder the proper one.",
+      "xp": 10,
+      "tags": [
+        "json",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Nothing, JSON supports dates",
+        "It writes the date as a string",
+        "TypeError: datetime is not JSON serialisable",
+        "It writes a Unix timestamp"
+      ],
+      "answer": [
+        "TypeError: datetime is not JSON serialisable"
+      ]
+    },
+    {
+      "id": "t5.l3.q1",
+      "tier": 5,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does df.shape return for 120 rows and 5 columns?",
+      "explain": "shape is a tuple of (rows, columns), so 120 rows and 5 columns is (120, 5).",
+      "hints": [
+        "Rows first, columns second."
+      ],
+      "deep": "shape is an attribute, not a method, so no parentheses. len(df) is the row count, df.columns the labels, df.dtypes the type per column, df.info() a one-screen summary with memory use and null counts. Read all four before touching any data.",
+      "xp": 10,
+      "tags": [
+        "pandas"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[120, 5]",
+        "600",
+        "(120, 5)",
+        "(5, 120)"
+      ],
+      "answer": [
+        "(120, 5)"
+      ]
+    },
+    {
+      "id": "t5.l3.q2",
+      "tier": 5,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this give you?",
+      "code": "df[\"age\"]",
+      "explain": "Indexing a DataFrame with a column name returns that column as a Series.",
+      "hints": [
+        "One label in the brackets selects one column."
+      ],
+      "deep": "df[\"age\"] is a Series, a labelled 1-D array; df[[\"age\", \"city\"]] with a list is a DataFrame. Dot access df.age also works but breaks on names with spaces or that clash with methods (df.count), so brackets are the safe habit.",
+      "xp": 10,
+      "tags": [
+        "pandas"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "The column's mean",
+        "A DataFrame with one row",
+        "A Series of the age column",
+        "A list of ages"
+      ],
+      "answer": [
+        "A Series of the age column"
+      ]
+    },
+    {
+      "id": "t5.l3.q3",
+      "tier": 5,
+      "level": 3,
+      "type": "fill",
+      "prompt": "Fill the gap to keep only rows where age is over 30.",
+      "explain": "The comparison produces a boolean Series and the outer brackets keep the True rows.",
+      "hints": [
+        "Over 30 excludes 30 itself."
+      ],
+      "deep": "Boolean indexing evaluates the comparison over the whole column at once, vectorised in C. Combine conditions with & and | inside parentheses, never and/or: df[(df.age > 30) & (df.city == \"Bergen\")]. df.query(\"age > 30\") is the readable alternative for long filters.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "filtering"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "adults = df[df[\"age\"] {0} 30]",
+      "blocks": [
+        {
+          "id": "gte",
+          "code": ">=",
+          "kind": "expr"
+        },
+        {
+          "id": "eq",
+          "code": "==",
+          "kind": "expr"
+        },
+        {
+          "id": "lt",
+          "code": "<",
+          "kind": "expr"
+        },
+        {
+          "id": "gt",
+          "code": ">",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "gt"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l3.q4",
+      "tier": 5,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print for a column with values 10, 20 and NaN?",
+      "code": "print(df[\"price\"].mean())",
+      "explain": "mean() skips missing values by default, so it averages 10 and 20.",
+      "hints": [
+        "pandas ignores NaN in aggregations unless told otherwise."
+      ],
+      "deep": "skipna=True is the default for sum, mean, min and max, which is convenient and occasionally misleading: a column that is 90 percent NaN still reports a confident mean. Always look at df.isna().sum() first, and decide per column whether to fill, drop or flag.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "missing-data"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "An error",
+        "15.0",
+        "NaN",
+        "10.0"
+      ],
+      "answer": [
+        "15.0"
+      ]
+    },
+    {
+      "id": "t5.l3.q5",
+      "tier": 5,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "Which line counts missing values per column?",
+      "explain": "isna() gives a boolean frame, and sum() adds the Trues column by column.",
+      "hints": [
+        "Two steps: mark the missing cells, then add them up."
+      ],
+      "deep": "Booleans sum as integers, which is why isna().sum() works and is the standard first diagnostic. isna().mean() gives the fraction. df.dropna() and df.fillna(value) are the two responses; fillna with the mean is a modelling decision, not a cleaning step.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "missing-data"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "df.missing()",
+        "df.count(NaN)",
+        "df.isna().sum()",
+        "df.null().count()"
+      ],
+      "answer": [
+        "df.isna().sum()"
+      ]
+    },
+    {
+      "id": "t5.l3.q6",
+      "tier": 5,
+      "level": 3,
+      "type": "order",
+      "prompt": "Order the lines to load a CSV and print the first five rows.",
+      "explain": "Import pandas under its pd alias, read the file into a frame, then inspect the first rows.",
+      "hints": [
+        "pd is the conventional alias and must exist before pd.read_csv."
+      ],
+      "deep": "read_csv infers types, parses the header and handles quoting, and its parameters cover most messy files: sep, encoding, parse_dates, dtype, usecols, nrows for a quick peek. head() is the first look, describe() the second, and df.sample(5) shows rows that are not all from the top.",
+      "xp": 15,
+      "tags": [
+        "pandas"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "df = pd.read_csv(\"sales.csv\")",
+        "import pandas as pd",
+        "print(df.head())"
+      ],
+      "answer": [
+        "import pandas as pd",
+        "df = pd.read_csv(\"sales.csv\")",
+        "print(df.head())"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l4.q1",
+      "tier": 5,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this return?",
+      "code": "df.groupby(\"city\")[\"price\"].mean()",
+      "explain": "groupby splits the rows by city, then mean() aggregates the price within each group.",
+      "hints": [
+        "Split by the key, apply the aggregation, one result per key."
+      ],
+      "deep": "Split-apply-combine is the mental model. groupby(\"city\")[\"price\"] selects the column before aggregating, which is faster than aggregating everything. .agg([\"mean\", \"count\"]) gives several statistics; .agg(total=(\"price\", \"sum\")) names them. The result is indexed by city; reset_index() flattens it.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "groupby"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Average price per city, one row per city",
+        "The overall average price",
+        "A price column sorted by city",
+        "The number of cities"
+      ],
+      "answer": [
+        "Average price per city, one row per city"
+      ]
+    },
+    {
+      "id": "t5.l4.q2",
+      "tier": 5,
+      "level": 4,
+      "type": "fill",
+      "prompt": "Fill the gap so the largest values come first.",
+      "explain": "ascending=False sorts from largest to smallest.",
+      "hints": [
+        "The default sorts upward; you want the opposite."
+      ],
+      "deep": "sort_values returns a new frame by default; pass inplace=True only if you mean it, and most style guides say never. For top-n, df.nlargest(10, \"revenue\") is faster and clearer. Sorting by several columns takes a list with a matching list of ascending flags.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "sorting"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "top = df.sort_values(\"revenue\", ascending={0}).head(10)",
+      "blocks": [
+        {
+          "id": "false",
+          "code": "False",
+          "kind": "expr"
+        },
+        {
+          "id": "zero",
+          "code": "0",
+          "kind": "expr"
+        },
+        {
+          "id": "desc",
+          "code": "\"desc\"",
+          "kind": "expr"
+        },
+        {
+          "id": "true",
+          "code": "True",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "false"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l4.q3",
+      "tier": 5,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this add?",
+      "code": "df[\"gross\"] = df[\"price\"] * 1.25",
+      "explain": "Assigning to a new column name creates it, and the multiplication is applied to every row at once.",
+      "hints": [
+        "Arithmetic on a column applies to every value."
+      ],
+      "deep": "Vectorised arithmetic is the whole point of pandas: one expression, computed in C over the entire column. The slow anti-pattern is df.apply(lambda row: ..., axis=1), a Python-level loop. Reach for apply only when no vectorised form exists, and for string columns use the .str accessor.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "vectorisation"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "It modifies price in place",
+        "A new column with each price including 25 percent VAT",
+        "An error, columns cannot be multiplied",
+        "A new row"
+      ],
+      "answer": [
+        "A new column with each price including 25 percent VAT"
+      ]
+    },
+    {
+      "id": "t5.l4.q4",
+      "tier": 5,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "Which is the fastest way to count how many rows each category has?",
+      "explain": "value_counts is the built-in, vectorised count per distinct value, sorted by frequency.",
+      "hints": [
+        "There is a Series method made exactly for this."
+      ],
+      "deep": "value_counts(normalize=True) gives proportions, dropna=False includes missing values. It is the first thing to run on any categorical column, because it reveals typos (\"bergen\" vs \"Bergen\"), rare classes and imbalance before they reach a model.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "eda"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "df.groupby(\"category\").apply(len)",
+        "df[\"category\"].value_counts()",
+        "len(set(df.category))",
+        "A for loop with a dict"
+      ],
+      "answer": [
+        "df[\"category\"].value_counts()"
+      ]
+    },
+    {
+      "id": "t5.l4.q5",
+      "tier": 5,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "Why convert the column with pd.to_datetime?",
+      "code": "df[\"date\"] = pd.to_datetime(df[\"date\"])",
+      "explain": "As strings, dates sort alphabetically and cannot be compared or decomposed. As datetimes they gain the .dt accessor.",
+      "hints": [
+        "Think about what you can do with a real date that you cannot do with text."
+      ],
+      "deep": "After conversion, df[\"date\"].dt.month, .dt.day_name() and resampling (df.set_index(\"date\").resample(\"M\").sum()) all work. Pass format= when you know it: parsing millions of dates by inference is slow. Store timezone-aware UTC in the frame, localise for display.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "dates"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "It makes the column smaller",
+        "So you can extract year, month and weekday and sort or filter by real dates",
+        "It removes duplicates",
+        "Strings cannot be stored in a DataFrame"
+      ],
+      "answer": [
+        "So you can extract year, month and weekday and sort or filter by real dates"
+      ]
+    },
+    {
+      "id": "t5.l4.q6",
+      "tier": 5,
+      "level": 4,
+      "type": "order",
+      "prompt": "Order the lines to find the city with the highest total revenue.",
+      "explain": "Aggregate per city, find the label of the maximum, print both.",
+      "hints": [
+        "idxmax gives the label of the largest value, not the value itself."
+      ],
+      "deep": "idxmax returns the index label at the maximum, which after a groupby is the group key. argmax would give a position. This aggregate-then-locate pattern replaces sorting the whole result when you need only the top entry.",
+      "xp": 15,
+      "tags": [
+        "pandas",
+        "groupby"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "totals = df.groupby(\"city\")[\"revenue\"].sum()",
+        "print(best, totals[best])",
+        "best = totals.idxmax()"
+      ],
+      "answer": [
+        "totals = df.groupby(\"city\")[\"revenue\"].sum()",
+        "best = totals.idxmax()",
+        "print(best, totals[best])"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l5.q1",
+      "tier": 5,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does how=\"left\" mean here?",
+      "code": "pd.merge(orders, customers, on=\"customer_id\", how=\"left\")",
+      "explain": "A left join keeps all rows from the left frame and fills unmatched columns with NaN.",
+      "hints": [
+        "The left frame is the first argument."
+      ],
+      "deep": "inner keeps only matches, left keeps all left rows, outer keeps everything. A left join whose row count grows means the right key is not unique, a silent duplication bug: check customers[\"id\"].is_unique first, or pass validate=\"many_to_one\" so pandas raises.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "joins"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Keep rows from neither unless they match",
+        "Keep only rows present in both",
+        "Keep every row of orders, matching customers where possible and NaN where not",
+        "Keep every row of customers"
+      ],
+      "answer": [
+        "Keep every row of orders, matching customers where possible and NaN where not"
+      ]
+    },
+    {
+      "id": "t5.l5.q2",
+      "tier": 5,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "orders has 100 rows and 8 of them have a customer_id missing from customers. How many rows does an inner join return?",
+      "explain": "inner keeps only rows whose key appears in both, so the 8 unmatched rows are dropped.",
+      "hints": [
+        "Only matched rows survive an inner join."
+      ],
+      "deep": "Assuming the customer ids are unique. Inner joins silently drop data, so after every merge compare len(before) with len(after) and account for the difference. indicator=True adds a _merge column that says left_only, right_only or both, the fastest way to audit a join.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "joins"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "92",
+        "8",
+        "108",
+        "100"
+      ],
+      "answer": [
+        "92"
+      ]
+    },
+    {
+      "id": "t5.l5.q3",
+      "tier": 5,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gap so the two frames are stacked one above the other.",
+      "explain": "concat stacks frames with the same columns; merge is for combining on a key.",
+      "hints": [
+        "Stacking rows is not joining on a key.",
+        "DataFrame.append was removed in pandas 2.0."
+      ],
+      "deep": "concat with axis=0 stacks rows, axis=1 places frames side by side. ignore_index=True renumbers the result instead of carrying duplicate indexes. Concatenating inside a loop is quadratic; collect the frames in a list and concat once.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "concat"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "all_sales = pd.{0}([jan, feb], ignore_index=True)",
+      "blocks": [
+        {
+          "id": "concat",
+          "code": "concat",
+          "kind": "call"
+        },
+        {
+          "id": "join",
+          "code": "join",
+          "kind": "call"
+        },
+        {
+          "id": "append",
+          "code": "append",
+          "kind": "call"
+        },
+        {
+          "id": "merge",
+          "code": "merge",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "concat"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t5.l5.q4",
+      "tier": 5,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this produce?",
+      "code": "df.pivot_table(index=\"city\", columns=\"year\", values=\"revenue\", aggfunc=\"sum\")",
+      "explain": "pivot_table reshapes long data into a grid, aggregating the values for each city and year pair.",
+      "hints": [
+        "Index gives rows, columns gives columns, values fill the cells."
+      ],
+      "deep": "pivot_table aggregates (default mean, here sum) while pivot requires unique pairs and raises otherwise. The inverse is melt, which turns wide back into long, the shape most plotting and modelling libraries want. Long is for computation, wide is for humans.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "reshaping"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "One long column of revenue",
+        "A list of cities",
+        "A table with one row per city, one column per year, revenue summed in each cell",
+        "An error"
+      ],
+      "answer": [
+        "A table with one row per city, one column per year, revenue summed in each cell"
+      ]
+    },
+    {
+      "id": "t5.l5.q5",
+      "tier": 5,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "Why pass index=False when saving?",
+      "code": "df.to_csv(\"clean.csv\", index=False)",
+      "explain": "By default to_csv writes the index as the first column, which reappears as Unnamed: 0 when read back.",
+      "hints": [
+        "Think about what the first column of the file would be otherwise."
+      ],
+      "deep": "The Unnamed: 0 column is the tell-tale of a frame saved with its default RangeIndex. Write index=False unless the index carries meaning (dates, ids), and then name it so it round-trips. For data you will reload, Parquet keeps types and is faster than CSV.",
+      "xp": 10,
+      "tags": [
+        "pandas",
+        "files"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "So the row numbers are not written as an extra unnamed column",
+        "It sorts the rows",
+        "To make the file smaller",
+        "Because CSV files cannot have an index"
+      ],
+      "answer": [
+        "So the row numbers are not written as an extra unnamed column"
+      ]
+    },
+    {
+      "id": "t5.l5.q6",
+      "tier": 5,
+      "level": 5,
+      "type": "order",
+      "prompt": "Order the steps of a clean load-join-summarise script.",
+      "explain": "Validate the keys before joining, verify the join did not duplicate or drop rows, then aggregate.",
+      "hints": [
+        "The key check belongs before the merge, the row-count check right after it."
+      ],
+      "deep": "Data pipelines fail quietly: a duplicated key doubles revenue and nothing crashes. The two checks around the merge are the difference between a script and a pipeline. In production they become assertions or a validation library such as pandera, and they run on every batch.",
+      "xp": 20,
+      "tags": [
+        "pandas",
+        "pipelines",
+        "joins"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "check the join keys are unique",
+        "load both CSVs",
+        "group by city and sum revenue",
+        "compare row counts before and after",
+        "merge on customer_id"
+      ],
+      "answer": [
+        "load both CSVs",
+        "check the join keys are unique",
+        "merge on customer_id",
+        "compare row counts before and after",
+        "group by city and sum revenue"
+      ],
+      "accept": []
+    }
+  ]
+}

@@ -41,6 +41,17 @@ class CurriculumParseTest {
     }
 
     @Test
+    fun `every question carries Pytor's hints and deep note`() {
+        curriculumFiles().forEach { file ->
+            val tier = json.decodeFromString(Tier.serializer(), file.readText())
+            tier.questions.forEach { question ->
+                assertTrue("${question.id} has no hints", question.hints.isNotEmpty())
+                assertTrue("${question.id} has no deep note", !question.deep.isNullOrBlank())
+            }
+        }
+    }
+
+    @Test
     fun `typed questions resolve every block they name`() {
         curriculumFiles().forEach { file ->
             val tier = json.decodeFromString(Tier.serializer(), file.readText())

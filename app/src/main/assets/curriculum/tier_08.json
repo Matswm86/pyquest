@@ -2,6 +2,14 @@
   "tier": 8,
   "title": "AI consultancy sims",
   "subtitle": "Scoping, budgets, evals and failure triage under a client brief",
+  "lessons": [
+    "scoping",
+    "architecture",
+    "budgets",
+    "handover"
+  ],
+  "pytor": "Every question here is a client brief. The budget readouts are the design review, the golden set is the contract, and the word you will say most is measured.",
+  "capstone": true,
   "questions": [
     {
       "id": "t8.l1.q1",
@@ -9,23 +17,28 @@
       "level": 1,
       "type": "mcq",
       "prompt": "A Norwegian law firm has 40,000 PDFs, wants internal question answering, the data may not leave the EU, the budget is 150,000 NOK and they want it live in six weeks. What do you propose?",
-      "options": [
-        "Retrieval over the PDFs with an EU-hosted model",
-        "Fine-tune an open model on the 40,000 PDFs",
-        "Paste the relevant documents into a long-context prompt on every query",
-        "Train a model from scratch on Norwegian legal text"
-      ],
-      "answer": [
-        "Retrieval over the PDFs with an EU-hosted model"
-      ],
       "explain": "Fine-tuning teaches style and format, not retrievable facts, and has to be redone whenever the corpus changes. Long-context-per-query still needs retrieval to choose the documents and multiplies the token bill. Training from scratch costs years and millions. Retrieval against an EU-hosted endpoint is the only option that meets residency, budget and timeline at once.",
+      "hints": [
+        "Four constraints: residency, budget, timeline, and facts that live in documents. Which option satisfies all four?",
+        "Ask of each option: what happens when a new PDF arrives next month?"
+      ],
+      "deep": "The consultant's first job is to map constraints to architecture before anyone says the word model. Residency rules out US-region endpoints without a data-processing agreement; budget and six weeks rule out training; a changing corpus rules out baking facts into weights. Say this in the proposal, in that order, and the client learns to reason the same way.",
       "xp": 40,
       "tags": [
         "scoping",
         "rag-vs-finetune",
         "data-residency"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "options": [
+        "Retrieval over the PDFs with an EU-hosted model",
+        "Fine-tune an open model on the 40,000 PDFs",
+        "Train a model from scratch on Norwegian legal text",
+        "Paste the relevant documents into a long-context prompt on every query"
+      ],
+      "answer": [
+        "Retrieval over the PDFs with an EU-hosted model"
+      ]
     },
     {
       "id": "t8.l1.q2",
@@ -33,22 +46,27 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Each request sends 40,000 input tokens and returns 800 output tokens, and the client expects 12,000 requests a month. Input costs $3 per million tokens and output $15 per million. What is the monthly model bill?",
-      "options": [
-        "$1,584",
-        "$1,440",
-        "$158.40",
-        "$1,468.80"
-      ],
-      "answer": [
-        "$1,584"
-      ],
       "explain": "Input is 40,000 x 12,000 = 480 million tokens, which is 480 x $3 = $1,440. Output is 800 x 12,000 = 9.6 million tokens, which is 9.6 x $15 = $144. The total is $1,584. $1,440 forgets output entirely and $1,468.80 prices output at the input rate.",
+      "hints": [
+        "Work out input and output separately, in millions of tokens.",
+        "Output has its own, higher price per million."
+      ],
+      "deep": "Ninety-one percent of this bill is input, so 40,000 tokens per request is the number to attack: retrieve fewer chunks, cache the stable prefix, shorten the system prompt. Put the arithmetic in the proposal with the assumptions visible; a client who can check your numbers trusts the ones they cannot.",
       "xp": 40,
       "tags": [
         "cost",
         "token-math"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "options": [
+        "$158.40",
+        "$1,440",
+        "$1,468.80",
+        "$1,584"
+      ],
+      "answer": [
+        "$1,584"
+      ]
     },
     {
       "id": "t8.l1.q3",
@@ -56,13 +74,25 @@
       "level": 1,
       "type": "blocks",
       "prompt": "Assemble the evaluation harness the client's procurement team will accept. Leave out anything that is not evidence.",
+      "explain": "A fixed question set comes first because nothing else is measurable without it. The rubric defines what good means, the automated judge applies it at scale, the regression run makes it a gate rather than a one-off, and cost plus latency logging is what procurement actually signs against. A vibe check is not evidence.",
+      "hints": [
+        "Start with the thing every other piece depends on: something to measure against.",
+        "One tray block would embarrass you in front of procurement."
+      ],
+      "deep": "The order is a dependency chain: no rubric without questions, no judge without a rubric, no regression gate without a judge, and no SLA without logging. Procurement wants a number and a way to re-check it after you leave. Deliver the harness as code in their repo, not as a slide.",
+      "xp": 45,
+      "tags": [
+        "evals",
+        "procurement"
+      ],
+      "reviewed": "2026-09-05",
       "tray": [
         "vibe check in the chat window",
-        "golden question set",
-        "human rubric",
-        "automated judge",
         "regression run on every deploy",
-        "cost and latency logging"
+        "automated judge",
+        "golden question set",
+        "cost and latency logging",
+        "human rubric"
       ],
       "answer": [
         "golden question set",
@@ -71,14 +101,7 @@
         "regression run on every deploy",
         "cost and latency logging"
       ],
-      "accept": [],
-      "explain": "A fixed question set comes first because nothing else is measurable without it. The rubric defines what good means, the automated judge applies it at scale, the regression run makes it a gate rather than a one-off, and cost plus latency logging is what procurement actually signs against. A vibe check is not evidence.",
-      "xp": 45,
-      "tags": [
-        "evals",
-        "procurement"
-      ],
-      "reviewed": "2026-09-04"
+      "accept": []
     },
     {
       "id": "t8.l1.q4",
@@ -86,12 +109,24 @@
       "level": 1,
       "type": "blocks",
       "prompt": "Order the ingestion pipeline. One block belongs to query time, not ingestion.",
+      "explain": "Re-ranking scores candidates that came back from a search, so it can only happen once a query exists. Putting it in the ingestion path is the mistake this level is built to catch.",
+      "hints": [
+        "Ingestion prepares documents before any user asks anything.",
+        "One block needs a query to make sense. Which one?"
+      ],
+      "deep": "Ingestion and query are two pipelines with one shared contract: the chunk. Anything that needs a question (re-ranking, query rewriting, generation) is query-time; anything that needs only documents (parsing, chunking, embedding, metadata) is ingest-time. Draw them as two boxes and the client stops asking why re-indexing takes a night.",
+      "xp": 45,
+      "tags": [
+        "rag",
+        "pipeline"
+      ],
+      "reviewed": "2026-09-05",
       "tray": [
+        "load the PDF",
         "embed chunks",
         "split into chunks",
-        "re-rank results",
-        "load the PDF",
-        "upsert to the vector store"
+        "upsert to the vector store",
+        "re-rank results"
       ],
       "answer": [
         "load the PDF",
@@ -99,14 +134,7 @@
         "embed chunks",
         "upsert to the vector store"
       ],
-      "accept": [],
-      "explain": "Re-ranking scores candidates that came back from a search, so it can only happen once a query exists. Putting it in the ingestion path is the mistake this level is built to catch.",
-      "xp": 45,
-      "tags": [
-        "rag",
-        "pipeline"
-      ],
-      "reviewed": "2026-09-04"
+      "accept": []
     },
     {
       "id": "t8.l1.q5",
@@ -114,22 +142,27 @@
       "level": 1,
       "type": "mcq",
       "prompt": "Two weeks after launch the client reports the assistant is inventing case numbers. What do you check first?",
-      "options": [
-        "Whether the retrieved chunks actually contain the answer",
-        "Whether temperature is set above zero",
-        "Whether a larger model would score better",
-        "Whether the system prompt says not to make things up"
-      ],
-      "answer": [
-        "Whether the retrieved chunks actually contain the answer"
-      ],
       "explain": "Most invented facts in a retrieval system are a retrieval miss: nothing relevant came back and the model filled the gap. Measure retrieval hit rate on the exact failing questions before you touch temperature, model size, or prompt wording, or you will spend the budget tuning generation to cover a search bug.",
+      "hints": [
+        "Where would a correct case number have to come from?",
+        "Debug the pipeline from the input side, not the output side."
+      ],
+      "deep": "Pull the retrieved chunk ids for the failing queries from the logs. If the right chunk was not retrieved, it is a search problem: chunking, embedding version, filters. If it was retrieved and ignored, it is a prompt or context-length problem. Without per-request chunk logging you cannot tell, which is why logging is in the harness.",
       "xp": 40,
       "tags": [
         "failure-triage",
         "hallucination"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "options": [
+        "Whether temperature is set above zero",
+        "Whether the system prompt says not to make things up",
+        "Whether the retrieved chunks actually contain the answer",
+        "Whether a larger model would score better"
+      ],
+      "answer": [
+        "Whether the retrieved chunks actually contain the answer"
+      ]
     },
     {
       "id": "t8.l1.q6",
@@ -137,22 +170,27 @@
       "level": 1,
       "type": "mcq",
       "prompt": "The contract sets p95 response time under 2 seconds and you are measuring 6. Which change buys the most?",
-      "options": [
-        "Stream tokens to the UI and shrink the retrieved context",
-        "Retrieve 40 chunks instead of 8 so answers are better grounded",
-        "Add a second model pass that checks the first answer",
-        "Put the whole corpus in the prompt and skip retrieval"
-      ],
-      "answer": [
-        "Stream tokens to the UI and shrink the retrieved context"
-      ],
       "explain": "Streaming changes time-to-first-token, which is what a user experiences as speed, and a smaller context cuts real prefill time. The other three each add work: more chunks means more prefill, a second pass doubles the round trips, and a whole-corpus prompt is the slowest and most expensive option on the list.",
+      "hints": [
+        "Three options add work. One removes it.",
+        "What does the user perceive as the answer starting?"
+      ],
+      "deep": "Break the 6 seconds down before choosing: queueing, retrieval, re-ranking, prefill, decode. Prefill scales with input tokens, decode with output tokens. Streaming hides decode; trimming input cuts prefill. If retrieval itself is 3 seconds, the fix is the index, not the model. Measure per stage, then pick the lever.",
       "xp": 40,
       "tags": [
         "latency",
         "sla"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "options": [
+        "Stream tokens to the UI and shrink the retrieved context",
+        "Put the whole corpus in the prompt and skip retrieval",
+        "Retrieve 40 chunks instead of 8 so answers are better grounded",
+        "Add a second model pass that checks the first answer"
+      ],
+      "answer": [
+        "Stream tokens to the UI and shrink the retrieved context"
+      ]
     },
     {
       "id": "t8.l1.q7",
@@ -160,6 +198,20 @@
       "level": 1,
       "type": "pipeline",
       "prompt": "Wire the ticket-routing pipeline inside the client's budget.",
+      "explain": "Redaction goes first, because every stage after it would otherwise see raw personal data. Retrieval then gives the classifier past tickets to reason from, and the escalation route is what keeps the low-confidence cases from being routed wrongly. That wiring costs 660 ms and EUR 0.0029, inside both ceilings. Swap the small classifier for the self-hosted 7B and you are at 1140 ms and EUR 0.0042, over on latency and over on cost at the same time.",
+      "hints": [
+        "Watch the two readouts as you place stages; coral means a ceiling is breached.",
+        "Personal data must be handled before anything else reads the ticket.",
+        "A routing system needs somewhere to send the cases it is not sure about."
+      ],
+      "deep": "Four stages, two budgets, six candidates: this is the shape of every architecture decision. The self-hosted 7B looks like the serious choice and breaches both ceilings; the small classifier plus retrieval beats it on this task because routing is a narrow problem. Escalation is not a failure path, it is the accuracy guarantee. Pytor's rule: the budget readout is the design review.",
+      "xp": 80,
+      "tags": [
+        "pipeline",
+        "budgets",
+        "architecture"
+      ],
+      "reviewed": "2026-09-05",
       "brief": {
         "client": "Nordic Logistics AS",
         "initials": "NL",
@@ -176,52 +228,52 @@
       },
       "blocks": [
         {
-          "id": "pii",
-          "code": "PII redaction",
-          "plain": "strip personal data",
-          "kind": "stage",
-          "ms": 40,
-          "cost": 0.0002
-        },
-        {
           "id": "knn",
           "code": "Embed + kNN retrieve",
-          "plain": "find similar past tickets",
           "kind": "stage",
           "ms": 180,
-          "cost": 0.0005
-        },
-        {
-          "id": "small",
-          "code": "Small-model classifier",
-          "plain": "a small model picks the queue",
-          "kind": "stage",
-          "ms": 420,
-          "cost": 0.0018
+          "cost": 0.0005,
+          "plain": "find similar past tickets"
         },
         {
           "id": "rerank",
           "code": "Cross-encoder re-rank",
-          "plain": "re-score the matches",
           "kind": "stage",
           "ms": 310,
-          "cost": 0.0009
-        },
-        {
-          "id": "ft7b",
-          "code": "Self-hosted 7B",
-          "plain": "a big model you run yourself",
-          "kind": "stage",
-          "ms": 900,
-          "cost": 0.0031
+          "cost": 0.0009,
+          "plain": "re-score the matches"
         },
         {
           "id": "esc",
           "code": "Human escalation route",
-          "plain": "hand the hard ones to a person",
           "kind": "stage",
           "ms": 20,
-          "cost": 0.0004
+          "cost": 0.0004,
+          "plain": "hand the hard ones to a person"
+        },
+        {
+          "id": "small",
+          "code": "Small-model classifier",
+          "kind": "stage",
+          "ms": 420,
+          "cost": 0.0018,
+          "plain": "a small model picks the queue"
+        },
+        {
+          "id": "pii",
+          "code": "PII redaction",
+          "kind": "stage",
+          "ms": 40,
+          "cost": 0.0002,
+          "plain": "strip personal data"
+        },
+        {
+          "id": "ft7b",
+          "code": "Self-hosted 7B",
+          "kind": "stage",
+          "ms": 900,
+          "cost": 0.0031,
+          "plain": "a big model you run yourself"
         }
       ],
       "answer": [
@@ -230,22 +282,476 @@
         "small",
         "esc"
       ],
-      "accept": [],
-      "explain": "Redaction goes first, because every stage after it would otherwise see raw personal data. Retrieval then gives the classifier past tickets to reason from, and the escalation route is what keeps the low-confidence cases from being routed wrongly. That wiring costs 660 ms and EUR 0.0029, inside both ceilings. Swap the small classifier for the self-hosted 7B and you are at 1140 ms and EUR 0.0042, over on latency and over on cost at the same time.",
+      "accept": []
+    },
+    {
+      "id": "t8.l2.q1",
+      "tier": 8,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "The client's CTO says: we want to train our own GPT on our documents. What do you say?",
+      "explain": "The request is a goal wearing the wrong solution. Reframe to the outcome, propose the architecture that reaches it, and leave the door open with evidence rather than opinion.",
+      "hints": [
+        "What does the CTO actually want: a trained model, or answers from their documents?",
+        "Never argue with a client about methods. Argue with numbers."
+      ],
+      "deep": "Translate every technology request into an outcome and a metric. Training their own model would cost more, take longer, go stale, and still hallucinate; retrieval answers from live documents with citations. Offer the comparison as a table in the proposal, and put fine-tuning in a phase-2 box so nobody feels overruled.",
+      "xp": 40,
+      "tags": [
+        "scoping",
+        "client-management",
+        "rag-vs-finetune"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Suggest they wait for a better model",
+        "Agree, and quote for a fine-tuning project",
+        "Refuse and walk away",
+        "Explain that retrieval gets their documents into answers this quarter, propose a measured pilot, and keep fine-tuning as a later option for style if the evals show a need"
+      ],
+      "answer": [
+        "Explain that retrieval gets their documents into answers this quarter, propose a measured pilot, and keep fine-tuning as a later option for style if the evals show a need"
+      ]
+    },
+    {
+      "id": "t8.l2.q2",
+      "tier": 8,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Which setup keeps the data in the EU?",
+      "explain": "Residency is a legal and physical fact: where the data is processed and under what contract. Only an EU-region deployment with the right agreement, or self-hosting in the EU, satisfies it.",
+      "hints": [
+        "Where are the bytes processed, and what does the contract say about them?",
+        "A model cannot answer questions about text it cannot read."
+      ],
+      "deep": "Ask the provider three things in writing: processing region, whether prompts are retained or used for training, and whether a DPA under GDPR is available. Self-hosting on EU hardware (Hetzner, OVH, a national cloud) trades convenience for control. Document the answer in the architecture, because the client's auditor will ask.",
+      "xp": 40,
+      "tags": [
+        "data-residency",
+        "compliance",
+        "architecture"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Encrypting the prompt before sending it so the model cannot read it",
+        "An EU-region endpoint under a data-processing agreement that excludes training on your data, or a model self-hosted in an EU data centre",
+        "Running the model on the consultant's laptop",
+        "A US endpoint whose terms say they take privacy seriously"
+      ],
+      "answer": [
+        "An EU-region endpoint under a data-processing agreement that excludes training on your data, or a model self-hosted in an EU data centre"
+      ]
+    },
+    {
+      "id": "t8.l2.q3",
+      "tier": 8,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Six-week timeline. What is the right week-one deliverable?",
+      "explain": "Everything after week one is measured against the golden set. Building it with the client first turns quality from an argument into a number.",
+      "hints": [
+        "What must exist before you can say any later week went well?",
+        "Interfaces and prompts can be changed cheaply; a missing yardstick cannot be recovered later."
+      ],
+      "deep": "Co-writing the golden set forces the client to define good answers and reveals the questions they really care about. The baseline (retrieval recall, a first answer quality score) becomes the number every later demo improves on. Consultants who skip this end up defending vibes at the acceptance meeting.",
+      "xp": 40,
+      "tags": [
+        "planning",
+        "evals",
+        "client-management"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "A fine-tuned model",
+        "A 30-question golden set agreed with the client and a measured retrieval baseline on it",
+        "The final system prompt",
+        "A polished chat interface"
+      ],
+      "answer": [
+        "A 30-question golden set agreed with the client and a measured retrieval baseline on it"
+      ]
+    },
+    {
+      "id": "t8.l2.q4",
+      "tier": 8,
+      "level": 2,
+      "type": "blocks",
+      "prompt": "Assemble the security controls for a customer-facing assistant. One block is not a control.",
+      "explain": "Redact before data spreads, isolate tenants where the query runs, test injection like any other bug class, verify grounding on output, and cap abuse. A system prompt is a request to the model, not a control.",
+      "hints": [
+        "A control is something enforced by code, not by asking the model nicely.",
+        "Think in layers: ingest, retrieval, testing, output, abuse."
+      ],
+      "deep": "Defence in depth for LLM systems mirrors web security: validate at the boundary, enforce authorisation in the data layer, test adversarial inputs, verify outputs, limit blast radius. The tenant filter belongs in the index query itself; filtering after retrieval leaves the wrong tenant's chunks in the top-k list and one bug away from the prompt.",
+      "xp": 45,
+      "tags": [
+        "security",
+        "architecture",
+        "multi-tenant"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "prompt-injection cases in the eval suite",
+        "PII redaction at ingest",
+        "rate limiting per user",
+        "trust the system prompt to block leaks",
+        "tenant filter enforced inside the index query",
+        "citation check on every answer"
+      ],
+      "answer": [
+        "PII redaction at ingest",
+        "tenant filter enforced inside the index query",
+        "prompt-injection cases in the eval suite",
+        "citation check on every answer",
+        "rate limiting per user"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t8.l2.q5",
+      "tier": 8,
+      "level": 2,
+      "type": "fill",
+      "prompt": "Fill the gap so a user can only ever retrieve their own company's documents.",
+      "explain": "The filter must come from the authenticated request, not from anything the caller can type. request.body is user input.",
+      "hints": [
+        "Which value did the server verify, and which did the user supply?",
+        "A wildcard or None filter returns every tenant's documents."
+      ],
+      "deep": "This is the LLM version of an IDOR bug: authorisation data must come from the session the server established, never from the payload. Test it explicitly: a golden-set question that asks for another tenant's document must return the abstain phrase. Put that test in CI and in the handover.",
+      "xp": 40,
+      "tags": [
+        "security",
+        "multi-tenant",
+        "retrieval"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "results = index.search(\n    vector=query_vec,\n    filter={\"tenant_id\": {0}},\n    top_k=8,\n)",
+      "blocks": [
+        {
+          "id": "body",
+          "code": "request.body[\"tenant_id\"]",
+          "kind": "expr",
+          "plain": "a tenant id the caller typed"
+        },
+        {
+          "id": "tenant",
+          "code": "request.tenant_id",
+          "kind": "var",
+          "plain": "the caller's verified tenant"
+        },
+        {
+          "id": "none",
+          "code": "None",
+          "kind": "expr"
+        },
+        {
+          "id": "star",
+          "code": "\"*\"",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "tenant"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t8.l2.q6",
+      "tier": 8,
+      "level": 2,
+      "type": "pipeline",
+      "prompt": "Wire the adviser question-answering pipeline so it cites sources, stays in the EU and fits the budget.",
+      "explain": "Redact, retrieve wide with hybrid search, re-rank narrow, generate on an EU-hosted model with streaming, then verify every citation against the chunks. That is 1,830 ms and EUR 0.0144. The frontier model breaks residency, latency and cost at once; the self-hosted 70B fits the cost ceiling but pushes p95 to 2,530 ms; fifty un-ranked chunks make generation slower and answers worse.",
+      "hints": [
+        "Residency is a constraint, not a preference: one block violates it outright.",
+        "Retrieve wide, then narrow, then generate, then verify.",
+        "Watch both readouts and the constraint chips as you place stages."
+      ],
+      "deep": "The tempting choices are the big ones, and both fail: the frontier model on residency, the 70B on latency by 30 ms, which is exactly the margin a contract is lost on. The mid-size EU model wins because re-ranking does the hard work before generation. The citation check costs 30 ms and is the control that makes the cited-page promise true rather than hoped.",
       "xp": 80,
       "tags": [
         "pipeline",
         "budgets",
-        "architecture"
+        "architecture",
+        "data-residency"
       ],
-      "reviewed": "2026-09-04"
+      "reviewed": "2026-09-05",
+      "brief": {
+        "client": "Vestkyst Forsikring",
+        "initials": "VF",
+        "quote": "Our advisers search 12,000 policy documents by hand. Answers must show the source page, nothing leaves the EU, and the console has to feel instant.",
+        "constraints": [
+          "p95 < 2.5 s",
+          "at most EUR 0.02 per question",
+          "EU residency",
+          "every answer cites a page"
+        ],
+        "stages": 5,
+        "maxMs": 2500,
+        "maxCost": 0.02,
+        "currency": "EUR"
+      },
+      "blocks": [
+        {
+          "id": "cite",
+          "code": "Citation check vs chunks",
+          "kind": "stage",
+          "ms": 30,
+          "cost": 0.0001,
+          "plain": "verify every cited page exists"
+        },
+        {
+          "id": "gen",
+          "code": "EU-hosted model, streamed",
+          "kind": "stage",
+          "ms": 1400,
+          "cost": 0.012,
+          "plain": "a mid-size model in an EU region"
+        },
+        {
+          "id": "rerank",
+          "code": "Cross-encoder re-rank to 6",
+          "kind": "stage",
+          "ms": 250,
+          "cost": 0.0015,
+          "plain": "keep the six best chunks"
+        },
+        {
+          "id": "pii",
+          "code": "Redact PII in the question",
+          "kind": "stage",
+          "ms": 30,
+          "cost": 0.0002,
+          "plain": "strip personal data from the question"
+        },
+        {
+          "id": "ft70",
+          "code": "Fine-tuned 70B, self-hosted",
+          "kind": "stage",
+          "ms": 2100,
+          "cost": 0.019,
+          "plain": "a large model you run yourself"
+        },
+        {
+          "id": "frontier",
+          "code": "Frontier model, US region",
+          "kind": "stage",
+          "ms": 2600,
+          "cost": 0.045,
+          "plain": "the biggest model, hosted outside the EU"
+        },
+        {
+          "id": "k50",
+          "code": "Retrieve top 50, no re-rank",
+          "kind": "stage",
+          "ms": 200,
+          "cost": 0.001,
+          "plain": "many chunks straight into the prompt"
+        },
+        {
+          "id": "hybrid",
+          "code": "Hybrid retrieve, top 30",
+          "kind": "stage",
+          "ms": 120,
+          "cost": 0.0006,
+          "plain": "keyword plus vector search"
+        }
+      ],
+      "answer": [
+        "pii",
+        "hybrid",
+        "rerank",
+        "gen",
+        "cite"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t8.l3.q1",
+      "tier": 8,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "The monthly bill quadrupled in month two with the same request count. First check?",
+      "explain": "Cost is tokens times price. Same requests, higher bill means more tokens per request, and the logs show which stage added them.",
+      "hints": [
+        "Bill equals tokens times price. Which side changed?",
+        "Find the cause before choosing a fix."
+      ],
+      "deep": "Typical culprits: retrieval k was raised, a prompt gained a long example block, chat history stopped being trimmed, or the cache stopped hitting after a system-prompt edit. Cost per request by stage is a dashboard, not a spreadsheet you build during an incident. Alert on a 30 percent week-over-week rise.",
+      "xp": 40,
+      "tags": [
+        "cost",
+        "operations",
+        "observability"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Whether the vendor raised prices",
+        "Per-request input token counts in the logs, to find which stage grew",
+        "Adding a cache and hoping",
+        "Switching to a smaller model immediately"
+      ],
+      "answer": [
+        "Per-request input token counts in the logs, to find which stage grew"
+      ]
+    },
+    {
+      "id": "t8.l3.q2",
+      "tier": 8,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "Answer quality dropped after the client uploaded 5,000 new documents. Most likely cause?",
+      "explain": "Two ingestion runs with different chunking or a different embedding model version produce an index that is inconsistent with itself. The golden-set recall check finds it in minutes.",
+      "hints": [
+        "What changed: the model, or the data pipeline?",
+        "There is a script in the harness built for exactly this."
+      ],
+      "deep": "Pin the embedding model version and the chunking parameters in the index metadata and refuse to upsert anything that does not match. Re-run recall after every ingest as a gate. This is why the harness ships with the system: the failure is invisible without it and trivial with it.",
+      "xp": 40,
+      "tags": [
+        "retrieval",
+        "operations",
+        "evals"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "The new documents were chunked or embedded differently from the original index; the recall check will show it",
+        "The vector database is full",
+        "Users started asking harder questions",
+        "The model became worse"
+      ],
+      "answer": [
+        "The new documents were chunked or embedded differently from the original index; the recall check will show it"
+      ]
+    },
+    {
+      "id": "t8.l3.q3",
+      "tier": 8,
+      "level": 3,
+      "type": "order",
+      "prompt": "The assistant showed one customer another customer's document. Order the response.",
+      "explain": "Contain, understand, fix with a regression test, verify, then communicate with a written record.",
+      "hints": [
+        "Stop the bleeding before diagnosing.",
+        "A fix without a test that reproduces the bug is a guess."
+      ],
+      "deep": "A kill switch is a design requirement, not an afterthought: the ability to turn the assistant off in one action. The post-mortem is blameless and specific: what happened, when, how it was detected, what changed. Under GDPR a personal-data breach may also carry a 72-hour notification duty; the consultant flags it, the client's DPO decides.",
+      "xp": 45,
+      "tags": [
+        "incident-response",
+        "security",
+        "operations"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "verify on the golden set and the new test, then re-enable",
+        "disable the feature behind the kill switch",
+        "fix the filter at the index query and add a test that reproduces the leak",
+        "pull the request logs and confirm how the tenant filter was bypassed",
+        "write the post-mortem and notify the client with the timeline"
+      ],
+      "answer": [
+        "disable the feature behind the kill switch",
+        "pull the request logs and confirm how the tenant filter was bypassed",
+        "fix the filter at the index query and add a test that reproduces the leak",
+        "verify on the golden set and the new test, then re-enable",
+        "write the post-mortem and notify the client with the timeline"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t8.l3.q4",
+      "tier": 8,
+      "level": 3,
+      "type": "blocks",
+      "prompt": "Assemble the handover package. One block does not belong.",
+      "explain": "A handover is what lets the client run the system without you. Operations, measurement, understanding, visibility, and who to call. Your chat logs are not documentation.",
+      "hints": [
+        "Ask of each block: does the client need it at 3 a.m. when something breaks?"
+      ],
+      "deep": "Handover quality is what turns a pilot into a reference customer. Everything should live in the client's repository and accounts, not yours, including API keys and the vector index. Walk the on-call engineer through the runbook live and watch them do a rollback; if they cannot, the runbook is not finished.",
+      "xp": 45,
+      "tags": [
+        "handover",
+        "operations",
+        "documentation"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "eval harness and golden set in the client's repo",
+        "cost and latency dashboard",
+        "on-call escalation path",
+        "the chat history from the build",
+        "architecture diagram with every data flow and region",
+        "runbook with restart, rollback and kill switch"
+      ],
+      "answer": [
+        "runbook with restart, rollback and kill switch",
+        "eval harness and golden set in the client's repo",
+        "architecture diagram with every data flow and region",
+        "cost and latency dashboard",
+        "on-call escalation path"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t8.l3.q5",
+      "tier": 8,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "How do you price the six-week engagement?",
+      "explain": "A fixed scope with measurable acceptance protects both sides: the client knows the cost, you know when you are done, and done is a number.",
+      "hints": [
+        "What makes done unambiguous?",
+        "The evals you built in week one are also the contract."
+      ],
+      "deep": "Acceptance criteria written as metrics on the golden set remove the biggest risk in AI consulting: the client who is never quite satisfied. Add a change-control clause for scope growth and a separate retainer for operations. Quote the model costs as pass-through with the token maths attached.",
+      "xp": 40,
+      "tags": [
+        "pricing",
+        "client-management",
+        "contracts"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Free, in exchange for a testimonial",
+        "Fixed price for a defined pilot with acceptance criteria measured on the golden set: recall, answer quality, p95 and cost per request",
+        "A share of the client's future revenue",
+        "Hourly with no end date"
+      ],
+      "answer": [
+        "Fixed price for a defined pilot with acceptance criteria measured on the golden set: recall, answer quality, p95 and cost per request"
+      ]
+    },
+    {
+      "id": "t8.l3.q6",
+      "tier": 8,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "The client asks for a guarantee that the assistant is 100 percent accurate. Your answer?",
+      "explain": "No probabilistic system is 100 percent accurate. Honest targets plus designed fallbacks are what a professional offers instead.",
+      "hints": [
+        "What can you actually measure and promise?",
+        "The design can make wrong answers rare and visible; it cannot make them impossible."
+      ],
+      "deep": "Reframe accuracy as a system property: retrieval recall, grounded-answer rate, abstention rate, and a human loop for high-stakes queries. Show the confusion matrix from the golden set. A client who hears no with a better offer trusts you more than one who hears yes and finds out later. Pytor's last rule: never promise a number you have not measured.",
+      "xp": 40,
+      "tags": [
+        "client-management",
+        "risk",
+        "evals"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "Offer 99 percent and hope",
+        "Agree, the model is very good",
+        "Suggest a bigger model to reach 100 percent",
+        "Decline the guarantee and offer measured targets, abstention on low confidence, and a human-review path for the cases that matter"
+      ],
+      "answer": [
+        "Decline the guarantee and offer measured targets, abstention on low confidence, and a human-review path for the cases that matter"
+      ]
     }
-  ],
-  "lessons": [
-    "scoping",
-    "architecture",
-    "budgets",
-    "handover"
-  ],
-  "capstone": true
+  ]
 }

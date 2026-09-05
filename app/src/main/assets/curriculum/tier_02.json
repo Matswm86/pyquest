@@ -1,0 +1,976 @@
+{
+  "tier": 2,
+  "title": "Types & collections",
+  "subtitle": "Numbers, strings, lists, dicts, sets and the slice",
+  "lessons": [
+    "int / float",
+    "strings",
+    "lists",
+    "dicts & sets",
+    "slicing"
+  ],
+  "pytor": "Everything in Python is an object with a type, and the type decides what + and [ ] mean. Get the containers under your fingers now; every later tier is built from them.",
+  "questions": [
+    {
+      "id": "t2.l1.q1",
+      "tier": 2,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "print(7 / 2)",
+      "explain": "A single slash is true division and always gives a float, even when the numbers divide evenly.",
+      "hints": [
+        "There are two kinds of division in Python, and this is the one that keeps the remainder."
+      ],
+      "deep": "Python 3 made / always return a float (PEP 238), fixing the Python 2 trap where 7 / 2 was 3. Floor division is the separate // operator. Even 6 / 2 gives 3.0, not 3, so an int is only guaranteed by // or int().",
+      "xp": 10,
+      "tags": [
+        "types",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "3",
+        "3.5",
+        "3.0",
+        "4"
+      ],
+      "answer": [
+        "3.5"
+      ]
+    },
+    {
+      "id": "t2.l1.q2",
+      "tier": 2,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "print(7 // 2)",
+      "explain": "Double slash is floor division: it divides and rounds down to the nearest whole number.",
+      "hints": [
+        "Two slashes throw the fraction away.",
+        "Rounding down, not rounding to nearest."
+      ],
+      "deep": "// rounds toward negative infinity, not toward zero: -7 // 2 is -4, and Python's % is defined so that a == (a // b) * b + a % b always holds. That is why -7 % 2 is 1, not -1 as in C. divmod(a, b) returns both at once.",
+      "xp": 10,
+      "tags": [
+        "types",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "3.5",
+        "4",
+        "3",
+        "1"
+      ],
+      "answer": [
+        "3"
+      ]
+    },
+    {
+      "id": "t2.l1.q3",
+      "tier": 2,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does 7 % 3 give?",
+      "explain": "Percent is the remainder after division: 3 goes into 7 twice with 1 left over.",
+      "hints": [
+        "Think of the leftover after fitting as many 3s as possible into 7."
+      ],
+      "deep": "Modulo is the workhorse of periodic logic: n % 2 == 0 tests evenness, i % width wraps a grid, seconds % 60 gives the seconds hand. For negative numbers Python's result takes the sign of the divisor, which is what you want for wrapping.",
+      "xp": 10,
+      "tags": [
+        "types",
+        "arithmetic"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "2",
+        "2.33",
+        "0",
+        "1"
+      ],
+      "answer": [
+        "1"
+      ]
+    },
+    {
+      "id": "t2.l1.q4",
+      "tier": 2,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "x = 42\nprint(type(x))",
+      "explain": "type() returns the class of the object, and print shows it in angle brackets.",
+      "hints": [
+        "type() gives back a class object, and printing a class shows its name in brackets."
+      ],
+      "deep": "type(x) is x.__class__: every object carries a pointer to its type, and every type is itself an object (an instance of type). For checks in real code prefer isinstance(x, int), which also accepts subclasses such as bool.",
+      "xp": 10,
+      "tags": [
+        "types"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "42",
+        "int",
+        "<class 'float'>",
+        "<class 'int'>"
+      ],
+      "answer": [
+        "<class 'int'>"
+      ]
+    },
+    {
+      "id": "t2.l1.q5",
+      "tier": 2,
+      "level": 1,
+      "type": "mcq",
+      "prompt": "Which line fails with TypeError?",
+      "explain": "Python never guesses whether you meant text or a number, so adding a string to an integer is an error.",
+      "hints": [
+        "Python does not silently turn text into numbers or numbers into text.",
+        "Look for the line that mixes quotes and no quotes."
+      ],
+      "deep": "Python is strongly typed: str + int raises TypeError instead of coercing, unlike JavaScript. int + float works because int is promoted to float by the numeric tower. Convert explicitly with int(\"3\") or str(4), or use an f-string.",
+      "xp": 10,
+      "tags": [
+        "types",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "\"3\" + \"4\"",
+        "\"3\" + 4",
+        "3 * 4.0",
+        "3 + 4.0"
+      ],
+      "answer": [
+        "\"3\" + 4"
+      ]
+    },
+    {
+      "id": "t2.l1.q6",
+      "tier": 2,
+      "level": 1,
+      "type": "fill",
+      "prompt": "Fill the gap so the sum is 7, not the text 34.",
+      "explain": "int(a) turns the text \"3\" into the number 3, and then + means addition rather than an error.",
+      "hints": [
+        "The text has to become a number before it can be added.",
+        "Which call converts text to an integer?"
+      ],
+      "deep": "int() parses a string in base 10 and raises ValueError on anything else, including \"3.0\" and \" 3 \" with a stray letter. For user input, parse once at the boundary, then work with numbers. Never let strings and numbers mix deep in the code.",
+      "xp": 20,
+      "tags": [
+        "types",
+        "conversion"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "a = \"3\"\nb = 4\nprint({0} + b)",
+      "blocks": [
+        {
+          "id": "bare",
+          "code": "a",
+          "kind": "var"
+        },
+        {
+          "id": "s",
+          "code": "str(a)",
+          "kind": "call"
+        },
+        {
+          "id": "conv",
+          "code": "int(a)",
+          "kind": "call"
+        },
+        {
+          "id": "f",
+          "code": "float(b)",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "conv"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t2.l2.q1",
+      "tier": 2,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "print(len(\"hello\"))",
+      "explain": "len counts characters, and hello has five.",
+      "hints": [
+        "Count the letters between the quotes."
+      ],
+      "deep": "len() calls the object's __len__, so it works on strings, lists, dicts and anything else that defines it. For str it counts code points, not bytes: len(\"å\") is 1 but len(\"å\".encode()) is 2. That distinction matters the moment text leaves Python.",
+      "xp": 10,
+      "tags": [
+        "strings"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "5",
+        "6",
+        "4",
+        "hello"
+      ],
+      "answer": [
+        "5"
+      ]
+    },
+    {
+      "id": "t2.l2.q2",
+      "tier": 2,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "word = \"hello\"\nprint(word[0])",
+      "explain": "Indexing starts at 0, so [0] is the first character.",
+      "hints": [
+        "Python starts counting positions at zero, not one."
+      ],
+      "deep": "Zero-based indexing is inherited from C, where an index is an offset from the start. It also makes slicing arithmetic clean: s[:n] has exactly n characters and s[n:] is the rest. s[-1] is the last character and s[len(s)] raises IndexError.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "indexing"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "h",
+        "hello",
+        "o",
+        "e"
+      ],
+      "answer": [
+        "h"
+      ]
+    },
+    {
+      "id": "t2.l2.q3",
+      "tier": 2,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "word = \"hello\"\nprint(word[-1])",
+      "explain": "A negative index counts from the end, and -1 is the last character.",
+      "hints": [
+        "Negative indexes count backwards from the end."
+      ],
+      "deep": "s[-k] is sugar for s[len(s) - k], resolved at runtime. It is the idiomatic way to get the last item and avoids the off-by-one of s[len(s) - 1]. It also works in slices: s[-3:] is the last three characters.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "indexing"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "o",
+        "An error",
+        "hello",
+        "l"
+      ],
+      "answer": [
+        "o"
+      ]
+    },
+    {
+      "id": "t2.l2.q4",
+      "tier": 2,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "print(\"ha\" * 3)",
+      "explain": "Multiplying a string by an integer repeats it that many times.",
+      "hints": [
+        "The * operator has a meaning for strings too."
+      ],
+      "deep": "str defines __mul__ for integers, so \"-\" * 40 draws a separator line. It works on lists as well, [0] * 5, which is convenient until the elements are mutable: [[]] * 3 gives three references to one list, the classic aliasing trap.",
+      "xp": 10,
+      "tags": [
+        "strings"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "hahaha",
+        "ha ha ha",
+        "ha3",
+        "An error"
+      ],
+      "answer": [
+        "hahaha"
+      ]
+    },
+    {
+      "id": "t2.l2.q5",
+      "tier": 2,
+      "level": 2,
+      "type": "mcq",
+      "prompt": "Why does this fail?",
+      "code": "word = \"hello\"\nword[0] = \"J\"",
+      "explain": "Strings are immutable, so assigning to a character raises TypeError. Build a new string instead.",
+      "hints": [
+        "Think about whether a string can be edited after it is created."
+      ],
+      "deep": "Immutability lets CPython hash strings once, intern common ones and share them freely between threads. To change one character build a new string: \"J\" + word[1:] or word.replace(\"h\", \"J\", 1). The same rule applies to tuples and bytes.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "immutability",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "You need double quotes",
+        "Index 0 does not exist",
+        "Strings cannot be changed in place; build a new one instead",
+        "It does not fail, it prints Jello"
+      ],
+      "answer": [
+        "Strings cannot be changed in place; build a new one instead"
+      ]
+    },
+    {
+      "id": "t2.l2.q6",
+      "tier": 2,
+      "level": 2,
+      "type": "fill",
+      "prompt": "Fill the gaps so the program prints HELLO WORLD.",
+      "explain": "upper() returns a new string with every letter in capitals.",
+      "hints": [
+        "The method name says what it does to the letters.",
+        "title() and capitalize() only change some letters."
+      ],
+      "deep": "String methods never modify the original, they return a new string, because str is immutable. Chain them freely: s.strip().lower().split(). capitalize() uppercases only the first character, title() the first of every word, and casefold() is the right choice for case-insensitive comparison.",
+      "xp": 20,
+      "tags": [
+        "strings",
+        "methods"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "greeting = \"hello world\"\nprint(greeting.{0}())",
+      "blocks": [
+        {
+          "id": "lower",
+          "code": "lower",
+          "kind": "call"
+        },
+        {
+          "id": "title",
+          "code": "title",
+          "kind": "call"
+        },
+        {
+          "id": "cap",
+          "code": "capitalize",
+          "kind": "call"
+        },
+        {
+          "id": "upper",
+          "code": "upper",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "upper"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t2.l3.q1",
+      "tier": 2,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "nums = [1, 2, 3]\nprint(nums[-1] * 2)",
+      "explain": "nums[-1] is the last element, 3, and 3 * 2 is 6.",
+      "hints": [
+        "Read the index first, then do the multiplication."
+      ],
+      "deep": "Index, then operate. Subscription binds tighter than *, so nums[-1] * 2 reads as (nums[-1]) * 2. Negative indexes are resolved at runtime by adding len(nums). This is the exact question from the game's design canvas.",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "indexing"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "-2",
+        "3",
+        "6",
+        "[3]"
+      ],
+      "answer": [
+        "6"
+      ]
+    },
+    {
+      "id": "t2.l3.q2",
+      "tier": 2,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "nums = [1, 2, 3]\nnums.append(4)\nprint(nums)",
+      "explain": "append adds one item to the end of the list, in place.",
+      "hints": [
+        "append changes the list itself rather than making a new one."
+      ],
+      "deep": "append is amortised O(1) because CPython over-allocates the list's backing array by about an eighth, so most appends do not reallocate. It returns None, which is a deliberate signal that it mutates rather than builds; nums = nums.append(4) is a classic bug that sets nums to None.",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "methods"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[1, 2, 3]",
+        "4",
+        "None",
+        "[1, 2, 3, 4]"
+      ],
+      "answer": [
+        "[1, 2, 3, 4]"
+      ]
+    },
+    {
+      "id": "t2.l3.q3",
+      "tier": 2,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "nums = [3, 1, 2]\nprint(nums.sort())",
+      "explain": "sort() sorts the list in place and returns None, so printing its result prints None.",
+      "hints": [
+        "In-place methods return nothing useful. What does Python print for nothing?",
+        "Compare sort() with the built-in sorted()."
+      ],
+      "deep": "sort() mutates and returns None; sorted() returns a new list and works on any iterable. Both use Timsort, which is stable and O(n log n) with linear time on already-sorted data. Use key=, never cmp: sorted(words, key=str.lower).",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "methods",
+        "sorting"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[3, 1, 2]",
+        "None",
+        "[1, 2, 3]",
+        "An error"
+      ],
+      "answer": [
+        "None"
+      ]
+    },
+    {
+      "id": "t2.l3.q4",
+      "tier": 2,
+      "level": 3,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "a = [1, 2, 3]\nb = a\nb[2] = 99\nprint(a)",
+      "explain": "b = a does not copy the list. Both names point at the same list, so a change through b shows through a.",
+      "hints": [
+        "Assignment copies the reference, not the contents.",
+        "How many list objects exist after line 2?"
+      ],
+      "deep": "Names are labels on objects; b = a binds a second label to the same list. Mutating through either label is visible through both. To copy: a.copy(), a[:], or list(a) for a shallow copy, and copy.deepcopy(a) when the list holds mutable items.",
+      "xp": 10,
+      "tags": [
+        "lists",
+        "aliasing",
+        "mutability"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "[1, 2, 99]",
+        "An error",
+        "[99]",
+        "[1, 2, 3]"
+      ],
+      "answer": [
+        "[1, 2, 99]"
+      ]
+    },
+    {
+      "id": "t2.l3.q5",
+      "tier": 2,
+      "level": 3,
+      "type": "blocks",
+      "prompt": "Build the line that removes and returns the last item of nums.",
+      "explain": "pop() with no argument removes the last element and hands it back, so it can be stored in a name.",
+      "hints": [
+        "The method is called on the list with a dot.",
+        "remove takes a value; you want the one that takes no argument and returns the item."
+      ],
+      "deep": "pop() from the end is O(1); pop(0) is O(n) because every remaining element shifts left. For a queue that pops from the front use collections.deque, whose popleft is O(1). remove(x) deletes the first match by value and returns None.",
+      "xp": 15,
+      "tags": [
+        "lists",
+        "methods"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "[-1]",
+        ")",
+        "nums",
+        "pop",
+        "(",
+        ".",
+        "last",
+        "=",
+        "remove"
+      ],
+      "answer": [
+        "last",
+        "=",
+        "nums",
+        ".",
+        "pop",
+        "(",
+        ")"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t2.l3.q6",
+      "tier": 2,
+      "level": 3,
+      "type": "fill",
+      "prompt": "Fill the gap so the program prints True.",
+      "explain": "in checks whether a value is one of the items, and \"pear\" is.",
+      "hints": [
+        "The item has to be written as text, with quotes.",
+        "One block would look up a variable that does not exist."
+      ],
+      "deep": "in on a list is a linear scan comparing with == in order, O(n). On a set or dict key it is a hash lookup, O(1) on average. When you test membership many times, build a set first. fruits[0] in fruits is also True but tests the wrong thing.",
+      "xp": 20,
+      "tags": [
+        "lists",
+        "membership"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "fruits = [\"apple\", \"pear\"]\nprint({0} in fruits)",
+      "blocks": [
+        {
+          "id": "pear",
+          "code": "\"pear\"",
+          "kind": "expr"
+        },
+        {
+          "id": "bare",
+          "code": "pear",
+          "kind": "var"
+        },
+        {
+          "id": "idx",
+          "code": "fruits[0]",
+          "kind": "expr"
+        },
+        {
+          "id": "len",
+          "code": "len(fruits)",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "pear"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t2.l4.q1",
+      "tier": 2,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "stock = {\"apple\": 3, \"pear\": 0}\nprint(stock[\"apple\"])",
+      "explain": "Square brackets with a key look up that key's value.",
+      "hints": [
+        "A dict maps keys to values; the bracket asks for the value behind a key."
+      ],
+      "deep": "dict lookup hashes the key and probes an open-addressing table, O(1) on average. Keys must be hashable, so strings, numbers and tuples work and lists do not. Since Python 3.7 dicts preserve insertion order as a language guarantee.",
+      "xp": 10,
+      "tags": [
+        "dicts"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "apple",
+        "An error",
+        "3",
+        "{'apple': 3}"
+      ],
+      "answer": [
+        "3"
+      ]
+    },
+    {
+      "id": "t2.l4.q2",
+      "tier": 2,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What happens here?",
+      "code": "stock = {\"apple\": 3}\nprint(stock[\"kiwi\"])",
+      "explain": "Reading a key that is not there raises KeyError. Use .get() when a missing key is normal.",
+      "hints": [
+        "Reading and writing a missing key behave differently."
+      ],
+      "deep": "d[k] raises KeyError so bugs surface early; d.get(k, default) returns the default silently; d.setdefault(k, default) inserts it. collections.defaultdict(list) makes grouping one line: groups[key].append(item). Choose based on whether a missing key is a bug or a normal case.",
+      "xp": 10,
+      "tags": [
+        "dicts",
+        "errors"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "It prints None",
+        "It adds kiwi with value None",
+        "KeyError, because there is no key called kiwi",
+        "It prints 0"
+      ],
+      "answer": [
+        "KeyError, because there is no key called kiwi"
+      ]
+    },
+    {
+      "id": "t2.l4.q3",
+      "tier": 2,
+      "level": 4,
+      "type": "fill",
+      "prompt": "Fill the gap so a missing key prints 0 instead of crashing.",
+      "explain": "get returns the value if the key exists and the fallback you pass if it does not.",
+      "hints": [
+        "You want to read with a fallback, not remove or list keys."
+      ],
+      "deep": "get(key, default) is the idiom for optional keys. pop(key, default) also takes a default but removes the entry. Counting pattern: counts[w] = counts.get(w, 0) + 1, or better, collections.Counter(words).",
+      "xp": 20,
+      "tags": [
+        "dicts",
+        "methods"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "stock = {\"apple\": 3}\nprint(stock.{0}(\"kiwi\", 0))",
+      "blocks": [
+        {
+          "id": "items",
+          "code": "items",
+          "kind": "call"
+        },
+        {
+          "id": "keys",
+          "code": "keys",
+          "kind": "call"
+        },
+        {
+          "id": "get",
+          "code": "get",
+          "kind": "call"
+        },
+        {
+          "id": "pop",
+          "code": "pop",
+          "kind": "call"
+        }
+      ],
+      "answer": [
+        "get"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t2.l4.q4",
+      "tier": 2,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "print(set([1, 1, 2, 3, 3]))",
+      "explain": "A set keeps one copy of each value and drops the duplicates.",
+      "hints": [
+        "Sets have no duplicates by definition."
+      ],
+      "deep": "set(iterable) is the fastest way to deduplicate, O(n), but it loses order. To dedupe and keep first-seen order use list(dict.fromkeys(items)), which works because dict keys are unique and ordered. Sets are unordered, so never rely on their print order.",
+      "xp": 10,
+      "tags": [
+        "sets"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "{1, 2, 3}",
+        "[1, 2, 3]",
+        "(1, 2, 3)",
+        "{1, 1, 2, 3, 3}"
+      ],
+      "answer": [
+        "{1, 2, 3}"
+      ]
+    },
+    {
+      "id": "t2.l4.q5",
+      "tier": 2,
+      "level": 4,
+      "type": "mcq",
+      "prompt": "Which values are in both sets?",
+      "code": "a = {1, 2, 3}\nb = {2, 3, 4}\nprint(a & b)",
+      "explain": "& is set intersection: the values present in both.",
+      "hints": [
+        "The ampersand asks for the overlap."
+      ],
+      "deep": "Set algebra reads like maths: & intersection, | union, - difference, ^ symmetric difference, <= subset. Each is O(len) with hashing, so a & b on two large sets beats a nested loop by orders of magnitude. Sets of strings are how you diff two lists of ids.",
+      "xp": 10,
+      "tags": [
+        "sets"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "{}",
+        "{1, 4}",
+        "{2, 3}",
+        "{1, 2, 3, 4}"
+      ],
+      "answer": [
+        "{2, 3}"
+      ]
+    },
+    {
+      "id": "t2.l4.q6",
+      "tier": 2,
+      "level": 4,
+      "type": "order",
+      "prompt": "Order the lines so the program prints the word with count 2.",
+      "explain": "Create the dict, add the key, then loop over items() unpacking each key and value.",
+      "hints": [
+        "The dict must exist before a key is added, and the loop comes last.",
+        "Indented lines belong under the line that opens their block."
+      ],
+      "deep": "items() yields (key, value) tuples and the loop header unpacks each one into two names. It is the idiomatic way to walk a dict; looping over keys and indexing inside is slower and noisier. Iteration order is insertion order.",
+      "xp": 15,
+      "tags": [
+        "dicts",
+        "loops"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "counts[\"b\"] = 2",
+        "counts = {\"a\": 1}",
+        "for word, n in counts.items():",
+        "    if n == 2:",
+        "        print(word)"
+      ],
+      "answer": [
+        "counts = {\"a\": 1}",
+        "counts[\"b\"] = 2",
+        "for word, n in counts.items():",
+        "    if n == 2:",
+        "        print(word)"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t2.l5.q1",
+      "tier": 2,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "s = \"Python\"\nprint(s[1:3])",
+      "explain": "A slice runs from the start index up to but not including the stop index.",
+      "hints": [
+        "The stop index is not included."
+      ],
+      "deep": "Half-open intervals [start, stop) are why s[a:b] has b - a characters and s[:i] + s[i:] == s. Slicing a string or list makes a new object; slicing never raises IndexError even when the bounds run past the end, it just clips.",
+      "xp": 10,
+      "tags": [
+        "slicing",
+        "strings"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "yt",
+        "Pyt",
+        "ytho",
+        "yth"
+      ],
+      "answer": [
+        "yt"
+      ]
+    },
+    {
+      "id": "t2.l5.q2",
+      "tier": 2,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "s = \"Python\"\nprint(s[::-1])",
+      "explain": "A step of -1 walks the sequence backwards, which reverses it.",
+      "hints": [
+        "The third slice number is the step, and it can be negative."
+      ],
+      "deep": "s[::-1] is the idiomatic reverse for strings, which have no reverse() method. For lists, reversed(lst) gives an iterator without copying and lst.reverse() flips in place. s[::2] takes every second character.",
+      "xp": 10,
+      "tags": [
+        "slicing",
+        "strings"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "An error",
+        "Pto",
+        "Python",
+        "nohtyP"
+      ],
+      "answer": [
+        "nohtyP"
+      ]
+    },
+    {
+      "id": "t2.l5.q3",
+      "tier": 2,
+      "level": 5,
+      "type": "fill",
+      "prompt": "Fill the gap so only the first two items print.",
+      "explain": "[:2] means from the start up to index 2, which is the first two items.",
+      "hints": [
+        "Leaving the start empty means from the beginning.",
+        "You want two items, so where does the slice stop?"
+      ],
+      "deep": "Omitting start means 0, omitting stop means len, so [:2] and [2:] split a list cleanly in two. Slice objects can be named: head = slice(0, 2); nums[head]. numpy and pandas reuse the same syntax on multiple axes.",
+      "xp": 20,
+      "tags": [
+        "slicing",
+        "lists"
+      ],
+      "reviewed": "2026-09-05",
+      "template": "nums = [10, 20, 30, 40]\nprint(nums{0})",
+      "blocks": [
+        {
+          "id": "s12",
+          "code": "[1:2]",
+          "kind": "expr"
+        },
+        {
+          "id": "s2",
+          "code": "[2:]",
+          "kind": "expr"
+        },
+        {
+          "id": "i2",
+          "code": "[2]",
+          "kind": "expr"
+        },
+        {
+          "id": "s02",
+          "code": "[:2]",
+          "kind": "expr"
+        }
+      ],
+      "answer": [
+        "s02"
+      ],
+      "accept": []
+    },
+    {
+      "id": "t2.l5.q4",
+      "tier": 2,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "letters = [\"a\", \"b\", \"c\"]\nprint(\"-\".join(letters))",
+      "explain": "join puts the separator between the items of the list.",
+      "hints": [
+        "The string before the dot is what goes between the items."
+      ],
+      "deep": "\"sep\".join(iterable) is called on the separator, not the list, which surprises everyone once. It is O(n) and the right way to build a string from parts; += in a loop is O(n^2) in principle. All items must already be strings, so map(str, nums) first.",
+      "xp": 10,
+      "tags": [
+        "strings",
+        "lists",
+        "conversion"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "a-b-c",
+        "-a-b-c-",
+        "['a', 'b', 'c']",
+        "abc"
+      ],
+      "answer": [
+        "a-b-c"
+      ]
+    },
+    {
+      "id": "t2.l5.q5",
+      "tier": 2,
+      "level": 5,
+      "type": "mcq",
+      "prompt": "What does this print?",
+      "code": "print(int(3.9))",
+      "explain": "int() truncates toward zero; it does not round.",
+      "hints": [
+        "Converting a float to int throws away the fraction rather than rounding it."
+      ],
+      "deep": "int(3.9) is 3 and int(-3.9) is -3, truncation toward zero. round(3.9) is 4, but round(2.5) is 2 because Python rounds half to even (banker's rounding) to avoid bias. math.floor and math.ceil are the explicit choices when the direction matters.",
+      "xp": 10,
+      "tags": [
+        "conversion",
+        "types"
+      ],
+      "reviewed": "2026-09-05",
+      "options": [
+        "3",
+        "4",
+        "3.9",
+        "An error"
+      ],
+      "answer": [
+        "3"
+      ]
+    },
+    {
+      "id": "t2.l5.q6",
+      "tier": 2,
+      "level": 5,
+      "type": "blocks",
+      "prompt": "Build the line that turns the string into a list of words.",
+      "code": "text = \"the quick fox\"",
+      "explain": "split() with no argument splits on any run of whitespace and returns a list of the words.",
+      "hints": [
+        "The method is called on the string.",
+        "join builds a string; you want the one that breaks one apart."
+      ],
+      "deep": "split() with no separator collapses runs of whitespace and strips the ends, which is what you want for words. split(\",\") keeps empty fields, which is what you want for CSV-like data. For real CSV use the csv module, which handles quotes.",
+      "xp": 15,
+      "tags": [
+        "strings",
+        "methods",
+        "lists"
+      ],
+      "reviewed": "2026-09-05",
+      "tray": [
+        "words",
+        "(",
+        "split",
+        "text",
+        ".",
+        "=",
+        ")",
+        "list",
+        "join"
+      ],
+      "answer": [
+        "words",
+        "=",
+        "text",
+        ".",
+        "split",
+        "(",
+        ")"
+      ],
+      "accept": []
+    }
+  ]
+}

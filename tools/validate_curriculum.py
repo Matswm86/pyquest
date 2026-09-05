@@ -23,6 +23,11 @@ ID_PATTERN = re.compile(r"^t(\d+)\.l(\d+)\.q(\d+)$")
 VALID_TYPES = {"mcq", "blocks", "order", "fill", "pipeline"}
 GAP = re.compile(r"\{(\d+)}")
 MIN_EXPLAIN_CHARS = 40
+# Pytor's material. A hint that is shorter than this is a nudge nobody can use,
+# and a deep note shorter than this is a restated explanation, not expertise.
+MIN_HINT_CHARS = 15
+MAX_HINTS = 3
+MIN_DEEP_CHARS = 60
 
 
 class CurriculumError(Exception):
@@ -63,10 +68,34 @@ def check_question(question: dict, tier_number: int, seen_ids: set[str]) -> list
             "The explanation is the teaching, not a footnote."
         )
 
+    hints = question.get("hints")
+    if not isinstance(hints, list) or not hints:
+        problems.append(f"{qid}: needs at least one hint, Pytor has nothing to say otherwise")
+    else:
+        if len(hints) > MAX_HINTS:
+            problems.append(f"{qid}: {len(hints)} hints, at most {MAX_HINTS}")
+        for index, hint in enumerate(hints):
+            if not isinstance(hint, str) or len(hint.strip()) < MIN_HINT_CHARS:
+                problems.append(f"{qid}: hint {index} is too short to help")
+
+    deep = question.get("deep")
+    if not isinstance(deep, str) or len(deep.strip()) < MIN_DEEP_CHARS:
+        problems.append(
+            f"{qid}: deep note missing or under {MIN_DEEP_CHARS} chars. "
+            "This is the expert layer, the part a working engineer would want."
+        )
+
     answer = question.get("answer") or []
     if not isinstance(answer, list) or not answer:
         problems.append(f"{qid}: answer must be a non-empty list")
         return problems
+
+    # A hint that quotes the whole answer is the answer. Check the plain string
+    # forms; block ids in the typed formats are opaque so they cannot leak.
+    if isinstance(hints, list) and qtype in {"mcq", "blocks", "order"}:
+        joined = " ".join(str(h) for h in hints).lower()
+        if qtype == "mcq" and str(answer[0]).lower() in joined and len(str(answer[0])) > 6:
+            problems.append(f"{qid}: a hint contains the correct option verbatim")
 
     if qtype == "mcq":
         options = question.get("options") or []

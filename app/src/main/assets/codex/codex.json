@@ -1,0 +1,1990 @@
+{
+  "entries": [
+    {
+      "id": "objects-and-names",
+      "domain": "python",
+      "title": "Objects, names and binding",
+      "tags": [
+        "objects",
+        "names",
+        "assignment",
+        "reference",
+        "variables",
+        "model"
+      ],
+      "summary": "Every value is an object; a variable is a name bound to one.",
+      "body": "Python has no boxes that hold values. It has objects, each with an identity, a type and a value, and it has names that are bound to objects in a namespace (a dict). Assignment never copies: x = y makes both names point at the same object. Passing an argument binds the parameter name to the same object the caller passed, which is why mutating a list inside a function is visible outside and rebinding it is not.\n\nThis one model explains aliasing, the mutable-default trap, why is differs from ==, and why del removes a name rather than an object. CPython frees an object when its reference count hits zero, with a cycle collector for reference loops.",
+      "code": "a = [1, 2]\nb = a          # same object\nb.append(3)\nprint(a)       # [1, 2, 3]\nb = [0]        # rebinds b only\nprint(a)       # [1, 2, 3]",
+      "related": [
+        "is-vs-equals",
+        "mutability",
+        "cpython-internals"
+      ]
+    },
+    {
+      "id": "is-vs-equals",
+      "domain": "python",
+      "title": "is versus == and the small-int cache",
+      "tags": [
+        "identity",
+        "equality",
+        "is",
+        "==",
+        "interning",
+        "none"
+      ],
+      "summary": "== compares values, is compares identity; use is only for None and sentinels.",
+      "body": "== calls __eq__ and compares values. is compares object identity, roughly memory address. Use is for None, True, False and your own sentinel objects, never for numbers or strings. CPython caches the integers -5 to 256 and interns many short strings, so 256 is 256 is True while 257 is 257 is False in a REPL, and neither is a language guarantee. Comparing strings with is works by accident until it does not.\n\nA related trap: x == None works but is unidiomatic and breaks for objects with a custom __eq__; PEP 8 says x is None.",
+      "code": "a, b = 256, 256\nprint(a is b)   # True (cached)\nc, d = 257, 257\nprint(c is d)   # False in a REPL\nprint(c == d)   # True, always",
+      "related": [
+        "objects-and-names"
+      ]
+    },
+    {
+      "id": "mutability",
+      "domain": "python",
+      "title": "Mutable and immutable types, aliasing and copies",
+      "tags": [
+        "mutable",
+        "immutable",
+        "copy",
+        "deepcopy",
+        "aliasing",
+        "tuple",
+        "frozenset"
+      ],
+      "summary": "Lists, dicts and sets change in place; ints, strings and tuples never do.",
+      "body": "Immutable: int, float, str, bytes, tuple, frozenset, and None. Mutable: list, dict, set, bytearray, and most user classes. Mutating an object changes it for every name bound to it. To get an independent copy use list(x), x[:], dict(x) or x.copy() for one level, and copy.deepcopy(x) when the container holds mutable items.\n\nImmutable objects can be dict keys and set members because their hash never changes. A tuple is hashable only if everything inside it is. Prefer immutable values for anything shared across functions or threads; it removes a whole class of bugs.",
+      "code": "row = [0] * 3\ngrid = [row] * 2      # two references to one row\ngrid[0][0] = 9\nprint(grid)            # [[9, 0, 0], [9, 0, 0]]\ngrid = [[0] * 3 for _ in range(2)]  # independent rows",
+      "related": [
+        "objects-and-names",
+        "dicts",
+        "functions-and-arguments"
+      ]
+    },
+    {
+      "id": "truthiness",
+      "domain": "python",
+      "title": "Truthiness and the bool protocol",
+      "tags": [
+        "bool",
+        "truthy",
+        "falsy",
+        "conditions",
+        "empty",
+        "none"
+      ],
+      "summary": "Empty containers, zero, None and empty strings are false; everything else is true.",
+      "body": "if x calls bool(x), which uses __bool__ if defined, else __len__, else returns True. Falsy values: None, False, 0, 0.0, 0j, \"\", b\"\", [], (), {}, set(), range(0). Write if not items: rather than if len(items) == 0:. Be careful with values where 0 is meaningful: if count: skips zero, so write if count is not None: when zero is valid.\n\nand and or short-circuit and return an operand, not a bool: name = given or \"anon\" is the idiom for defaults, and x and x.attr guards against None.",
+      "related": [
+        "is-vs-equals"
+      ]
+    },
+    {
+      "id": "strings-and-fstrings",
+      "domain": "python",
+      "title": "Strings, f-strings and the format mini-language",
+      "tags": [
+        "strings",
+        "f-string",
+        "format",
+        "str",
+        "unicode",
+        "encoding"
+      ],
+      "summary": "str is an immutable sequence of Unicode code points; f-strings format any expression in place.",
+      "body": "f\"{value}\" (PEP 498) evaluates the expression at runtime and applies an optional format spec after a colon: f\"{price:.2f}\" two decimals, f\"{n:,}\" thousands separators, f\"{x:>10}\" right-align in 10 characters, f\"{pct:.1%}\" percent. f\"{x=}\" prints x=<value>, perfect for debugging. Python 3.12 allows nested quotes and comments inside the braces.\n\nStrings are immutable, so methods return new strings. Join with \"sep\".join(parts), never += in a loop. len counts code points; encode() to bytes before counting storage. Always pass encoding=\"utf-8\" when reading or writing files.",
+      "code": "name, n = \"Pytor\", 1234567.891\nprint(f\"{name!r} {n:,.1f} {n=}\")\n# 'Pytor' 1,234,567.9 n=1234567.891",
+      "related": [
+        "slicing",
+        "pathlib-files"
+      ]
+    },
+    {
+      "id": "lists-and-tuples",
+      "domain": "python",
+      "title": "Lists and tuples",
+      "tags": [
+        "list",
+        "tuple",
+        "sequence",
+        "append",
+        "sort",
+        "unpacking"
+      ],
+      "summary": "A list is a growable array; a tuple is a fixed, hashable record.",
+      "body": "Lists are contiguous arrays of object pointers. append is amortised O(1) thanks to over-allocation, insert(0, x) and pop(0) are O(n) (use collections.deque), and x in list is O(n). sort() mutates and returns None; sorted() returns a new list; both are stable Timsort and take key=. Tuples are immutable, hashable when their contents are, and are the right choice for fixed-shape records and dict keys. Unpacking works on both: first, *rest = items; a, b = b, a swaps.\n\nNever mutate a list while iterating over it; iterate a copy or build a new list.",
+      "code": "nums = [3, 1, 2]\nprint(sorted(nums, reverse=True))   # [3, 2, 1]\nfirst, *rest = nums\nprint(first, rest)                   # 3 [1, 2]",
+      "related": [
+        "slicing",
+        "comprehensions",
+        "mutability"
+      ]
+    },
+    {
+      "id": "dicts",
+      "domain": "python",
+      "title": "Dictionaries: the hash table you use everywhere",
+      "tags": [
+        "dict",
+        "mapping",
+        "hash",
+        "keyerror",
+        "get",
+        "defaultdict",
+        "counter"
+      ],
+      "summary": "dict is an insertion-ordered hash table with O(1) average lookup; keys must be hashable.",
+      "body": "d[k] raises KeyError when missing, d.get(k, default) returns a default, d.setdefault(k, default) inserts it, d.pop(k, default) removes it. Insertion order is guaranteed since Python 3.7. Iterate with .items() for key-value pairs. Merge with {**a, **b} or a | b (3.9). collections.defaultdict(list) makes grouping one line, collections.Counter counts anything iterable and has most_common().\n\nDo not change a dict's size while iterating it. Keys need a stable __hash__ and __eq__, so lists cannot be keys but tuples can. CPython's compact dict stores entries in insertion order with a separate index table, which is why it is both ordered and fast.",
+      "code": "from collections import Counter, defaultdict\nwords = \"a b a c b a\".split()\nprint(Counter(words).most_common(1))   # [('a', 3)]\ngroups = defaultdict(list)\nfor w in words:\n    groups[len(w)].append(w)",
+      "related": [
+        "sets",
+        "mutability"
+      ]
+    },
+    {
+      "id": "sets",
+      "domain": "python",
+      "title": "Sets and set algebra",
+      "tags": [
+        "set",
+        "frozenset",
+        "membership",
+        "dedupe",
+        "intersection",
+        "union"
+      ],
+      "summary": "A set is a hash table of unique, unordered members with O(1) membership.",
+      "body": "set(iterable) deduplicates in O(n) but loses order; list(dict.fromkeys(items)) deduplicates and keeps first-seen order. Operators: & intersection, | union, - difference, ^ symmetric difference, <= subset. Each runs in linear time with hashing, so comparing two large id lists with sets beats nested loops by orders of magnitude. frozenset is the immutable, hashable version, usable as a dict key.\n\nMembership tests on a set are O(1) average; on a list they are O(n). When a loop tests x in collection many times, build a set first.",
+      "code": "seen = {1, 2, 3}\nnew = {3, 4}\nprint(new - seen)   # {4}\nprint(seen & new)   # {3}",
+      "related": [
+        "dicts"
+      ]
+    },
+    {
+      "id": "slicing",
+      "domain": "python",
+      "title": "Slicing: half-open intervals and steps",
+      "tags": [
+        "slice",
+        "index",
+        "negative-index",
+        "step",
+        "reverse",
+        "sequence"
+      ],
+      "summary": "s[start:stop:step] copies from start up to but not including stop.",
+      "body": "Half-open intervals make the arithmetic clean: s[:n] has n items, s[n:] the rest, and s[:i] + s[i:] == s. Omitted start is 0, omitted stop is the length, negative indexes count from the end, and out-of-range slice bounds clip instead of raising. A negative step walks backwards: s[::-1] reverses. Slicing always returns a new object of the same type for lists, strings and tuples; numpy slices are views.\n\nSlices are objects: slice(0, 2) can be stored and reused. Assigning to a list slice replaces a range in place: nums[1:3] = [9].",
+      "code": "s = \"Python\"\nprint(s[1:3], s[-3:], s[::2], s[::-1])\n# yt hon Pto nohtyP",
+      "related": [
+        "lists-and-tuples",
+        "strings-and-fstrings"
+      ]
+    },
+    {
+      "id": "comprehensions",
+      "domain": "python",
+      "title": "List, dict, set comprehensions and generator expressions",
+      "tags": [
+        "comprehension",
+        "generator-expression",
+        "map",
+        "filter",
+        "lazy"
+      ],
+      "summary": "A comprehension is a loop turned into an expression: what, for what, if what.",
+      "body": "[f(x) for x in xs if cond(x)] builds a list; {k: v for ...} a dict; {x for ...} a set; (f(x) for x in xs) a lazy generator that streams into sum, max, any, all or join without building a list. Nested loops read left to right as they would be written as statements. Comprehensions have their own scope, so the loop variable does not leak.\n\nUse a comprehension when the body is one expression. When you need more than one line of logic, write the loop; a comprehension that needs a comment is too clever. Python 3.12 inlines comprehensions (PEP 709), so they are marginally faster than the equivalent loop.",
+      "code": "nums = [1, 2, 3, 4]\nsquares = [n * n for n in nums if n % 2 == 0]   # [4, 16]\ntotal = sum(n * n for n in nums)                # lazy\nindex = {n: n * n for n in nums}",
+      "related": [
+        "iterators-and-generators",
+        "lists-and-tuples"
+      ]
+    },
+    {
+      "id": "iterators-and-generators",
+      "domain": "python",
+      "title": "Iterators, generators and itertools",
+      "tags": [
+        "iterator",
+        "generator",
+        "yield",
+        "itertools",
+        "lazy",
+        "protocol",
+        "next"
+      ],
+      "summary": "for calls iter() then next() until StopIteration; a generator writes that protocol with yield.",
+      "body": "An iterable has __iter__; an iterator also has __next__ and is consumed once. A function containing yield returns a generator: execution pauses at each yield and resumes on the next next(), so it produces values on demand with constant memory. Generators are how you process a 10 GB file line by line. yield from delegates to a sub-generator. Generators can also receive values with send() and are the ancestor of coroutines.\n\nitertools is the toolkit: chain, islice, groupby (sort first), product, combinations, accumulate, batched (3.12), pairwise. Once exhausted, an iterator is empty; call the function again for a fresh one.",
+      "code": "def countdown(n):\n    while n > 0:\n        yield n\n        n -= 1\n\nprint(list(countdown(3)))   # [3, 2, 1]\nfrom itertools import islice\nprint(list(islice(countdown(10**9), 2)))  # [1000000000, 999999999]",
+      "related": [
+        "comprehensions",
+        "async-await"
+      ]
+    },
+    {
+      "id": "functions-and-arguments",
+      "domain": "python",
+      "title": "Functions: parameters, defaults, *args and **kwargs",
+      "tags": [
+        "function",
+        "def",
+        "arguments",
+        "kwargs",
+        "defaults",
+        "keyword-only",
+        "return"
+      ],
+      "summary": "Parameters bind names; defaults are evaluated once; * and ** pack and unpack.",
+      "body": "Positional arguments fill parameters left to right, keyword arguments by name and may follow in any order. def f(a, /, b, *, c) makes a positional-only and c keyword-only (PEP 570). *args collects extra positionals into a tuple, **kwargs extra keywords into a dict; on the call side * and ** unpack. Every function returns something: None when there is no return.\n\nDefaults are evaluated once at definition time and stored on the function object. A mutable default (items=[]) is therefore shared across calls; use None and create the object inside. Type hints on signatures are the cheapest documentation you can write.",
+      "code": "def add(item, items=None):\n    if items is None:\n        items = []\n    items.append(item)\n    return items\n\nprint(add(1), add(2))   # [1] [2]",
+      "related": [
+        "scope-and-closures",
+        "decorators",
+        "typing"
+      ]
+    },
+    {
+      "id": "scope-and-closures",
+      "domain": "python",
+      "title": "Scope: LEGB, global, nonlocal and closures",
+      "tags": [
+        "scope",
+        "closure",
+        "legb",
+        "global",
+        "nonlocal",
+        "unboundlocalerror"
+      ],
+      "summary": "Names resolve Local, Enclosing, Global, Built-in; assignment makes a name local for the whole function.",
+      "body": "The compiler decides scope per function by scanning for assignments: any name assigned anywhere in the body is local everywhere in that body, which is why count += 1 on a global raises UnboundLocalError without global count. An inner function reads enclosing names freely (a closure) but needs nonlocal to rebind them. global is almost always a design smell; return values instead.\n\nClosures capture variables, not values: lambdas created in a loop all see the loop variable's final value unless you bind it with a default argument (lambda i=i: i). Shadowing a built-in (list = [...]) hides it for the whole module.",
+      "code": "def make_counter():\n    n = 0\n    def step():\n        nonlocal n\n        n += 1\n        return n\n    return step\n\nc = make_counter(); c(); print(c())   # 2",
+      "related": [
+        "functions-and-arguments",
+        "decorators"
+      ]
+    },
+    {
+      "id": "decorators",
+      "domain": "python",
+      "title": "Decorators",
+      "tags": [
+        "decorator",
+        "wraps",
+        "functools",
+        "higher-order",
+        "cache",
+        "lru_cache"
+      ],
+      "summary": "A decorator is a function that takes a function and returns a replacement; @ is sugar for f = deco(f).",
+      "body": "Decorators wrap behaviour around a function: timing, caching, retries, access checks, registration. Write them with a closure over the original and always apply functools.wraps to keep __name__, __doc__ and the signature for tooling. Decorators with arguments are a function that returns a decorator. Class decorators and stacking (@a then @b applies b first) follow the same rule.\n\nBuilt-ins worth knowing: functools.lru_cache and cache for memoisation of pure functions, functools.partial for pre-filled arguments, property, staticmethod, classmethod, contextlib.contextmanager, dataclass.",
+      "code": "import functools, time\n\ndef timed(fn):\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        t = time.perf_counter()\n        try:\n            return fn(*args, **kwargs)\n        finally:\n            print(f\"{fn.__name__}: {time.perf_counter() - t:.3f}s\")\n    return wrapper",
+      "related": [
+        "functions-and-arguments",
+        "scope-and-closures",
+        "context-managers"
+      ]
+    },
+    {
+      "id": "context-managers",
+      "domain": "python",
+      "title": "Context managers and the with statement",
+      "tags": [
+        "with",
+        "context-manager",
+        "enter",
+        "exit",
+        "contextlib",
+        "resources",
+        "cleanup"
+      ],
+      "summary": "with guarantees cleanup: __exit__ runs on every path out of the block, exception included.",
+      "body": "with expr as name: calls expr.__enter__(), binds its return value, runs the block, and calls __exit__(exc_type, exc, tb) whether the block finished, returned or raised. Files, locks, database transactions, temporary directories and httpx clients are all context managers. Multiple managers go in one with, comma-separated or parenthesised (3.10).\n\ncontextlib.contextmanager turns a generator with one yield into a context manager: code before yield is setup, after it is teardown, wrapped in try/finally. contextlib.suppress(FileNotFoundError) replaces a try/except/pass. ExitStack manages a dynamic number of managers.",
+      "code": "from contextlib import contextmanager\n\n@contextmanager\ndef opened(path):\n    f = open(path, encoding=\"utf-8\")\n    try:\n        yield f\n    finally:\n        f.close()",
+      "related": [
+        "exceptions",
+        "decorators",
+        "pathlib-files"
+      ]
+    },
+    {
+      "id": "classes-and-dunder",
+      "domain": "python",
+      "title": "Classes, dunder methods, MRO and super()",
+      "tags": [
+        "class",
+        "dunder",
+        "__init__",
+        "__repr__",
+        "__eq__",
+        "inheritance",
+        "mro",
+        "super",
+        "property"
+      ],
+      "summary": "A class is a namespace plus a constructor; dunder methods let your objects speak the language's protocols.",
+      "body": "__init__ initialises (the object already exists; __new__ created it). __repr__ should be unambiguous and ideally evaluable; __str__ is for humans and falls back to __repr__. Define __eq__ and __hash__ together or the object stops being hashable. __len__, __iter__, __getitem__ and __contains__ make containers; __enter__/__exit__ make context managers; __call__ makes instances callable. @property exposes a computed attribute without parentheses.\n\nInheritance follows the MRO (C3 linearisation, see Class.__mro__); super() follows it too, which is what makes cooperative multiple inheritance work. Prefer composition over deep hierarchies. __slots__ removes the per-instance dict, saving memory for millions of small objects.",
+      "code": "class Money:\n    __slots__ = (\"amount\", \"currency\")\n    def __init__(self, amount, currency):\n        self.amount, self.currency = amount, currency\n    def __repr__(self):\n        return f\"Money({self.amount!r}, {self.currency!r})\"\n    def __eq__(self, other):\n        return (self.amount, self.currency) == (other.amount, other.currency)\n    def __hash__(self):\n        return hash((self.amount, self.currency))",
+      "related": [
+        "dataclasses",
+        "objects-and-names"
+      ]
+    },
+    {
+      "id": "dataclasses",
+      "domain": "python",
+      "title": "dataclasses, NamedTuple, Enum and Protocol",
+      "tags": [
+        "dataclass",
+        "namedtuple",
+        "enum",
+        "protocol",
+        "frozen",
+        "slots",
+        "record"
+      ],
+      "summary": "@dataclass writes __init__, __repr__ and __eq__ from annotated fields; frozen=True makes it a value object.",
+      "body": "A dataclass (PEP 557) declares fields with type hints and generates the boilerplate. field(default_factory=list) is the safe way to default a mutable field. frozen=True gives immutability and hashing; order=True gives comparisons; slots=True (3.10) gives memory savings; kw_only=True forces keyword construction. asdict() and astuple() convert; replace() copies with changes.\n\nNamedTuple is a lighter immutable record that is also a tuple. Enum gives named constants with identity and iteration; use auto() and StrEnum (3.11) for string values. Protocol (PEP 544) defines structural interfaces for type checkers without inheritance: if it has the methods, it satisfies the protocol. pydantic adds runtime validation on top of the same field syntax.",
+      "code": "from dataclasses import dataclass, field\n\n@dataclass(frozen=True, slots=True)\nclass Chunk:\n    doc_id: str\n    text: str\n    tags: tuple[str, ...] = ()\n\nc = Chunk(\"d1\", \"hello\")\nprint(c)   # Chunk(doc_id='d1', text='hello', tags=())",
+      "related": [
+        "classes-and-dunder",
+        "typing"
+      ]
+    },
+    {
+      "id": "exceptions",
+      "domain": "python",
+      "title": "Exceptions: hierarchy, chaining, EAFP and ExceptionGroup",
+      "tags": [
+        "exception",
+        "try",
+        "except",
+        "raise",
+        "finally",
+        "eafp",
+        "traceback",
+        "exceptiongroup"
+      ],
+      "summary": "Catch the most specific exception you can handle, as close to the source as makes sense, and never swallow silently.",
+      "body": "The hierarchy matters: KeyboardInterrupt and SystemExit derive from BaseException, so except Exception leaves them alone, and bare except does not. Order clauses from specific to general. try/except/else/finally: else runs when no exception occurred, finally always. raise X from e chains the cause; raise inside except re-raises the current one. EAFP (try it, catch the failure) beats LBYL checks that race with the world.\n\nPython 3.11 added ExceptionGroup and except* for concurrent failures (TaskGroup raises them) and much faster zero-cost try blocks. Define your own exceptions by subclassing Exception or a relevant built-in; give them useful messages and attributes. Log with logger.exception inside except to keep the traceback.",
+      "code": "try:\n    value = int(text)\nexcept ValueError as e:\n    raise ConfigError(f\"port must be an integer, got {text!r}\") from e",
+      "related": [
+        "context-managers",
+        "logging-basics"
+      ]
+    },
+    {
+      "id": "typing",
+      "domain": "python",
+      "title": "Type hints: generics, Optional, Protocol, TypedDict and the checkers",
+      "tags": [
+        "typing",
+        "type-hints",
+        "mypy",
+        "pyright",
+        "generics",
+        "optional",
+        "typeddict",
+        "literal"
+      ],
+      "summary": "Hints are for readers and checkers, not the interpreter; run mypy or pyright in CI to make them mean something.",
+      "body": "Use built-in generics: list[str], dict[str, int], tuple[int, ...] (3.9+). X | None replaces Optional[X] (3.10). TypedDict types dict shapes, Literal restricts to specific values, Protocol defines structural interfaces, TypeVar and the 3.12 syntax def first[T](xs: list[T]) -> T: (PEP 695) write generic functions. Callable[[int], str] types callbacks; ParamSpec preserves signatures through decorators. Any turns checking off, object turns it on.\n\nHints do nothing at runtime, but frameworks read them: FastAPI, pydantic and dataclasses all build behaviour from annotations. Start by annotating public signatures, run the checker non-strict, tighten module by module. A checker catches the class of bug tests miss: the wrong type flowing three layers deep.",
+      "code": "from typing import Protocol\n\nclass Embedder(Protocol):\n    def embed(self, text: str) -> list[float]: ...\n\ndef index(docs: list[str], embedder: Embedder) -> dict[str, list[float]]:\n    return {d: embedder.embed(d) for d in docs}",
+      "related": [
+        "dataclasses",
+        "functions-and-arguments"
+      ]
+    },
+    {
+      "id": "async-await",
+      "domain": "python",
+      "title": "async/await, the event loop and structured concurrency",
+      "tags": [
+        "async",
+        "await",
+        "asyncio",
+        "coroutine",
+        "event-loop",
+        "gather",
+        "taskgroup",
+        "concurrency"
+      ],
+      "summary": "One thread, many tasks: a coroutine yields at each await so others run while it waits on I/O.",
+      "body": "async def defines a coroutine; calling it builds one without running it; await runs it and yields to the loop while it waits. asyncio.run(main()) is the entry point. Run things concurrently with asyncio.gather or, better, asyncio.TaskGroup (3.11), which cancels siblings when one fails. create_task schedules background work; keep a reference or it can be garbage-collected mid-flight.\n\nAnything blocking inside a coroutine (time.sleep, requests, a sync DB driver, CPU work) freezes every task. Use async libraries (httpx.AsyncClient, asyncpg, aiofiles) or await asyncio.to_thread(fn). async helps I/O-bound work; for CPU-bound work use processes. Limit fan-out with a Semaphore so a gather of a thousand requests does not get you rate-limited.",
+      "code": "import asyncio, httpx\n\nasync def fetch_all(urls):\n    async with httpx.AsyncClient(timeout=10) as client:\n        async with asyncio.TaskGroup() as tg:\n            tasks = [tg.create_task(client.get(u)) for u in urls]\n    return [t.result().status_code for t in tasks]",
+      "related": [
+        "gil-threads-processes",
+        "iterators-and-generators",
+        "http-clients-retries"
+      ]
+    },
+    {
+      "id": "gil-threads-processes",
+      "domain": "python",
+      "title": "The GIL, threads, processes and free-threaded Python",
+      "tags": [
+        "gil",
+        "threads",
+        "multiprocessing",
+        "concurrency",
+        "parallelism",
+        "free-threading"
+      ],
+      "summary": "Threads share memory but the GIL serialises bytecode; processes run in parallel at the cost of copying.",
+      "body": "The Global Interpreter Lock lets one thread run Python bytecode at a time, so threads give concurrency for I/O (the lock is released during blocking calls and in C extensions like numpy) but not parallelism for pure-Python CPU work. For CPU-bound parallelism use multiprocessing or concurrent.futures.ProcessPoolExecutor, paying for pickling arguments and results. ThreadPoolExecutor is the simple choice for parallel I/O when you are not using asyncio.\n\nPEP 703 introduced an optional free-threaded build (python3.13t) that removes the GIL; it is still maturing and many extensions are not yet ready. Shared mutable state needs a Lock regardless of the GIL; the GIL does not make compound operations atomic.",
+      "code": "from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor\n\nwith ThreadPoolExecutor(max_workers=8) as pool:      # I/O-bound\n    pages = list(pool.map(download, urls))\n\nwith ProcessPoolExecutor() as pool:                  # CPU-bound\n    results = list(pool.map(crunch, chunks))",
+      "related": [
+        "async-await",
+        "cpython-internals"
+      ]
+    },
+    {
+      "id": "pattern-matching",
+      "domain": "python",
+      "title": "Structural pattern matching: match/case",
+      "tags": [
+        "match",
+        "case",
+        "pattern-matching",
+        "destructuring",
+        "pep-634"
+      ],
+      "summary": "match compares a value against structural patterns and binds the pieces; it is not a switch.",
+      "body": "PEP 634 (Python 3.10) matches on shape: literals, sequences, mappings, class patterns with attributes, or-patterns with |, guards with if, and captures that bind names. The first matching case wins; case _: is the wildcard. It shines when handling tagged data such as JSON messages, ASTs and command tuples, replacing chains of isinstance and indexing.\n\nA bare name in a pattern is a capture, not a comparison; to compare against a constant use a dotted name (Color.RED) or a literal. For a plain value switch, a dict of functions is still often clearer.",
+      "code": "match event:\n    case {\"type\": \"click\", \"x\": x, \"y\": y}:\n        handle_click(x, y)\n    case {\"type\": \"key\", \"key\": (\"q\" | \"Q\")}:\n        quit()\n    case _:\n        log.warning(\"unknown event %s\", event)",
+      "related": [
+        "dicts",
+        "walrus-and-newer-syntax"
+      ]
+    },
+    {
+      "id": "pathlib-files",
+      "domain": "python",
+      "title": "Files and pathlib",
+      "tags": [
+        "pathlib",
+        "path",
+        "files",
+        "open",
+        "read_text",
+        "glob",
+        "encoding"
+      ],
+      "summary": "Path objects join with /, read and write in one call, and glob; always name the encoding.",
+      "body": "Path(\"data\") / \"x.csv\" builds a path without touching disk; exists(), is_file(), read_text(encoding=\"utf-8\"), write_text(), read_bytes(), mkdir(parents=True, exist_ok=True), glob(\"*.csv\") and rglob() do the work. name, stem, suffix, parent and with_suffix() take paths apart. For large files iterate lines under with path.open() as f: so the file closes on every path out.\n\nThe platform default encoding is not UTF-8 everywhere, so pass encoding explicitly (PEP 686 plans to make UTF-8 the default). Directory listing order is filesystem-dependent: sorted(glob) before relying on it. Prefer check-free EAFP: try to open and catch FileNotFoundError rather than exists() then open, which races.",
+      "code": "from pathlib import Path\n\nout = Path(\"reports\")\nout.mkdir(parents=True, exist_ok=True)\nfor src in sorted(Path(\"raw\").rglob(\"*.txt\")):\n    (out / src.with_suffix(\".md\").name).write_text(src.read_text(encoding=\"utf-8\"), encoding=\"utf-8\")",
+      "related": [
+        "context-managers",
+        "json-csv"
+      ]
+    },
+    {
+      "id": "json-csv",
+      "domain": "python",
+      "title": "JSON and CSV in the standard library",
+      "tags": [
+        "json",
+        "csv",
+        "serialisation",
+        "dictreader",
+        "loads",
+        "dumps"
+      ],
+      "summary": "json.load/loads read, dump/dumps write; csv.DictReader handles quoting that split(\",\") never will.",
+      "body": "JSON maps to dict, list, str, int, float, bool and None; keys become strings; tuples become lists; datetime, Decimal, set and bytes raise TypeError unless you pass default=str or an encoder. Use indent=2 for readable diffs, sort_keys=True for determinism, ensure_ascii=False to keep non-ASCII text readable. Parse money with parse_float=Decimal.\n\ncsv.DictReader yields one dict per row with header names as keys and every value as a string; open the file with newline=\"\". DictWriter writes the mirror image. For analysis, pandas.read_csv does the same with type inference; for storage that survives round-trips, prefer Parquet.",
+      "code": "import csv, json\nfrom pathlib import Path\n\nrows = list(csv.DictReader(Path(\"people.csv\").open(newline=\"\", encoding=\"utf-8\")))\nPath(\"people.json\").write_text(json.dumps(rows, indent=2, ensure_ascii=False), encoding=\"utf-8\")",
+      "related": [
+        "pathlib-files",
+        "data-pipelines-validation"
+      ]
+    },
+    {
+      "id": "logging-basics",
+      "domain": "python",
+      "title": "logging: loggers, levels and lazy formatting",
+      "tags": [
+        "logging",
+        "logger",
+        "levels",
+        "getlogger",
+        "basicconfig",
+        "structured-logs"
+      ],
+      "summary": "Libraries emit through logging.getLogger(__name__); the application configures once at startup.",
+      "body": "Levels: DEBUG for developers, INFO for operators, WARNING for things to look at, ERROR for failures, CRITICAL for the pager. Use logger.info(\"user %s logged in\", user_id) with arguments, not an f-string: formatting is skipped when the level is off and the constant template lets log tools group events. logger.exception(\"...\") inside an except attaches the traceback.\n\nbasicConfig only acts once, so it belongs in the entry point; libraries never add handlers. Hierarchical names (app.db.pool) let you set levels per subsystem. In production emit structured JSON with a timestamp, level, logger, message and request id, and never log secrets or full request bodies.",
+      "code": "import logging\n\nlogging.basicConfig(level=logging.INFO, format=\"%(asctime)s %(levelname)s %(name)s: %(message)s\")\nlog = logging.getLogger(__name__)\nlog.info(\"loaded %d rows from %s\", len(rows), path)",
+      "related": [
+        "exceptions",
+        "observability"
+      ]
+    },
+    {
+      "id": "packaging-venv",
+      "domain": "python",
+      "title": "Virtual environments, pyproject.toml and uv",
+      "tags": [
+        "venv",
+        "pip",
+        "uv",
+        "pyproject",
+        "packaging",
+        "dependencies",
+        "lockfile",
+        "__main__"
+      ],
+      "summary": "Isolate every project in its own environment and pin dependencies in a lockfile.",
+      "body": "python -m venv .venv then source .venv/bin/activate, or uv venv and uv add for a much faster, lockfile-first workflow. Declare dependencies in pyproject.toml under [project]; uv.lock or a pip-compile requirements.txt pins exact versions so CI and production match your laptop. Installing into the system Python is how two projects end up needing different versions of the same package.\n\nA package is a directory with __init__.py; python -m package runs its __main__.py. Guard script entry points with if __name__ == \"__main__\": main() so the module can be imported by tests. Publish with a build backend such as hatchling and twine or uv publish.",
+      "code": "uv init myproj && cd myproj\nuv add httpx pydantic\nuv add --dev pytest ruff mypy\nuv run pytest",
+      "related": [
+        "pep8-and-idioms",
+        "ci-cd"
+      ]
+    },
+    {
+      "id": "cpython-internals",
+      "domain": "python",
+      "title": "CPython internals: bytecode, reference counting and the GC",
+      "tags": [
+        "cpython",
+        "bytecode",
+        "dis",
+        "refcount",
+        "garbage-collection",
+        "interpreter",
+        "performance"
+      ],
+      "summary": "Source becomes bytecode run by a stack VM; objects die when their refcount hits zero, cycles by the collector.",
+      "body": "python compiles a module to bytecode (cached in __pycache__) and the interpreter loop executes it; dis.dis(fn) shows the instructions. Python 3.11 added a specialising adaptive interpreter that rewrites hot instructions for observed types, a 10 to 60 percent speedup, and 3.12 and 3.13 continued with inlined comprehensions, per-interpreter GILs and an experimental JIT.\n\nMemory: every object carries a reference count; sys.getrefcount(x) shows it (plus one for the call). Cycles (a.b = b; b.a = a) are found by the generational cycle collector in gc. Small integers, empty tuples and short strings are shared singletons. Attribute access walks the instance dict then the class MRO, which is why __slots__ and local variables are faster than repeated lookups.",
+      "code": "import dis\n\ndef add(a, b):\n    return a + b\n\ndis.dis(add)   # LOAD_FAST a, LOAD_FAST b, BINARY_OP +, RETURN_VALUE",
+      "related": [
+        "objects-and-names",
+        "performance-profiling",
+        "gil-threads-processes"
+      ]
+    },
+    {
+      "id": "performance-profiling",
+      "domain": "python",
+      "title": "Performance: profile first, then fix the right thing",
+      "tags": [
+        "performance",
+        "profiling",
+        "cprofile",
+        "py-spy",
+        "timeit",
+        "big-o",
+        "vectorise",
+        "numpy"
+      ],
+      "summary": "Measure with a profiler before optimising; most time is in one place and it is rarely where you think.",
+      "body": "cProfile plus snakeviz shows where CPU time goes; py-spy profiles a running process without changing it; timeit compares small snippets fairly. Then apply in order: a better algorithm or data structure (dict lookup instead of list scan, a set for membership), doing less work (caching with lru_cache, batching I/O), vectorising numeric loops with numpy or pandas, and only then native code via Cython, Rust with PyO3, or a C extension.\n\nRules of thumb: local variables beat globals and attribute lookups, join beats += for strings, generators beat lists for one-pass data, and I/O latency dwarfs everything until it does not. Write the readable version first and keep it until a profile says otherwise.",
+      "code": "import cProfile, pstats\n\ncProfile.run(\"main()\", \"prof.out\")\npstats.Stats(\"prof.out\").sort_stats(\"cumulative\").print_stats(15)",
+      "related": [
+        "cpython-internals",
+        "performance-caching"
+      ]
+    },
+    {
+      "id": "walrus-and-newer-syntax",
+      "domain": "python",
+      "title": "Newer syntax: walrus, unions, PEP 695 generics, except*",
+      "tags": [
+        "walrus",
+        ":=",
+        "syntax",
+        "python-3.12",
+        "python-3.13",
+        "generics",
+        "except-star"
+      ],
+      "summary": "Modern Python reads shorter: := binds inside expressions, | unions types, and generics need no TypeVar.",
+      "body": "The walrus operator (PEP 572, 3.8) assigns inside an expression: while (line := f.readline()): or if (m := pattern.match(s)):. PEP 604 (3.10) writes int | None. match/case arrived in 3.10. 3.11 brought ExceptionGroup, except*, tomllib and Self. 3.12 brought PEP 695 generic syntax (class Box[T]: and type Alias = ...), f-strings with nested quotes, and inlined comprehensions. 3.13 brought the experimental free-threaded build, a JIT behind a flag and a better REPL.\n\nCheck the version you deploy to before using new syntax; a SyntaxError on an older interpreter fails at import, before any test runs.",
+      "code": "import re\n\nif (m := re.fullmatch(r\"(\\d+)-(\\d+)\", \"12-34\")):\n    lo, hi = map(int, m.groups())\n\ndef first[T](xs: list[T]) -> T:   # 3.12\n    return xs[0]",
+      "related": [
+        "typing",
+        "pattern-matching",
+        "exceptions"
+      ]
+    },
+    {
+      "id": "pep8-and-idioms",
+      "domain": "python",
+      "title": "PEP 8, the Zen and ruff",
+      "tags": [
+        "pep8",
+        "style",
+        "idioms",
+        "ruff",
+        "zen",
+        "readability",
+        "naming"
+      ],
+      "summary": "Readability is the feature: follow PEP 8, let ruff enforce it, and prefer the obvious way.",
+      "body": "snake_case for functions and variables, CapWords for classes, UPPER_CASE for constants, a leading underscore for internal names. Four-space indentation, lines around 88 characters, imports grouped stdlib, third-party, local. Docstrings on public functions (PEP 257). Comparisons: is None, not == None; if not items:, not len(items) == 0; for item in items, not indexes; with for resources; f-strings for formatting.\n\nruff check --fix and ruff format replace flake8, isort, pyupgrade and black in one fast tool; run it in pre-commit and CI so style never appears in code review. import this prints the Zen; the lines that matter most are explicit is better than implicit and errors should never pass silently.",
+      "code": "ruff check --fix . && ruff format .\nmypy src/",
+      "related": [
+        "packaging-venv",
+        "linting-and-formatting",
+        "clean-code"
+      ]
+    },
+    {
+      "id": "datetime-timezones",
+      "domain": "python",
+      "title": "datetime, timezones and zoneinfo",
+      "tags": [
+        "datetime",
+        "timezone",
+        "utc",
+        "zoneinfo",
+        "iso-8601",
+        "naive",
+        "aware"
+      ],
+      "summary": "Store UTC-aware datetimes, convert to local for display, and never mix naive with aware.",
+      "body": "datetime.now() returns a naive local time with no zone attached; datetime.now(tz=timezone.utc) is aware. zoneinfo (PEP 615, 3.9) gives IANA zones: ZoneInfo(\"Europe/Oslo\") handles daylight saving correctly, which fixed offsets cannot. Compare, subtract and sort only aware values; mixing raises TypeError. Serialise with isoformat() and parse with fromisoformat() (3.11 accepts most ISO 8601 forms). Use date for calendar days and timedelta for durations.\n\nMarket and log data are the classic trap: a naive timestamp from one source and a UTC one from another sort into nonsense. Attach the zone at ingestion, once.",
+      "code": "from datetime import datetime, timezone\nfrom zoneinfo import ZoneInfo\n\nnow = datetime.now(timezone.utc)\noslo = now.astimezone(ZoneInfo(\"Europe/Oslo\"))\nprint(now.isoformat(), oslo.strftime(\"%H:%M %Z\"))",
+      "related": [
+        "json-csv"
+      ]
+    },
+    {
+      "id": "regex",
+      "domain": "python",
+      "title": "Regular expressions with re",
+      "tags": [
+        "regex",
+        "re",
+        "pattern",
+        "match",
+        "search",
+        "fullmatch",
+        "groups",
+        "raw-string"
+      ],
+      "summary": "Compile once, use raw strings, prefer fullmatch for validation and named groups for extraction.",
+      "body": "re.search finds the first match anywhere, re.match anchors at the start, re.fullmatch requires the whole string, re.findall returns all matches, re.sub replaces. Write patterns as raw strings (r\"\\d+\") so backslashes survive. Named groups (?P<year>\\d{4}) make m.group(\"year\") readable. Use re.VERBOSE to lay out a long pattern with comments. Non-greedy quantifiers (.*?) stop at the first opportunity; greedy ones (.*) eat as much as possible.\n\nDo not parse HTML, JSON or CSV with regex; use a parser. For a fixed substring, in and str methods are faster and clearer. Catastrophic backtracking on nested quantifiers can hang a service; test patterns on adversarial input.",
+      "code": "import re\n\nDATE = re.compile(r\"(?P<y>\\d{4})-(?P<m>\\d{2})-(?P<d>\\d{2})\")\nm = DATE.fullmatch(\"2026-09-05\")\nprint(m.group(\"y\"), m.groupdict())",
+      "related": [
+        "strings-and-fstrings"
+      ]
+    },
+    {
+      "id": "testing-pyramid",
+      "domain": "engineering",
+      "title": "The testing pyramid and what each layer is for",
+      "tags": [
+        "testing",
+        "unit-tests",
+        "integration-tests",
+        "end-to-end",
+        "test-strategy"
+      ],
+      "summary": "Many fast unit tests, fewer integration tests, a handful of end-to-end checks; each catches a different failure.",
+      "body": "Unit tests exercise one function in isolation, run in milliseconds and pin behaviour so refactoring is safe. Integration tests check that pieces talk to each other correctly: your code against a real database or a recorded API. End-to-end tests drive the whole system the way a user would and are slow and brittle, so keep only the critical paths. A green suite that never touched a real dependency proves less than people think, which is why the smoke job in this game's CI boots a real emulator.\n\nA test should fail for exactly one reason and its name should say which. Test behaviour, not implementation: a test that breaks on every refactor is a cost, not an asset. Coverage is a floor, never a target.",
+      "related": [
+        "pytest-essentials",
+        "mocking-and-fakes",
+        "ci-cd"
+      ]
+    },
+    {
+      "id": "pytest-essentials",
+      "domain": "engineering",
+      "title": "pytest: fixtures, parametrize, raises, conftest",
+      "tags": [
+        "pytest",
+        "fixtures",
+        "parametrize",
+        "assert",
+        "conftest",
+        "markers"
+      ],
+      "summary": "Plain assert, functions named test_*, fixtures for setup by injection, parametrize for tables of cases.",
+      "body": "pytest discovers test_*.py files and test_* functions, rewrites assert to show both sides on failure, and injects fixtures by parameter name. A fixture is a function decorated with @pytest.fixture; yield inside it separates setup from teardown; scope=\"session\" shares an expensive resource; conftest.py shares fixtures across files without imports. @pytest.mark.parametrize turns a list of tuples into separate test cases with readable ids. pytest.raises(ValueError, match=\"positive\") tests error paths. Markers (@pytest.mark.slow) and -m select subsets; -k selects by name; -x stops at the first failure; --lf reruns last failures.\n\nConfigure under [tool.pytest.ini_options] in pyproject.toml. tmp_path, monkeypatch and capsys are built-in fixtures you will use constantly.",
+      "code": "import pytest\n\n@pytest.fixture\ndef store(tmp_path):\n    return Store(tmp_path / \"db.sqlite\")\n\n@pytest.mark.parametrize(\"n, expected\", [(2, 4), (3, 9), (0, 0)])\ndef test_square(n, expected):\n    assert square(n) == expected\n\ndef test_rejects_negative(store):\n    with pytest.raises(ValueError, match=\"positive\"):\n        store.withdraw(-5)",
+      "related": [
+        "testing-pyramid",
+        "mocking-and-fakes",
+        "property-based-testing"
+      ]
+    },
+    {
+      "id": "mocking-and-fakes",
+      "domain": "engineering",
+      "title": "Mocks, fakes and dependency injection in tests",
+      "tags": [
+        "mocking",
+        "fakes",
+        "dependency-injection",
+        "monkeypatch",
+        "unittest.mock",
+        "isolation"
+      ],
+      "summary": "Pass collaborators in so tests can substitute a fake; patch only what you cannot inject.",
+      "body": "A unit test must never hit the network, the clock, the filesystem outside tmp_path, or a payment provider. The cleanest way is dependency injection: the function takes its client, clock or repository as a parameter, and the test passes a fake with the same interface. Protocol types make the interface explicit. When code you do not own hard-codes a dependency, pytest's monkeypatch fixture or unittest.mock.patch swaps it for the duration of a test.\n\nMocks that assert on call arguments couple tests to implementation; prefer fakes that behave (an in-memory repository) and assert on outcomes. Record real API responses once with respx or vcrpy and replay them, and keep a separate, clearly marked integration suite for the real thing.",
+      "code": "class FakeClock:\n    def __init__(self, now): self.now = now\n    def __call__(self): return self.now\n\ndef test_expires_after_ttl():\n    clock = FakeClock(100.0)\n    cache = TTLCache(ttl=10, clock=clock)\n    cache.set(\"k\", 1)\n    clock.now = 111.0\n    assert cache.get(\"k\") is None",
+      "related": [
+        "pytest-essentials",
+        "cohesion-coupling-di"
+      ]
+    },
+    {
+      "id": "property-based-testing",
+      "domain": "engineering",
+      "title": "Property-based testing with hypothesis",
+      "tags": [
+        "hypothesis",
+        "property-based",
+        "fuzzing",
+        "invariants",
+        "edge-cases"
+      ],
+      "summary": "State a property that must hold for all inputs and let hypothesis search for a counterexample.",
+      "body": "Instead of three hand-picked cases, describe the input space with strategies (st.integers(), st.text(), st.lists(st.floats(allow_nan=False))) and assert an invariant: encoding then decoding returns the original, sorting is idempotent, the total after a transfer is unchanged. hypothesis generates hundreds of inputs, shrinks any failure to the smallest reproducing case, and remembers it in a local database so it is retried next run.\n\nProperties worth testing: round-trips, idempotence, commutativity, comparison with a slow reference implementation, and no-crash on arbitrary input (the kill-input pattern for parsers). It finds Unicode, empty and boundary bugs that example tests never think of.",
+      "code": "from hypothesis import given, strategies as st\n\n@given(st.lists(st.integers()))\ndef test_sort_is_idempotent(xs):\n    once = sorted(xs)\n    assert sorted(once) == once\n\n@given(st.text())\ndef test_roundtrip(s):\n    assert decode(encode(s)) == s",
+      "related": [
+        "pytest-essentials",
+        "testing-pyramid"
+      ]
+    },
+    {
+      "id": "git-workflow",
+      "domain": "engineering",
+      "title": "git: branches, rebase versus merge, bisect and reflog",
+      "tags": [
+        "git",
+        "rebase",
+        "merge",
+        "bisect",
+        "reflog",
+        "commits",
+        "branches",
+        "conventional-commits"
+      ],
+      "summary": "Small commits with clear messages, feature branches, rebase to tidy, merge to integrate, bisect to find the breaking commit.",
+      "body": "Commit early and often on a branch; write messages as a short imperative subject line plus a body that says why. Conventional Commits (feat:, fix:, docs:) make changelogs automatic. git rebase -i cleans a branch before review; never rebase commits others have pulled. git merge --no-ff or a squash merge integrates. git bisect run pytest finds the commit that broke a test in log2(n) steps. git reflog recovers almost anything you think you lost; git stash parks work.\n\nProtect main: reviews required, CI required, no force pushes. Pre-commit hooks run linters and secret scanners before a commit exists; never bypass them with --no-verify unless you understand exactly what you are skipping.",
+      "code": "git switch -c fix/leitner-reset\ngit add -p                      # stage hunks deliberately\ngit commit -m \"Reset the counter after a requeued miss\"\ngit rebase -i main              # tidy before review\ngit bisect start HEAD v0.1.0 && git bisect run pytest -x",
+      "related": [
+        "code-review",
+        "ci-cd"
+      ]
+    },
+    {
+      "id": "code-review",
+      "domain": "engineering",
+      "title": "Code review that improves the code and the reviewer",
+      "tags": [
+        "code-review",
+        "pull-request",
+        "feedback",
+        "quality",
+        "collaboration"
+      ],
+      "summary": "Review for correctness, clarity and risk, in small diffs, with comments that say why and suggest a fix.",
+      "body": "Keep pull requests under a few hundred lines; review quality collapses past that. As author, write a description that states the problem, the approach and how you tested it, and review your own diff first. As reviewer, read the tests before the code, ask what happens on empty, huge, concurrent or malicious input, check error handling and logging, and flag anything you had to read twice. Distinguish blocking issues from suggestions, and prefer questions to commands.\n\nAutomate what a machine can check (formatting, lint, types, coverage) so humans review design and intent. Approve when you would be comfortable being paged for the change.",
+      "related": [
+        "git-workflow",
+        "clean-code",
+        "linting-and-formatting"
+      ]
+    },
+    {
+      "id": "ci-cd",
+      "domain": "engineering",
+      "title": "CI/CD: pipelines that fail fast and ship safely",
+      "tags": [
+        "ci",
+        "cd",
+        "github-actions",
+        "pipeline",
+        "deployment",
+        "automation",
+        "pre-commit"
+      ],
+      "summary": "Every push runs lint, types, tests and a build in a clean environment; main is always deployable.",
+      "body": "A continuous-integration pipeline runs the same checks on every commit in a fresh machine, so it works on my machine stops being an argument. Order stages cheapest first: lint and format, type check, unit tests, build, integration tests, then deploy. Cache dependencies, pin action versions, and make the pipeline fail loudly with the log that explains why. Pre-commit runs the fast subset locally before a commit exists.\n\nContinuous delivery adds a deploy stage with rollback: tag releases, build artifacts once and promote the same artifact through environments, keep secrets in the CI secret store, and make a smoke test after deploy the gate that decides success. PyQuest builds its APK only in GitHub Actions and boots it on an emulator before calling a build green.",
+      "code": "# .github/workflows/ci.yml (sketch)\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: astral-sh/setup-uv@v5\n      - run: uv sync --all-extras\n      - run: uv run ruff check . && uv run mypy src\n      - run: uv run pytest -q",
+      "related": [
+        "git-workflow",
+        "linting-and-formatting",
+        "docker-basics"
+      ]
+    },
+    {
+      "id": "linting-and-formatting",
+      "domain": "engineering",
+      "title": "ruff, mypy and pre-commit",
+      "tags": [
+        "ruff",
+        "mypy",
+        "pyright",
+        "pre-commit",
+        "lint",
+        "format",
+        "static-analysis"
+      ],
+      "summary": "One formatter, one linter, one type checker, all in pre-commit and CI, so style never reaches review.",
+      "body": "ruff format replaces black; ruff check covers flake8, isort, pyupgrade, bugbear and hundreds more rules at Rust speed, with --fix for the safe ones. Enable a curated rule set (E, F, I, B, UP, SIM, RUF) rather than everything, and add rules as the team agrees. mypy or pyright runs the type checker; start non-strict and tighten. detect-secrets or gitleaks stops keys from entering history.\n\nPut all of it in .pre-commit-config.yaml so it runs on commit, and run the same versions in CI. Rules that keep firing on false positives get a scoped noqa with a reason, never a global disable.",
+      "code": "[tool.ruff]\nline-length = 100\ntarget-version = \"py312\"\n\n[tool.ruff.lint]\nselect = [\"E\", \"F\", \"I\", \"B\", \"UP\", \"SIM\", \"RUF\"]",
+      "related": [
+        "ci-cd",
+        "pep8-and-idioms"
+      ]
+    },
+    {
+      "id": "solid-and-composition",
+      "domain": "engineering",
+      "title": "SOLID, composition over inheritance and small interfaces",
+      "tags": [
+        "solid",
+        "design",
+        "composition",
+        "inheritance",
+        "interfaces",
+        "single-responsibility"
+      ],
+      "summary": "Each unit does one thing, depends on abstractions, and is extended by adding code rather than editing it.",
+      "body": "Single responsibility: a module has one reason to change. Open/closed: add behaviour with new classes or functions, not by editing a growing if-chain. Liskov: a subclass must be usable wherever its parent is. Interface segregation: small Protocols beat one fat base class. Dependency inversion: high-level code depends on an interface, and the concrete database or HTTP client is injected.\n\nIn Python, composition usually beats inheritance: hold a collaborator and delegate, and use Protocol for the interface. Deep class hierarchies and mixins are where bugs hide. Functions and dataclasses cover most designs; reach for a class when there is state and behaviour that belong together.",
+      "related": [
+        "cohesion-coupling-di",
+        "clean-code"
+      ]
+    },
+    {
+      "id": "cohesion-coupling-di",
+      "domain": "engineering",
+      "title": "Cohesion, coupling, dependency injection and ports and adapters",
+      "tags": [
+        "coupling",
+        "cohesion",
+        "dependency-injection",
+        "hexagonal",
+        "ports-and-adapters",
+        "architecture"
+      ],
+      "summary": "Keep business logic pure in the middle and push I/O to the edges behind interfaces you inject.",
+      "body": "High cohesion: things that change together live together. Low coupling: modules know as little as possible about each other. Hexagonal architecture (ports and adapters) puts the domain logic in the centre with no imports of frameworks, databases or HTTP, defines ports (Protocols) for what it needs, and implements adapters at the edge: a Postgres repository, a FastAPI router, a Groq client. Tests exercise the centre with fakes and the adapters with real dependencies.\n\nDependency injection in Python needs no framework: pass collaborators to constructors or functions. The payoff is testability, swappable providers (Groq today, Ollama tomorrow) and a codebase where the interesting logic is readable without wading through I/O.",
+      "code": "class Repo(Protocol):\n    def save(self, order: Order) -> None: ...\n\ndef place_order(order: Order, repo: Repo, notify: Callable[[str], None]) -> None:\n    order.validate()\n    repo.save(order)\n    notify(f\"order {order.id} placed\")",
+      "related": [
+        "solid-and-composition",
+        "mocking-and-fakes"
+      ]
+    },
+    {
+      "id": "api-design-rest",
+      "domain": "engineering",
+      "title": "REST API design: resources, status codes, idempotency, pagination, versioning",
+      "tags": [
+        "rest",
+        "api-design",
+        "http",
+        "idempotency",
+        "pagination",
+        "versioning",
+        "status-codes"
+      ],
+      "summary": "Nouns for resources, verbs from HTTP, honest status codes, idempotent writes, cursor pagination, versioned contracts.",
+      "body": "GET reads and is safe; PUT and DELETE are idempotent; POST creates or acts. Return 201 with a Location for creation, 204 for empty success, 400/422 for bad input, 401 versus 403 for who versus what, 404 for missing, 409 for conflicts, 429 for rate limits. Make writes idempotent with an Idempotency-Key header so clients can retry safely. Paginate with cursors, not offsets, so inserts do not shift pages. Version in the path (/v1) or via a header, and never break a published field. Document with OpenAPI, which FastAPI generates from your types.\n\nErrors should be structured JSON with a code, a message and a request id. Rate limit per client, log every request with its id, and time out upstream calls.",
+      "related": [
+        "fastapi-pydantic",
+        "http-clients-retries"
+      ]
+    },
+    {
+      "id": "fastapi-pydantic",
+      "domain": "engineering",
+      "title": "FastAPI and pydantic: typed endpoints, validation and docs",
+      "tags": [
+        "fastapi",
+        "pydantic",
+        "validation",
+        "openapi",
+        "asgi",
+        "uvicorn",
+        "response-model"
+      ],
+      "summary": "Type hints drive parsing, validation, serialisation and documentation from one definition.",
+      "body": "A path operation is a decorated function; path parameters come from the URL, query parameters from plain arguments, request bodies from pydantic model parameters, and dependencies from Depends(). Validation failures return 422 with per-field errors before your code runs. response_model filters the output so internal fields never leak, and separate models for create, stored and public shapes are the standard pattern. Endpoints may be async def when they await I/O; plain def runs in a thread pool.\n\nRun with uvicorn main:app --reload locally and behind a process manager in production. Add a /health endpoint first, structured logging with request ids second, and tests with TestClient third. pydantic v2 is Rust-backed and fast; use model_validate and model_dump, not the v1 names.",
+      "code": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel, Field\n\napp = FastAPI()\n\nclass ItemIn(BaseModel):\n    name: str = Field(min_length=1)\n    price: float = Field(gt=0)\n\n@app.post(\"/items\", status_code=201)\ndef create(item: ItemIn) -> dict:\n    return {\"id\": 1, **item.model_dump()}",
+      "related": [
+        "api-design-rest",
+        "typing"
+      ]
+    },
+    {
+      "id": "http-clients-retries",
+      "domain": "engineering",
+      "title": "HTTP clients: timeouts, retries with jitter, circuit breakers",
+      "tags": [
+        "httpx",
+        "requests",
+        "timeout",
+        "retry",
+        "backoff",
+        "jitter",
+        "circuit-breaker",
+        "resilience"
+      ],
+      "summary": "Every network call gets a timeout, a bounded retry with exponential backoff and jitter, and a way to fail fast.",
+      "body": "httpx (sync and async, HTTP/2, 5 s default timeout) is the modern choice; requests has no default timeout and will hang forever. Reuse one client for connection pooling. Call raise_for_status and handle HTTPStatusError. Retry only on 429, 5xx and connection errors, never on 400-class errors, with exponential backoff plus random jitter so a thousand clients do not retry in the same second; honour Retry-After. Cap total attempts and total wait, and surface the failure as a typed exception. The tenacity library implements this well.\n\nA circuit breaker stops calling a dependency that keeps failing, returns fast, and probes periodically; it protects both sides. Log each attempt with the request id and count retries as a metric: a rising retry rate is the earliest warning.",
+      "code": "import httpx, random, time\n\ndef get_json(client: httpx.Client, url: str, attempts: int = 4):\n    for i in range(attempts):\n        try:\n            r = client.get(url, timeout=10)\n            if r.status_code in (429, 502, 503, 504):\n                raise httpx.HTTPStatusError(\"retryable\", request=r.request, response=r)\n            r.raise_for_status()\n            return r.json()\n        except (httpx.TransportError, httpx.HTTPStatusError):\n            if i == attempts - 1:\n                raise\n            time.sleep(min(30, 0.5 * 2**i) + random.uniform(0, 0.5))",
+      "related": [
+        "api-design-rest",
+        "async-await",
+        "distributed-basics"
+      ]
+    },
+    {
+      "id": "databases-indexes-transactions",
+      "domain": "engineering",
+      "title": "Databases: indexes, transactions, N+1 and migrations",
+      "tags": [
+        "database",
+        "sql",
+        "index",
+        "transaction",
+        "isolation",
+        "n+1",
+        "migration",
+        "orm"
+      ],
+      "summary": "Index what you filter and join on, keep transactions short, fetch in batches, and version the schema.",
+      "body": "An index is a sorted structure the planner uses to avoid scanning the table; put one on foreign keys and on columns in WHERE and ORDER BY, and read EXPLAIN ANALYZE before guessing. Transactions group writes atomically; isolation levels (read committed, repeatable read, serializable) trade anomalies for throughput. The N+1 problem, one query per row in a loop, is the most common ORM performance bug; fix it with a join or a single IN query. Parameterise every query; string formatting into SQL is injection.\n\nSchema changes are code: Alembic or Django migrations, reviewed and reversible, run in CI against a fresh database. Backups you have not restored are hopes, not backups.",
+      "code": "-- Postgres: find the slow part\nEXPLAIN ANALYZE\nSELECT o.id, c.name FROM orders o\nJOIN customers c ON c.id = o.customer_id\nWHERE o.created_at > now() - interval '7 days';\n\nCREATE INDEX CONCURRENTLY orders_created_at_idx ON orders (created_at);",
+      "related": [
+        "sqlite-postgres-duckdb",
+        "security-owasp"
+      ]
+    },
+    {
+      "id": "sqlite-postgres-duckdb",
+      "domain": "engineering",
+      "title": "SQLite, Postgres and DuckDB: which store for which job",
+      "tags": [
+        "sqlite",
+        "postgres",
+        "duckdb",
+        "olap",
+        "oltp",
+        "storage",
+        "parquet"
+      ],
+      "summary": "SQLite for one writer and simplicity, Postgres for concurrent services, DuckDB for analytics over files.",
+      "body": "SQLite is a file, zero-ops, ACID, fine for embedded apps, tests and single-writer services up to surprising scale; enable WAL mode. Postgres is the default for anything with concurrent writers, real users, or a need for extensions (pgvector for embeddings, PostGIS for geo); use connection pooling. DuckDB is an in-process columnar engine that queries Parquet and CSV directly at analytics speed and pairs with pandas and polars; it is the right tool for backtests, reports and feature tables, not for transactional writes.\n\nRule of thumb: rows in, rows out with concurrency is OLTP (Postgres); scan, aggregate, join millions of rows is OLAP (DuckDB); one process and no fuss is SQLite. Store analytical data as Parquet, which keeps types and compresses well.",
+      "code": "import duckdb\n\ncon = duckdb.connect()\nprint(con.sql(\"\"\"\n    SELECT city, avg(price) AS avg_price\n    FROM 'listings/*.parquet'\n    GROUP BY city ORDER BY avg_price DESC LIMIT 5\n\"\"\"))",
+      "related": [
+        "databases-indexes-transactions",
+        "data-pipelines-validation"
+      ]
+    },
+    {
+      "id": "observability",
+      "domain": "engineering",
+      "title": "Observability: structured logs, metrics, traces and SLOs",
+      "tags": [
+        "observability",
+        "logging",
+        "metrics",
+        "tracing",
+        "slo",
+        "alerting",
+        "monitoring",
+        "request-id"
+      ],
+      "summary": "Logs say what happened, metrics say how much, traces say where the time went; SLOs say when to care.",
+      "body": "Emit structured JSON logs with timestamp, level, logger, message, request id and the fields someone will filter on; never free text you must regex later. Metrics are cheap counters, gauges and histograms (requests, errors, latency by endpoint); export them to Prometheus or the vendor of choice. Traces follow one request across services and stages (retrieve, re-rank, generate) with OpenTelemetry, which is how you learn that p95 lives in one stage. Attach the same request id to all three.\n\nDefine SLOs (99.9 percent of requests under 2 s over 30 days) and alert on burn rate, not on every blip. Fail-open paths must emit a typed tag and a counter so silent failures cannot exist. Dashboards are for humans; alerts are for pages; both need an owner.",
+      "related": [
+        "logging-basics",
+        "latency-percentiles",
+        "observability-for-llm-apps"
+      ]
+    },
+    {
+      "id": "latency-percentiles",
+      "domain": "engineering",
+      "title": "p50, p95, p99: why the mean lies about latency",
+      "tags": [
+        "latency",
+        "p95",
+        "p99",
+        "percentiles",
+        "sla",
+        "tail-latency",
+        "performance"
+      ],
+      "summary": "Report percentiles, not averages; the tail is what users and contracts feel.",
+      "body": "Latency distributions are skewed: most requests are fast and a few are very slow, so the mean hides the slow ones and the median hides them too. p95 means 95 percent of requests finished faster than this; p99 catches the tail that a busy user hits several times a day. Contracts and SLOs are written against p95 or p99 for a reason. Measure at the client or edge, not just inside the service, and per endpoint.\n\nTail latency has specific causes: garbage collection pauses, cold caches, retries, lock contention, a slow downstream, oversized payloads. Fixes: timeouts and hedged requests, warm caches, smaller responses, streaming for perceived latency. A histogram metric with sensible buckets gives percentiles cheaply.",
+      "code": "import numpy as np\n\nlat = np.array(latencies_ms)\nprint(f\"mean {lat.mean():.0f}  p50 {np.percentile(lat, 50):.0f}  p95 {np.percentile(lat, 95):.0f}  p99 {np.percentile(lat, 99):.0f}\")",
+      "related": [
+        "observability",
+        "latency-engineering"
+      ]
+    },
+    {
+      "id": "security-owasp",
+      "domain": "engineering",
+      "title": "Application security: injection, authz, secrets, supply chain",
+      "tags": [
+        "security",
+        "owasp",
+        "injection",
+        "authorization",
+        "idor",
+        "supply-chain",
+        "xss",
+        "csrf"
+      ],
+      "summary": "Validate input at the boundary, authorise on the server from the session, parameterise queries, pin dependencies.",
+      "body": "The recurring failures: injection (SQL, shell, template, prompt) from concatenating untrusted input, fixed by parameterised queries and never building commands from strings; broken access control (IDOR: trusting an id the client sent) fixed by deriving tenant and user from the authenticated session; secrets in code or logs; outdated dependencies with known CVEs; missing rate limits; verbose errors leaking internals. Hash passwords with argon2 or bcrypt, never store plaintext, and use a library for auth rather than writing your own.\n\nSupply chain: pin versions with a lockfile, review new dependencies, watch for typosquats, enable Dependabot or pip-audit, and generate an SBOM if a customer asks. Least privilege everywhere: the app's database user cannot DROP, the deploy key cannot read prod secrets.",
+      "code": "# never\ncur.execute(f\"SELECT * FROM users WHERE name = '{name}'\")\n# always\ncur.execute(\"SELECT * FROM users WHERE name = %s\", (name,))",
+      "related": [
+        "secrets-management",
+        "prompt-injection-security",
+        "databases-indexes-transactions"
+      ]
+    },
+    {
+      "id": "secrets-management",
+      "domain": "engineering",
+      "title": "Secrets: environment, vaults, rotation and scanning",
+      "tags": [
+        "secrets",
+        "api-keys",
+        "environment-variables",
+        "vault",
+        "rotation",
+        "detect-secrets",
+        "gitleaks"
+      ],
+      "summary": "Secrets live in the environment or a vault, never in code, logs, URLs or chat; rotate them and scan for leaks.",
+      "body": "Read secrets from environment variables (os.environ[\"GROQ_API_KEY\"]) or a secrets manager; load a local .env with python-dotenv only in development and keep .env in .gitignore. In CI use the platform's encrypted secrets. Scope every key to the minimum permissions and expiry, keep one key per service so rotation is cheap, and rotate on any suspicion of exposure. Never put a key in a URL, a log line, an error message or a screenshot.\n\nA leaked key in git history stays leaked after a delete; rotate it. Pre-commit secret scanners (detect-secrets, gitleaks) catch the accident before it becomes a commit. The app in your hand talks to a server that holds the model key precisely so the key never ships inside the APK.",
+      "code": "import os\n\nkey = os.environ.get(\"GROQ_API_KEY\")\nif not key:\n    raise SystemExit(\"GROQ_API_KEY is not set\")",
+      "related": [
+        "security-owasp",
+        "twelve-factor-config"
+      ]
+    },
+    {
+      "id": "docker-basics",
+      "domain": "engineering",
+      "title": "Docker: images, layers, small containers, non-root",
+      "tags": [
+        "docker",
+        "containers",
+        "dockerfile",
+        "images",
+        "deployment",
+        "layers"
+      ],
+      "summary": "An image is a layered filesystem plus a command; build small, cache well, run as non-root.",
+      "body": "A Dockerfile builds an image layer by layer; order instructions so rarely changing layers (base image, dependencies) come before frequently changing ones (your code) to keep the cache warm. Use a slim base (python:3.12-slim), a .dockerignore, uv or pip with a lockfile, and a non-root user. Multi-stage builds keep compilers out of the final image. Configure via environment variables, log to stdout, and expose one port. docker compose wires services (app, Postgres, Qdrant) for local development.\n\nAn image is immutable and versioned; a container is a running instance. Tag images with the git SHA, scan them for CVEs, and never bake secrets into layers, because every layer is readable.",
+      "code": "FROM python:3.12-slim AS base\nWORKDIR /app\nCOPY pyproject.toml uv.lock ./\nRUN pip install uv && uv sync --frozen --no-dev\nCOPY src ./src\nUSER 1000\nCMD [\"uv\", \"run\", \"uvicorn\", \"app.main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]",
+      "related": [
+        "ci-cd",
+        "twelve-factor-config"
+      ]
+    },
+    {
+      "id": "twelve-factor-config",
+      "domain": "engineering",
+      "title": "Configuration: twelve-factor, environments and feature flags",
+      "tags": [
+        "configuration",
+        "twelve-factor",
+        "environment",
+        "settings",
+        "feature-flags",
+        "deployment"
+      ],
+      "summary": "Same artifact in every environment; behaviour comes from config in the environment, not from code branches.",
+      "body": "The twelve-factor principles that matter most: one codebase, dependencies declared and isolated, config in the environment, backing services as attached resources, build-release-run separated, stateless processes, logs as event streams, dev and prod as similar as possible. A typed settings object (pydantic-settings) reads environment variables once at startup and fails fast on a missing or malformed value, which beats discovering it at 3 a.m.\n\nFeature flags and kill switches are config too: the ability to turn a model, a tool or a whole assistant off without a deploy is a design requirement for anything AI-shaped. Keep a .env.example in the repo documenting every variable.",
+      "code": "from pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    groq_api_key: str\n    groq_model: str = \"qwen/qwen3.8-27b\"\n    assistant_enabled: bool = True\n\nsettings = Settings()   # reads the environment, raises if groq_api_key is missing",
+      "related": [
+        "secrets-management",
+        "docker-basics"
+      ]
+    },
+    {
+      "id": "performance-caching",
+      "domain": "engineering",
+      "title": "Caching: memoisation, TTLs, invalidation and batching",
+      "tags": [
+        "cache",
+        "memoise",
+        "lru_cache",
+        "ttl",
+        "invalidation",
+        "redis",
+        "batching"
+      ],
+      "summary": "Cache pure and expensive results, give every entry a lifetime, and know exactly what invalidates it.",
+      "body": "functools.lru_cache memoises pure functions in-process; a TTL cache (cachetools) expires entries; Redis shares a cache across processes. Cache keys must include everything the result depends on, including model name and prompt version for LLM calls. The two hard problems are invalidation (stale data served with confidence) and stampedes (a thousand requests recomputing the same miss at once), solved with TTLs plus jitter and single-flight locking.\n\nBatching is the other lever: one query for 100 ids instead of 100 queries, one embedding call for 64 chunks instead of 64 calls. Measure hit rate; a cache with a low hit rate is complexity for nothing.",
+      "code": "from functools import lru_cache\n\n@lru_cache(maxsize=4096)\ndef embed(text: str, model: str = \"bge-m3\") -> tuple[float, ...]:\n    return tuple(_embed_remote(text, model))",
+      "related": [
+        "performance-profiling",
+        "prompt-caching"
+      ]
+    },
+    {
+      "id": "concurrency-patterns",
+      "domain": "engineering",
+      "title": "Queues, workers, backpressure and idempotency keys",
+      "tags": [
+        "queue",
+        "worker",
+        "backpressure",
+        "idempotency",
+        "concurrency",
+        "rate-limit",
+        "celery"
+      ],
+      "summary": "Decouple producers from consumers with a queue, bound the queue, and make every job safe to run twice.",
+      "body": "A queue (Redis, RabbitMQ, SQS, or a Postgres table) lets a web request return immediately while workers do the slow part. Bound it: unbounded queues hide overload until memory runs out. Backpressure means slowing producers when consumers fall behind, via bounded queues, rate limits or 429s. Workers crash and retry, so every job needs an idempotency key and handlers that can run twice without double effects. Dead-letter queues hold jobs that keep failing so a human can look.\n\nIn asyncio, asyncio.Queue plus a fixed number of worker tasks and a Semaphore gives the same shape in one process. Observe queue depth and job age; they are the earliest signals of trouble.",
+      "code": "import asyncio\n\nasync def worker(q: asyncio.Queue, limit: asyncio.Semaphore):\n    while True:\n        job = await q.get()\n        async with limit:\n            await handle(job)\n        q.task_done()",
+      "related": [
+        "distributed-basics",
+        "async-await",
+        "http-clients-retries"
+      ]
+    },
+    {
+      "id": "distributed-basics",
+      "domain": "engineering",
+      "title": "Distributed systems basics: retries, exactly-once, timeouts, CAP in practice",
+      "tags": [
+        "distributed-systems",
+        "retries",
+        "exactly-once",
+        "timeouts",
+        "cap",
+        "consistency",
+        "partition"
+      ],
+      "summary": "Networks fail partially; design for at-least-once delivery, idempotent handlers and explicit timeouts.",
+      "body": "Every remote call can succeed, fail, or succeed without you hearing back, which is why exactly-once delivery is a myth and at-least-once plus idempotency is the practical answer. Timeouts must be shorter than the caller's timeout or the failure cascades. Retries need budgets and jitter. Clocks drift, so order events with monotonic ids, not wall time. CAP in practice: during a network partition you choose between refusing writes (consistency) and accepting divergent ones (availability); most product systems choose availability with later reconciliation.\n\nKeep state in one place with clear ownership, prefer boring managed services, and add distribution only when a single process demonstrably cannot do the job.",
+      "related": [
+        "concurrency-patterns",
+        "http-clients-retries"
+      ]
+    },
+    {
+      "id": "refactoring",
+      "domain": "engineering",
+      "title": "Refactoring: small steps, tests first, strangler pattern",
+      "tags": [
+        "refactoring",
+        "legacy",
+        "tests",
+        "strangler",
+        "technical-debt",
+        "incremental"
+      ],
+      "summary": "Change structure without changing behaviour, in small verified steps, with tests as the safety net.",
+      "body": "Before refactoring, get a test around the current behaviour (a characterisation test if none exists), then make one small change, run the tests, commit. Extract function, rename, inline, move, replace conditional with polymorphism, introduce parameter object: each is a mechanical move your editor can do. Never mix a refactor with a feature in one commit; reviewers cannot tell which lines changed behaviour.\n\nFor legacy systems use the strangler pattern: put a facade in front, route one capability at a time to the new implementation, and delete the old path when nothing calls it. Technical debt is a loan; pay it where the interest is highest, which is the code you change most often.",
+      "related": [
+        "testing-pyramid",
+        "clean-code"
+      ]
+    },
+    {
+      "id": "documentation",
+      "domain": "engineering",
+      "title": "Documentation: README, ADRs, runbooks and docstrings",
+      "tags": [
+        "documentation",
+        "readme",
+        "adr",
+        "runbook",
+        "docstrings",
+        "handover"
+      ],
+      "summary": "Write the README for a stranger, ADRs for decisions, runbooks for 3 a.m., and docstrings for the next caller.",
+      "body": "A README answers what this is, how to run it, how to test it and where to look next, in that order. Architecture decision records (one page: context, decision, consequences, date) explain why the system is the way it is, which is what future maintainers actually need. Runbooks list symptoms, checks and actions for each known failure, including restart, rollback and the kill switch; they are only finished when someone else has followed one live. Docstrings (PEP 257) state what a function does, its arguments and what it raises.\n\nDocs rot; keep them next to the code, review them in pull requests, and delete what is wrong rather than leaving it to mislead. Chat logs are not documentation.",
+      "related": [
+        "incident-response-postmortem",
+        "estimation-and-scoping"
+      ]
+    },
+    {
+      "id": "incident-response-postmortem",
+      "domain": "engineering",
+      "title": "Incident response and blameless post-mortems",
+      "tags": [
+        "incident",
+        "post-mortem",
+        "on-call",
+        "kill-switch",
+        "rollback",
+        "sre",
+        "gdpr-breach"
+      ],
+      "summary": "Contain, diagnose, fix with a test, verify, communicate, then write down what happened without blame.",
+      "body": "Order of operations: stop the damage (kill switch, rollback, disable the feature), then understand from logs and traces, then fix with a regression test that reproduces the failure, verify on the eval or test suite, re-enable, and communicate to the people affected with a timeline. Only then improve. A blameless post-mortem records what happened, how it was detected, what went well, what did not, and concrete actions with owners and dates; blame hides information.\n\nFor AI systems add: which prompt, model and index version were live, and whether any personal data was exposed, because a data breach under GDPR may carry a 72-hour notification duty for the data controller. Design for incidents in advance: a kill switch is a feature.",
+      "related": [
+        "observability",
+        "documentation",
+        "twelve-factor-config"
+      ]
+    },
+    {
+      "id": "estimation-and-scoping",
+      "domain": "engineering",
+      "title": "Scoping and estimating technical work, including consulting engagements",
+      "tags": [
+        "estimation",
+        "scoping",
+        "consulting",
+        "acceptance-criteria",
+        "fixed-price",
+        "milestones",
+        "proposal"
+      ],
+      "summary": "Define done as measurable acceptance criteria, deliver in milestones, and price the scope, not the hours.",
+      "body": "Estimates are distributions, not points: give a range and the assumptions. Break work into milestones that each produce something demonstrable, and put the riskiest unknown first. For consulting, a fixed-price pilot with written acceptance criteria protects both sides; for AI work the criteria are numbers on a golden set (recall, answer quality, p95, cost per request) plus operational deliverables (runbook, dashboard, handover). Add a change-control clause for scope growth, quote model usage as pass-through with the token maths attached, and separate operations into a retainer.\n\nSay no with a better offer: a client who wants a guarantee gets measured targets, abstention and a human-review path instead.",
+      "related": [
+        "documentation",
+        "consulting-scoping-ai-projects",
+        "evals-golden-sets"
+      ]
+    },
+    {
+      "id": "clean-code",
+      "domain": "engineering",
+      "title": "Clean code: names, small functions, guard clauses",
+      "tags": [
+        "clean-code",
+        "naming",
+        "functions",
+        "readability",
+        "guard-clause",
+        "complexity"
+      ],
+      "summary": "Code is read far more than written; name things by what they mean and keep each function at one level of abstraction.",
+      "body": "Names carry intent: total_incl_vat beats t, is_admin beats flag, and a function name should be a verb phrase that says what it returns or does. Functions do one thing at one level of abstraction; when you need a comment to separate sections, extract them. Guard clauses (early return, early continue) flatten nesting. Avoid boolean parameters that switch behaviour; make two functions. Keep argument lists short, prefer keyword arguments for clarity, and return values rather than mutating inputs.\n\nDelete dead code; version control remembers it. Comments explain why, never what. If a function is hard to test, its design is the problem, not the test.",
+      "related": [
+        "pep8-and-idioms",
+        "refactoring",
+        "solid-and-composition"
+      ]
+    },
+    {
+      "id": "data-pipelines-validation",
+      "domain": "engineering",
+      "title": "Data pipelines: validation around every join, idempotent batches",
+      "tags": [
+        "data-pipeline",
+        "validation",
+        "pandera",
+        "joins",
+        "idempotent",
+        "etl",
+        "pandas",
+        "quality"
+      ],
+      "summary": "A pipeline is a script plus the checks that prove each step did what you think; joins are where data goes wrong silently.",
+      "body": "Around every merge: assert the join keys are unique on the many-to-one side (or pass validate=\"many_to_one\"), compare row counts before and after, and account for the difference. Check nulls and ranges on the columns that matter with pandera or plain assertions. Make each batch idempotent so a rerun does not double-count: write to a staging table and swap, or key rows by a deterministic id. Log row counts and timings per stage, and fail loudly on a schema change rather than coercing.\n\nKeep raw data immutable and derive everything from it, so any bug can be fixed by rerunning. Store outputs as Parquet with types intact. A pipeline without these checks is a script that happens to work today.",
+      "code": "before = len(orders)\nmerged = orders.merge(customers, on=\"customer_id\", how=\"left\", validate=\"many_to_one\")\nassert len(merged) == before, f\"join changed row count {before} -> {len(merged)}\"\nassert merged[\"customer_name\"].isna().mean() < 0.01, \"too many unmatched customers\"",
+      "related": [
+        "sqlite-postgres-duckdb",
+        "json-csv",
+        "chunking"
+      ]
+    },
+    {
+      "id": "transformers-attention",
+      "domain": "ai",
+      "title": "Transformers and attention, in one page",
+      "tags": [
+        "transformer",
+        "attention",
+        "self-attention",
+        "llm",
+        "architecture",
+        "positional-encoding"
+      ],
+      "summary": "A transformer predicts the next token by letting every position attend to every earlier one, through stacked attention and feed-forward layers.",
+      "body": "Tokens become embedding vectors plus positional information. Each layer computes self-attention: every token builds a query, compares it with every other token's key, and mixes their values weighted by the match, so the representation of a word is shaped by its context. Multiple heads learn different relations; a feed-forward block then transforms each position; residual connections and layer norm keep training stable. Decoder-only models (the GPT family, Llama, Qwen) mask future positions and generate one token at a time.\n\nAttention is quadratic in sequence length, which is why long contexts are slow and expensive and why the KV cache exists. Scale (parameters, data, compute) drives capability; instruction tuning and RLHF shape behaviour. Everything the model knows is in its weights; everything it can see is in the context.",
+      "related": [
+        "tokenization",
+        "context-window-kv-cache",
+        "training-vs-finetuning"
+      ]
+    },
+    {
+      "id": "tokenization",
+      "domain": "ai",
+      "title": "Tokens: what they are, why they cost, how to count them",
+      "tags": [
+        "tokens",
+        "tokenizer",
+        "bpe",
+        "context",
+        "cost",
+        "tiktoken",
+        "counting"
+      ],
+      "summary": "Models read subword tokens, roughly three quarters of an English word each; count with the vendor's tokenizer.",
+      "body": "Tokenizers (BPE, SentencePiece) split text into pieces from a fixed vocabulary of tens of thousands of entries. Common English words are one token; rare words, code, numbers and non-English text fragment into more, so Norwegian, JSON and source code cost more tokens per character. Pricing, context limits and latency are all in tokens: input tokens are processed in one parallel pass (prefill), output tokens are generated one at a time (decode), which is why output costs more per token and takes longer.\n\nCount with tiktoken or the model's own tokenizer, never by words. Watch for tokenizer effects: numbers split unpredictably, so arithmetic and exact ids are weak spots, and a stray space can change the tokens of a word. Trim whitespace and boilerplate in prompts; it is billed.",
+      "code": "import tiktoken\n\nenc = tiktoken.get_encoding(\"cl100k_base\")\nprint(len(enc.encode(\"Pytor counts tokens, not words.\")))",
+      "related": [
+        "transformers-attention",
+        "cost-engineering"
+      ]
+    },
+    {
+      "id": "embeddings",
+      "domain": "ai",
+      "title": "Embeddings and similarity",
+      "tags": [
+        "embeddings",
+        "vectors",
+        "cosine-similarity",
+        "semantic-search",
+        "embedding-model",
+        "dimensions"
+      ],
+      "summary": "An embedding maps text to a vector so that similar meanings land close together; compare with cosine similarity.",
+      "body": "Embedding models output fixed-length vectors (384 to 3,072 dimensions) trained so that paraphrases are near and unrelated text is far. Cosine similarity ignores length; many models normalise, making dot product equivalent and faster. Index and query must use the same model and version, and some models expect different prefixes for queries and documents. Embeddings capture topic and paraphrase well and exact identifiers, numbers, negation and very recent jargon poorly, which is why hybrid search exists.\n\nChoose a model by benchmark on your own data, not a leaderboard: language coverage (multilingual models for Norwegian), dimension (storage and speed), and licence. Store the model name with the index and re-embed everything when it changes.",
+      "code": "import numpy as np\n\ndef cosine(a, b):\n    a, b = np.asarray(a), np.asarray(b)\n    return float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b)))",
+      "related": [
+        "vector-search-hnsw",
+        "hybrid-search-reranking",
+        "chunking"
+      ]
+    },
+    {
+      "id": "context-window-kv-cache",
+      "domain": "ai",
+      "title": "Context windows, the KV cache and long-context limits",
+      "tags": [
+        "context-window",
+        "kv-cache",
+        "long-context",
+        "lost-in-the-middle",
+        "memory",
+        "prefill"
+      ],
+      "summary": "The context window is the model's working memory; it costs quadratic attention, linear cache memory, and attention quality fades in the middle.",
+      "body": "The context holds the system prompt, conversation, retrieved documents and tool results; everything must fit, and everything is billed. During decode the model caches the keys and values of every previous token (the KV cache) so it does not recompute them, which is what makes generation fast and what limits how many long requests a GPU can serve at once. Long contexts raise time to first token because prefill scales with input length.\n\nQuality is not uniform: models attend best to the start and end of the context and worst to the middle (lost in the middle), so place the most relevant material first or last and trim noise. A million-token window does not remove the need for retrieval; it changes the economics of when to use it. Trim chat history, summarise old turns, and cache the stable prefix.",
+      "related": [
+        "transformers-attention",
+        "prompt-caching",
+        "rag-overview"
+      ]
+    },
+    {
+      "id": "training-vs-finetuning",
+      "domain": "ai",
+      "title": "Pretraining, instruction tuning, RLHF, DPO and fine-tuning",
+      "tags": [
+        "pretraining",
+        "fine-tuning",
+        "rlhf",
+        "dpo",
+        "instruction-tuning",
+        "sft",
+        "alignment"
+      ],
+      "summary": "Pretraining learns language from the internet; tuning shapes behaviour; fine-tuning teaches style and format, not facts.",
+      "body": "Pretraining predicts the next token over trillions of tokens and produces a base model that completes text. Supervised fine-tuning on instruction-response pairs makes it follow instructions. RLHF (a reward model trained on human preferences, then reinforcement learning) or DPO (direct preference optimisation, no reward model) shape helpfulness and refusals. Your own fine-tuning is another SFT pass on your examples: it changes tone, format, a domain's vocabulary or a classification boundary reliably, and adds facts unreliably, which is why retrieval handles knowledge.\n\nFine-tune when prompting has plateaued on a measured eval and you have hundreds to thousands of clean examples. Beware catastrophic forgetting and eval contamination. Distillation trains a small model on a large model's outputs to cut cost.",
+      "related": [
+        "lora-qlora-peft",
+        "rag-vs-finetune-decision",
+        "small-models-distillation-quantisation"
+      ]
+    },
+    {
+      "id": "lora-qlora-peft",
+      "domain": "ai",
+      "title": "LoRA, QLoRA and parameter-efficient fine-tuning",
+      "tags": [
+        "lora",
+        "qlora",
+        "peft",
+        "adapters",
+        "fine-tuning",
+        "quantisation",
+        "gpu"
+      ],
+      "summary": "LoRA trains small low-rank adapter matrices instead of all weights, so fine-tuning fits on one GPU and ships as a few megabytes.",
+      "body": "Full fine-tuning updates every parameter and needs memory for weights, gradients and optimiser state, several times the model size. LoRA freezes the base model and learns low-rank updates (rank 8 to 64) on attention and feed-forward projections; the adapter is tiny, can be swapped per customer, and merges into the weights for serving. QLoRA quantises the frozen base to 4 bits so a 7B to 13B model trains on a single 24 GB GPU. Hyperparameters that matter: rank, alpha, target modules, learning rate, and a validation set you actually look at.\n\nThe workflow: build a clean dataset, hold out an eval, train with the HuggingFace peft library or a framework such as axolotl or Unsloth, evaluate against the prompted baseline, and only ship if the eval moves. Most projects discover prompting plus retrieval was enough.",
+      "code": "from peft import LoraConfig, get_peft_model\n\nconfig = LoraConfig(r=16, lora_alpha=32, target_modules=[\"q_proj\", \"v_proj\"], lora_dropout=0.05, task_type=\"CAUSAL_LM\")\nmodel = get_peft_model(base_model, config)\nmodel.print_trainable_parameters()   # a fraction of a percent",
+      "related": [
+        "training-vs-finetuning",
+        "self-hosting-vs-api"
+      ]
+    },
+    {
+      "id": "decoding-temperature-top-p",
+      "domain": "ai",
+      "title": "Decoding: temperature, top-p, top-k, stop sequences and determinism",
+      "tags": [
+        "temperature",
+        "top-p",
+        "top-k",
+        "sampling",
+        "decoding",
+        "determinism",
+        "max-tokens"
+      ],
+      "summary": "Temperature scales randomness, top-p and top-k limit the candidate pool; 0 is near-deterministic, never fully.",
+      "body": "The model outputs a probability over the vocabulary each step. Temperature divides the logits before softmax: below 1 sharpens, above 1 flattens, 0 approximates greedy decoding. top-p (nucleus) samples from the smallest set of tokens whose probability sums to p; top-k from the k most likely. Adjust one, not both. Use 0 to 0.3 for extraction, classification and code; 0.7 to 1.0 for creative text. max_tokens caps output and the finish reason tells you when it truncated; stop sequences end generation at a delimiter.\n\nEven at temperature 0, GPU batching and floating-point non-associativity make outputs vary slightly across runs, so never write a test that requires byte-identical model output; test properties and parse results. Speculative decoding and beam search are server-side speedups and search strategies you rarely control through an API.",
+      "related": [
+        "structured-output-json",
+        "tokenization"
+      ]
+    },
+    {
+      "id": "prompt-engineering-basics",
+      "domain": "ai",
+      "title": "Prompt engineering that survives contact with production",
+      "tags": [
+        "prompting",
+        "system-prompt",
+        "few-shot",
+        "chain-of-thought",
+        "instructions",
+        "prompt-design"
+      ],
+      "summary": "State the role, the task, the format and the failure mode; show examples for format; measure every change.",
+      "body": "A production prompt has a stable system section (role, rules, output format, what to do when unsure) and a user section with the data and the question. Put instructions before data and mark data with clear delimiters so it is not mistaken for instructions. Few-shot examples teach format and edge cases better than paragraphs of rules; choose them to cover the hard cases. Asking for reasoning before the answer (chain of thought) helps on multi-step problems; for reasoning models it is often built in and extra prompting can hurt. Give the model a permitted way to say it does not know.\n\nVersion prompts like code, keep them in the repo, and run the golden set on every edit. A prompt change that is not measured is a guess, and prompt drift is a real production failure mode.",
+      "code": "SYSTEM = \"\"\"You classify support tickets into exactly one of: billing, bug, other.\nReply with JSON: {\"label\": ..., \"confidence\": 0-1}.\nIf the ticket is empty or not in Norwegian or English, use label \"other\" with confidence 0.\"\"\"",
+      "related": [
+        "structured-output-json",
+        "evals-golden-sets",
+        "prompt-caching"
+      ]
+    },
+    {
+      "id": "structured-output-json",
+      "domain": "ai",
+      "title": "Structured outputs: JSON mode, schemas and validation",
+      "tags": [
+        "structured-output",
+        "json",
+        "json-schema",
+        "pydantic",
+        "function-calling",
+        "parsing",
+        "validation"
+      ],
+      "summary": "Ask for JSON against a schema, validate with pydantic, retry once with the error, and count the failures.",
+      "body": "Most APIs offer a JSON mode or schema-constrained decoding that guarantees syntactically valid output; tool or function calling is the same mechanism with a schema per tool. Syntax is not semantics: validate the parsed object with a pydantic model (types, enums, ranges) and treat a validation error as a retry with the error message appended to the prompt, at most once or twice. Log the failure rate; a rising rate means the prompt or model changed.\n\nDesign the schema for the model: flat fields, short enum values, descriptions on each field, no deeply nested optionals. Prefer extracting a small object over a large document. Never eval() model output and never pass it to a shell or SQL unvalidated.",
+      "code": "from pydantic import BaseModel, ValidationError\nfrom typing import Literal\n\nclass Triage(BaseModel):\n    label: Literal[\"billing\", \"bug\", \"other\"]\n    confidence: float\n\ntry:\n    result = Triage.model_validate_json(raw)\nexcept ValidationError as e:\n    raw = retry_with_feedback(raw, str(e))",
+      "related": [
+        "prompt-engineering-basics",
+        "tool-use-function-calling",
+        "fastapi-pydantic"
+      ]
+    },
+    {
+      "id": "prompt-caching",
+      "domain": "ai",
+      "title": "Prompt caching: pay once for the stable prefix",
+      "tags": [
+        "prompt-caching",
+        "cache",
+        "cost",
+        "latency",
+        "system-prompt",
+        "prefix"
+      ],
+      "summary": "Providers cache the processed prefix of a prompt; keep the stable part first and identical to cut input cost and time to first token.",
+      "body": "Prefill is the expensive part of an LLM request and most requests share a long identical prefix: the system prompt, tool definitions, few-shot examples, a large document. Prompt caching lets the provider reuse the computed KV state for that prefix, typically at a large discount on input tokens and a big drop in time to first token. It only works when the prefix is byte-identical, so put the stable content first, the variable content (user question, retrieved chunks) last, and avoid timestamps or random ids in the system prompt.\n\nMeasure cache hit rate from the API's usage fields. Self-hosted servers such as vLLM have prefix caching too. Combined with routing easy requests to smaller models, caching is where most cost reductions come from.",
+      "related": [
+        "cost-engineering",
+        "context-window-kv-cache",
+        "performance-caching"
+      ]
+    },
+    {
+      "id": "rag-overview",
+      "domain": "ai",
+      "title": "Retrieval-augmented generation, end to end",
+      "tags": [
+        "rag",
+        "retrieval",
+        "generation",
+        "grounding",
+        "pipeline",
+        "citations",
+        "knowledge",
+        "chunking",
+        "reranking"
+      ],
+      "summary": "RAG retrieves the relevant pieces of your documents at query time and lets the model answer from them, with citations.",
+      "body": "Ingestion: parse documents, split into chunks, attach metadata (source, page, tenant, date), embed, store in a vector index alongside a keyword index. Query: rewrite the question if needed, retrieve wide with hybrid search, re-rank narrow with a cross-encoder, build a prompt with the top chunks and an instruction to answer only from them and to abstain otherwise, generate with streaming, then verify every citation against the retrieved chunks. Log the chunk ids with every answer.\n\nRAG wins when facts change, must be cited, or belong to different tenants. It fails silently when retrieval misses, so the recall check on a golden set is not optional. Most hallucinations in RAG systems are retrieval misses wearing a confident voice.",
+      "related": [
+        "chunking",
+        "hybrid-search-reranking",
+        "hallucination-grounding",
+        "evals-golden-sets"
+      ]
+    },
+    {
+      "id": "chunking",
+      "domain": "ai",
+      "title": "Chunking strategies for retrieval",
+      "tags": [
+        "chunking",
+        "rag",
+        "retrieval",
+        "chunk-size",
+        "overlap",
+        "splitting",
+        "parent-document",
+        "metadata",
+        "ingestion"
+      ],
+      "summary": "Split on structure first, then by size, around 200 to 500 tokens with overlap, and keep a pointer to the parent section.",
+      "body": "Small chunks retrieve precisely but lack context; huge chunks retrieve poorly and waste tokens. Split on document structure (headings, paragraphs, code blocks, table rows) before falling back to a token limit, keep 10 to 20 percent overlap so sentences are not cut, and store the section title and page with each chunk. Parent-document retrieval embeds small chunks and returns their enclosing section to the model. Tables and code need their own handling; a table split mid-row is noise.\n\nThe only way to choose parameters is to measure recall on a golden set of question to chunk pairs. Pin the chunking parameters and the embedding model in the index metadata, and refuse to upsert anything produced with different settings, or the index becomes inconsistent with itself and quality drops with no error anywhere.",
+      "related": [
+        "rag-overview",
+        "embeddings",
+        "data-pipelines-validation"
+      ]
+    },
+    {
+      "id": "vector-search-hnsw",
+      "domain": "ai",
+      "title": "Vector databases and approximate nearest neighbour search",
+      "tags": [
+        "vector-database",
+        "hnsw",
+        "ann",
+        "qdrant",
+        "pgvector",
+        "faiss",
+        "index",
+        "recall"
+      ],
+      "summary": "An ANN index such as HNSW finds near neighbours in milliseconds by trading a little recall for speed; measure that recall.",
+      "body": "Brute-force search compares the query with every vector, fine up to about 100k vectors. Beyond that, HNSW builds a layered graph that reaches near neighbours in logarithmic time; parameters M and ef_construction at build time and ef at query time trade recall for memory and latency. IVF and product quantisation compress large indexes. Qdrant, pgvector, Weaviate, Milvus, FAISS and Elasticsearch all offer HNSW; pick by operational fit (Postgres you already run, or a dedicated service with filtering and hybrid search built in).\n\nMetadata filters must be applied inside the index query (pre-filtering), not after top-k, or a tenant filter leaves the wrong tenant's chunks in the candidates. Always compare the ANN index against exact search on a sample to know your recall, and back up the index or be able to rebuild it from the source documents.",
+      "code": "from qdrant_client import QdrantClient, models\n\nclient = QdrantClient(\"http://localhost:6333\")\nhits = client.query_points(\n    collection_name=\"docs\",\n    query=query_vector,\n    query_filter=models.Filter(must=[models.FieldCondition(key=\"tenant_id\", match=models.MatchValue(value=tenant))]),\n    limit=30,\n)",
+      "related": [
+        "embeddings",
+        "hybrid-search-reranking",
+        "pii-data-residency"
+      ]
+    },
+    {
+      "id": "hybrid-search-reranking",
+      "domain": "ai",
+      "title": "Hybrid search and cross-encoder re-ranking",
+      "tags": [
+        "hybrid-search",
+        "bm25",
+        "reranking",
+        "cross-encoder",
+        "reciprocal-rank-fusion",
+        "retrieval-quality"
+      ],
+      "summary": "Retrieve wide with keyword plus vector search, then re-rank narrow with a cross-encoder that reads query and chunk together.",
+      "body": "Dense retrieval finds paraphrases and misses exact strings; BM25 finds exact identifiers, names and rare terms and misses paraphrases. Hybrid retrieval runs both and fuses the rankings (reciprocal rank fusion is simple and robust), which fixes the invoice-number problem and improves recall broadly. Retrieve 20 to 50 candidates cheaply, then apply a cross-encoder re-ranker (bge-reranker, Cohere Rerank, a small LLM) that scores each query-chunk pair jointly and keeps the best 5 to 8. Re-ranking is the single most reliable quality upgrade in RAG.\n\nCost: the re-ranker adds latency proportional to candidate count; measure and cap it. Query rewriting (expanding abbreviations, generating a hypothetical answer to embed, HyDE) helps when user questions are terse.",
+      "related": [
+        "vector-search-hnsw",
+        "rag-overview",
+        "query-rewriting"
+      ]
+    },
+    {
+      "id": "query-rewriting",
+      "domain": "ai",
+      "title": "Query rewriting, HyDE and multi-query retrieval",
+      "tags": [
+        "query-rewriting",
+        "hyde",
+        "multi-query",
+        "query-expansion",
+        "retrieval"
+      ],
+      "summary": "Turn a terse or ambiguous question into the query the index will actually match, before retrieval.",
+      "body": "Users type fragments; documents are written in full sentences. Rewriting the question with a small model (expand abbreviations, add the entity from the conversation, split a compound question) lifts recall. HyDE generates a hypothetical answer and embeds that, because an answer looks more like the document than the question does. Multi-query generates several phrasings, retrieves for each and fuses. Conversational RAG must resolve pronouns and references from earlier turns before searching.\n\nAll of these add a model call and latency; measure recall gain against cost on the golden set and keep only what pays. Log the rewritten query with the answer so you can see what the index was actually asked.",
+      "related": [
+        "hybrid-search-reranking",
+        "rag-overview"
+      ]
+    },
+    {
+      "id": "hallucination-grounding",
+      "domain": "ai",
+      "title": "Hallucination, grounding, abstention and citation checks",
+      "tags": [
+        "hallucination",
+        "grounding",
+        "citations",
+        "abstain",
+        "faithfulness",
+        "verification"
+      ],
+      "summary": "Give the model only what it should answer from, a permitted way to say no, and a mechanical check that every citation exists.",
+      "body": "A hallucination is fluent text not supported by the context or the world. In RAG, first ask whether retrieval returned the fact at all; if not, no prompt will fix it. Then: instruct the model to answer only from the provided chunks and to use a fixed abstain phrase otherwise, require inline citations to chunk ids, and verify in code that every cited id was retrieved and, ideally, that the cited text supports the claim (an entailment check with a small model). Withhold or flag answers that fail. Track abstention rate and citation-failure rate as metrics.\n\nOn the eval side, include unanswerable questions whose correct answer is the abstain phrase, and score faithfulness separately from helpfulness. Lower temperature helps a little; retrieval quality helps a lot.",
+      "code": "def citations_valid(answer: str, retrieved_ids: set[str]) -> bool:\n    cited = set(re.findall(r\"\\[(chunk_[a-z0-9]+)\\]\", answer))\n    return bool(cited) and cited <= retrieved_ids",
+      "related": [
+        "rag-overview",
+        "evals-golden-sets",
+        "llm-as-judge"
+      ]
+    },
+    {
+      "id": "rag-vs-finetune-decision",
+      "domain": "ai",
+      "title": "RAG or fine-tune: how to decide",
+      "tags": [
+        "rag",
+        "fine-tuning",
+        "decision",
+        "architecture",
+        "scoping",
+        "knowledge",
+        "style"
+      ],
+      "summary": "Facts that change or need citing want retrieval; consistent style, format or a narrow classifier wants fine-tuning; most projects want prompting plus RAG.",
+      "body": "Ask four questions. Does the content change? Retrieval updates by re-indexing a document; fine-tuning needs retraining. Must answers cite sources? Only retrieval can. Is the failure about knowledge or about behaviour? Missing facts are a retrieval problem; wrong tone, format or persistent instruction-following failures are behaviour, where a fine-tune or better few-shot examples help. Is there enough clean data? Fine-tuning needs hundreds to thousands of examples and an eval to prove it helped.\n\nA client who says train our own GPT usually wants answers from their documents, which is RAG. Propose a measured pilot, keep fine-tuning as a phase-2 option contingent on evals, and put the comparison in a table with cost, timeline and update path.",
+      "related": [
+        "rag-overview",
+        "training-vs-finetuning",
+        "consulting-scoping-ai-projects"
+      ]
+    },
+    {
+      "id": "tool-use-function-calling",
+      "domain": "ai",
+      "title": "Tool use and function calling",
+      "tags": [
+        "tool-use",
+        "function-calling",
+        "agents",
+        "json-schema",
+        "tools",
+        "orchestration"
+      ],
+      "summary": "The model emits a structured call; your code validates and runs it; the result goes back; the model finishes.",
+      "body": "You send tool definitions (name, description, JSON-Schema parameters) with the messages. When the model decides a tool is needed it returns a tool-call message with arguments instead of prose. Your code validates the arguments as untrusted input, executes with a timeout, appends a tool-result message, and calls the model again; repeat until it answers. The description is prompt text: say what the tool does, when to use it, and what it returns. Generate schemas from typed functions so they never drift.\n\nClassify tools as read, write or destructive; log every call with arguments and duration; require confirmation for destructive ones; make writes idempotent. The model never executes anything itself, which is the whole security boundary.",
+      "code": "tools = [{\n    \"name\": \"get_order\",\n    \"description\": \"Look up an order by id. Use when the user mentions an order number.\",\n    \"input_schema\": {\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}}, \"required\": [\"order_id\"]},\n}]",
+      "related": [
+        "agents-loops-guards",
+        "structured-output-json",
+        "mcp"
+      ]
+    },
+    {
+      "id": "agents-loops-guards",
+      "domain": "ai",
+      "title": "Agents: loops, planning, memory and the guards that keep them safe",
+      "tags": [
+        "agents",
+        "react",
+        "planning",
+        "loop",
+        "guardrails",
+        "budget",
+        "autonomy"
+      ],
+      "summary": "An agent is a model in a loop with tools; the engineering is in the loop's limits, logs and stop conditions.",
+      "body": "The ReAct pattern alternates reasoning, a tool call, and an observation until the goal is met. Add a step limit, a token and cost budget, a wall-clock timeout, detection of repeated identical calls, and a structured failure result when a guard trips. Keep the task decomposition explicit (a plan the model updates) and the state outside the model (a scratchpad, a database) so a crash or restart is recoverable. Memory is retrieval over past interactions, with the same grounding rules.\n\nGive agents the narrowest toolset that can do the job, run them with least privilege, gate destructive actions behind human confirmation, and trace every step. Evaluate agents on task success, cost and steps over a fixed task set, not on demos. Most business problems need a workflow with a couple of model calls, not an open-ended agent.",
+      "related": [
+        "tool-use-function-calling",
+        "prompt-injection-security",
+        "observability-for-llm-apps"
+      ]
+    },
+    {
+      "id": "mcp",
+      "domain": "ai",
+      "title": "Model Context Protocol (MCP)",
+      "tags": [
+        "mcp",
+        "protocol",
+        "tools",
+        "servers",
+        "clients",
+        "integration",
+        "fastmcp"
+      ],
+      "summary": "MCP is an open protocol for exposing tools, resources and prompts to any compatible model client over stdio or HTTP.",
+      "body": "An MCP server declares tools with JSON-Schema arguments, resources (readable data such as files or records) and prompt templates. A client (an IDE, a desktop assistant, an agent runtime) connects, lists capabilities, and calls tools; the transport is stdio for local processes or HTTP for remote servers. It replaces per-vendor plugin formats, so one server serves many clients. In Python, FastMCP turns typed functions into tools with a decorator.\n\nSecurity is the server's job: authenticate the client, scope permissions, validate inputs, and treat everything from the model as untrusted. Log tool calls. A server that can read files and browse the web is an exfiltration path if a prompt injection reaches the model, so keep dangerous capabilities separate and confirmed.",
+      "code": "from fastmcp import FastMCP\n\nmcp = FastMCP(\"orders\")\n\n@mcp.tool()\ndef get_order(order_id: str) -> dict:\n    \"\"\"Look up an order by id.\"\"\"\n    return repo.get(order_id)\n\nif __name__ == \"__main__\":\n    mcp.run()",
+      "related": [
+        "tool-use-function-calling",
+        "agents-loops-guards"
+      ]
+    },
+    {
+      "id": "prompt-injection-security",
+      "domain": "ai",
+      "title": "Prompt injection and LLM application security",
+      "tags": [
+        "prompt-injection",
+        "security",
+        "jailbreak",
+        "exfiltration",
+        "untrusted-input",
+        "guardrails",
+        "owasp-llm"
+      ],
+      "summary": "Any text the model reads can try to give it orders; treat retrieved and tool-returned content as untrusted data and limit what the model can do.",
+      "body": "Direct injection is a user telling the model to ignore its instructions; indirect injection hides instructions in a web page, a document, an email or a tool result the model reads later. The dangerous combination is untrusted input plus a capable tool: a poisoned document instructing the agent to email the customer list. No prompt fully prevents it, so layer defences: delimit and label data as data, keep secrets and dangerous tools away from the model, require human confirmation for actions with side effects, restrict what tools can reach (allowlists, read-only credentials), validate and sanitise tool outputs, and put injection cases in the eval suite.\n\nAlso cover the classics: rate limiting, authentication, tenant isolation in retrieval, and never rendering model output as HTML unescaped. The OWASP Top 10 for LLM applications is the checklist.",
+      "related": [
+        "security-owasp",
+        "agents-loops-guards",
+        "pii-data-residency"
+      ]
+    },
+    {
+      "id": "pii-data-residency",
+      "domain": "ai",
+      "title": "PII, GDPR, data residency and tenant isolation",
+      "tags": [
+        "pii",
+        "gdpr",
+        "data-residency",
+        "eu",
+        "privacy",
+        "tenant-isolation",
+        "redaction",
+        "dpa"
+      ],
+      "summary": "Know where every byte is processed, under what contract, for whom; redact early and isolate tenants inside the index.",
+      "body": "Residency is a physical and legal fact: an EU-region endpoint under a data-processing agreement that excludes training on your data, or a model self-hosted on EU infrastructure. Ask the provider in writing about processing region, retention and training use. Redact personal data (names, ids, emails) at ingestion and in questions before anything else sees it; keep the mapping outside the model. Enforce tenant filters inside the vector query, derived from the authenticated session, never from user-supplied fields, and test cross-tenant questions in the eval suite.\n\nA breach may trigger a 72-hour notification duty for the data controller; design the kill switch and the audit log before launch. Document the data flows in the architecture diagram; the auditor will ask.",
+      "related": [
+        "prompt-injection-security",
+        "vector-search-hnsw",
+        "security-owasp"
+      ]
+    },
+    {
+      "id": "evals-golden-sets",
+      "domain": "ai",
+      "title": "Evaluation: golden sets, metrics and regression gates",
+      "tags": [
+        "evals",
+        "golden-set",
+        "metrics",
+        "recall",
+        "regression",
+        "benchmark",
+        "quality"
+      ],
+      "summary": "Turn quality into numbers on a fixed set of real cases and run them on every change; nothing else counts as evidence.",
+      "body": "Build a golden set of 50 to 200 real inputs with expected outputs, including hard cases and ones the system should refuse; grow it from production failures. Score with exact match or F1 where the answer is a label or a value, retrieval recall@k where the target is a chunk, and a rubric (via humans or an LLM judge) where the answer is prose. Separate metrics for retrieval, faithfulness, helpfulness, abstention, latency and cost. Run it in CI on every prompt, model, chunking or index change and block regressions.\n\nOffline evals predict; online metrics confirm: log user feedback, escalations and corrections, and sample production traffic into the golden set monthly. A change without an eval number is a guess.",
+      "code": "def recall_at_k(results: list[list[str]], targets: list[str], k: int = 5) -> float:\n    hits = sum(t in r[:k] for r, t in zip(results, targets, strict=True))\n    return hits / len(targets)",
+      "related": [
+        "llm-as-judge",
+        "regression-and-ab-testing",
+        "hallucination-grounding"
+      ]
+    },
+    {
+      "id": "llm-as-judge",
+      "domain": "ai",
+      "title": "LLM-as-judge: useful, biased, calibrate it",
+      "tags": [
+        "llm-as-judge",
+        "evaluation",
+        "rubric",
+        "bias",
+        "pairwise",
+        "calibration"
+      ],
+      "summary": "A model can grade answers at scale, but it prefers long answers and the first option; use rubrics, swap positions, and check against humans.",
+      "body": "Give the judge a rubric with explicit criteria and a scale, the question, the reference or the retrieved context, and the answer; ask for reasoning then a score in JSON. Known biases: verbosity (longer looks better), position (first of two wins), self-preference (a model likes its own style), and leniency. Mitigate with pairwise comparisons run in both orders, length-normalised scoring, a different model family as judge, and a human-labelled sample to measure agreement (Cohen's kappa) before trusting it. Re-calibrate when the judge model changes.\n\nUse the judge for regression detection and triage, not as the sole acceptance criterion in a contract. Faithfulness judgments (is this claim supported by this chunk) are more reliable than open-ended quality scores.",
+      "related": [
+        "evals-golden-sets",
+        "regression-and-ab-testing"
+      ]
+    },
+    {
+      "id": "regression-and-ab-testing",
+      "domain": "ai",
+      "title": "Regression suites, shadow deployments and A/B tests for LLM features",
+      "tags": [
+        "regression",
+        "ab-testing",
+        "shadow-deployment",
+        "canary",
+        "rollout",
+        "experiments"
+      ],
+      "summary": "Gate changes on the offline suite, then roll out gradually and compare online metrics before committing.",
+      "body": "Prompt, model and index changes go through the same path as code: the golden set runs in CI and a regression blocks the merge. Then shadow the new version on live traffic without showing users its output, comparing metrics and costs; then a canary to a small percentage with a kill switch; then an A/B test with enough traffic to detect the effect you care about (thumbs, escalations, task completion, cost per request). Keep versions pinned and logged with every response so an incident can be traced to a change.\n\nVendor models change under the same name; pin dated model versions where the API allows and re-run the suite when you move.",
+      "related": [
+        "evals-golden-sets",
+        "ci-cd",
+        "observability-for-llm-apps"
+      ]
+    },
+    {
+      "id": "cost-engineering",
+      "domain": "ai",
+      "title": "Cost engineering for LLM systems",
+      "tags": [
+        "cost",
+        "tokens",
+        "pricing",
+        "routing",
+        "cascade",
+        "caching",
+        "budget"
+      ],
+      "summary": "Cost is tokens times price per request times volume; attack input tokens first, then route by difficulty.",
+      "body": "Compute cost per request as input_tokens x input_price + output_tokens x output_price, then multiply by monthly volume and put the arithmetic in the proposal. Input usually dominates, so: cache the stable prefix, retrieve fewer and better chunks, trim system prompts and history, and cap output. Then route: a small model or classifier handles the easy majority and escalates the rest (a cascade), evaluated on the golden set for quality at cost. Batch APIs cut price for non-interactive work. Self-hosting pays only at sustained volume with an ops team.\n\nDashboard cost per request by stage and alert on a 30 percent week-over-week rise; the usual causes are a raised k, a longer prompt, untrimmed history, or a cache that stopped hitting after a system-prompt edit.",
+      "code": "def cost_usd(in_tok: int, out_tok: int, in_price: float, out_price: float) -> float:\n    return in_tok * in_price / 1e6 + out_tok * out_price / 1e6\n\nprint(cost_usd(6000, 400, 2.50, 10.0))   # 0.019",
+      "related": [
+        "prompt-caching",
+        "latency-engineering",
+        "small-models-distillation-quantisation"
+      ]
+    },
+    {
+      "id": "latency-engineering",
+      "domain": "ai",
+      "title": "Latency engineering: time to first token, streaming and the tail",
+      "tags": [
+        "latency",
+        "streaming",
+        "ttft",
+        "p95",
+        "throughput",
+        "batching",
+        "performance"
+      ],
+      "summary": "Break the request into stages, measure p95 per stage, stream to hide decode, and trim input to cut prefill.",
+      "body": "Time to first token is dominated by queueing plus prefill, which scales with input length; total time adds decode, which scales with output length. Streaming changes what the user waits for from the last token to the first. Levers in rough order of cost: stream, shorten prompts and retrieved context, cap output, cache the prefix, run retrieval and other calls concurrently, pick a smaller or faster model, and only then bigger infrastructure. For self-hosted models, continuous batching (vLLM) trades per-request latency for throughput; tune for your traffic.\n\nMeasure at the client, per stage, as percentiles, and alert on p95 against the contract. A 6 s p95 is usually one slow stage, not a slow model.",
+      "related": [
+        "latency-percentiles",
+        "cost-engineering",
+        "self-hosting-vs-api"
+      ]
+    },
+    {
+      "id": "self-hosting-vs-api",
+      "domain": "ai",
+      "title": "Self-hosting versus APIs: vLLM, llama.cpp, Ollama and when each fits",
+      "tags": [
+        "self-hosting",
+        "vllm",
+        "llama.cpp",
+        "ollama",
+        "api",
+        "gpu",
+        "deployment",
+        "open-weights"
+      ],
+      "summary": "APIs win on capability and simplicity; self-hosting wins on residency, control and cost at sustained volume, if you can run it.",
+      "body": "Hosted APIs give the strongest models, no ops, and pay-per-token; the questions are data residency, retention and price at scale. Open-weight models (Llama, Qwen, Mistral, Gemma) run on your hardware: vLLM for production throughput with continuous batching and prefix caching on GPUs; llama.cpp for CPU and quantised GGUF models on modest machines; Ollama for a developer-friendly local server with an OpenAI-compatible API. A 7B to 14B quantised model runs on a single consumer GPU and handles narrow tasks well; frontier-level quality still needs large models and serious hardware.\n\nDecide with numbers: monthly token volume, required quality on the golden set, residency constraints, and the cost of an engineer who can keep GPUs healthy. Many teams run a hybrid: hosted for hard queries, self-hosted small models for classification and routing.",
+      "related": [
+        "small-models-distillation-quantisation",
+        "lora-qlora-peft",
+        "pii-data-residency"
+      ]
+    },
+    {
+      "id": "small-models-distillation-quantisation",
+      "domain": "ai",
+      "title": "Small models, distillation and quantisation",
+      "tags": [
+        "small-models",
+        "distillation",
+        "quantisation",
+        "gguf",
+        "int8",
+        "int4",
+        "efficiency",
+        "routing"
+      ],
+      "summary": "Shrink cost with a smaller model where quality allows: distil from a large one, quantise weights, and route by difficulty.",
+      "body": "Distillation trains a small model on outputs (and sometimes reasoning) generated by a large one for your task, capturing most of the quality at a fraction of the cost. Quantisation stores weights in 8 or 4 bits (int8, int4, GGUF formats) cutting memory and often speeding inference with a small quality loss; measure it on your eval, do not assume. Small models excel at narrow, well-specified tasks: classification, extraction, routing, re-ranking. They fail on open-ended reasoning and long instructions, which is where the router escalates.\n\nThe pattern that pays: small model first, confidence or a verifier decides, large model on escalation. Evaluate the combined system, because the router's mistakes are the system's mistakes.",
+      "related": [
+        "cost-engineering",
+        "self-hosting-vs-api",
+        "training-vs-finetuning"
+      ]
+    },
+    {
+      "id": "multimodal-and-vision",
+      "domain": "ai",
+      "title": "Multimodal models: images, documents and audio",
+      "tags": [
+        "multimodal",
+        "vision",
+        "ocr",
+        "documents",
+        "pdf",
+        "audio",
+        "speech"
+      ],
+      "summary": "Vision-capable models read images and page renders directly; use them for layout-heavy documents, and OCR plus text models for bulk text.",
+      "body": "Multimodal models accept images (and in some cases audio or video) alongside text. For document work, rendering a PDF page to an image and asking the model to extract fields handles tables, stamps and handwriting that OCR mangles, at a higher token cost per page. For large corpora, a text pipeline (pdf text extraction, layout-aware parsers, OCR for scans) is cheaper and searchable; reserve vision for the pages the text pipeline flags as low quality. Speech-to-text models (Whisper and successors) turn audio into transcripts that then flow through the normal text pipeline.\n\nEvaluate extraction like any other task: a golden set of pages with expected fields and an exact-match score. Images are large in tokens; resize and crop before sending.",
+      "related": [
+        "rag-overview",
+        "cost-engineering"
+      ]
+    },
+    {
+      "id": "consulting-scoping-ai-projects",
+      "domain": "ai",
+      "title": "Scoping an AI project for a client",
+      "tags": [
+        "consulting",
+        "scoping",
+        "proposal",
+        "pilot",
+        "acceptance-criteria",
+        "client",
+        "budget",
+        "timeline"
+      ],
+      "summary": "Map constraints to architecture, define done as numbers on a golden set, deliver in milestones, and hand over something the client can run.",
+      "body": "Week one: agree the golden set and a baseline with the client; nothing else is measurable without it. Translate every technology request into an outcome and a metric. Map the constraints (residency, budget, timeline, integration, accuracy tolerance) to an architecture, usually retrieval plus a hosted or EU-hosted model, with fine-tuning parked as a later option. Price a fixed-scope pilot with acceptance criteria (recall, answer quality, abstention, p95, cost per request), a change-control clause, and pass-through model costs with the token arithmetic shown. Put the riskiest unknown first in the plan.\n\nDeliverables: the system in the client's accounts and repo, the eval harness, the runbook with kill switch and rollback, a cost and latency dashboard, an architecture diagram with data flows, and an on-call path. Refuse guarantees of perfection; offer measured targets and a human-review path instead.",
+      "related": [
+        "estimation-and-scoping",
+        "rag-vs-finetune-decision",
+        "evals-golden-sets",
+        "pii-data-residency"
+      ]
+    },
+    {
+      "id": "observability-for-llm-apps",
+      "domain": "ai",
+      "title": "Observability for LLM applications",
+      "tags": [
+        "observability",
+        "tracing",
+        "llm-ops",
+        "logging",
+        "chunk-ids",
+        "prompt-version",
+        "monitoring"
+      ],
+      "summary": "Trace every request through retrieval, re-ranking and generation, and log prompt version, model, chunk ids, tokens and cost with the answer.",
+      "body": "Without per-request traces you cannot tell a retrieval miss from a generation failure. Log for every answer: request id, user or tenant (pseudonymised), prompt and system-prompt version, model and version, retrieved and re-ranked chunk ids with scores, tokens in and out, latency per stage, cost, finish reason, citation-check result, and any guard that fired. Use OpenTelemetry spans or a dedicated LLM tracing tool. Dashboards: p95 per stage, cost per request, abstention rate, citation failure rate, retry rate, cache hit rate.\n\nAlerts on burn rate against the SLO, on cost per request rising, and on quality proxies (thumbs-down rate, escalations). Sample traces into the golden set. Fail-open paths must emit a typed tag and a counter so silent failures cannot exist.",
+      "related": [
+        "observability",
+        "evals-golden-sets",
+        "agents-loops-guards"
+      ]
+    },
+    {
+      "id": "safety-guardrails-human-in-loop",
+      "domain": "ai",
+      "title": "Guardrails, safety layers and human in the loop",
+      "tags": [
+        "guardrails",
+        "safety",
+        "moderation",
+        "human-in-the-loop",
+        "escalation",
+        "risk",
+        "confidence"
+      ],
+      "summary": "Guardrails are code around the model: input checks, output checks, confidence thresholds and a human path for what matters.",
+      "body": "Input guardrails: block or route off-topic, abusive or injected inputs, and redact PII. Output guardrails: validate structure, check citations, screen for policy violations, detect refusal loops, and cap length. Confidence: use abstention, self-consistency or a verifier model to decide when to escalate to a human, and make that path fast and logged. High-stakes domains (legal, medical, financial) keep a human approving actions; the model drafts, the person decides.\n\nGuardrails are measured like everything else: false positive and false negative rates on labelled examples, and their latency. A guardrail that silently blocks good answers is a quality bug; log every trip with a reason. The kill switch is the last guardrail and must exist before launch.",
+      "related": [
+        "prompt-injection-security",
+        "hallucination-grounding",
+        "incident-response-postmortem"
+      ]
+    }
+  ]
+}
