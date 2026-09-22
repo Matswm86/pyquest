@@ -1,3 +1,13 @@
+> ## This repo has moved
+>
+> PyQuest now lives inside the **[pylearn](https://github.com/Matswm86/pylearn)** repo at
+> **[`pyquest/`](https://github.com/Matswm86/pylearn/tree/main/pyquest)**, next to the
+> Pytor site it already shared a tutor with. Development and new APK releases happen
+> there; this repo is archived and read-only as of 2026-09-22.
+>
+> The APKs already published here still download and still install. New builds are at
+> **[pylearn/releases](https://github.com/Matswm86/pylearn/releases)**.
+
 # PyQuest
 
 An Android game that walks you from `print("hello")` to scoping and pricing an
